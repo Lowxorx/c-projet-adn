@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "c-projet-adn", "c-projet-adn\c-projet-adn.csproj", "{96EECED8-BE34-44CD-B814-F2AB2093AE09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POC client serveur", "..\..\..\poc client serveur\POC client serveur.csproj", "{198A0609-97E1-4170-9DA4-1740F7E769F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POC client serveur", "poc client serveur\POC client serveur.csproj", "{198A0609-97E1-4170-9DA4-1740F7E769F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
