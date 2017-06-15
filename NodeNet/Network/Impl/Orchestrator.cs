@@ -6,68 +6,68 @@ using NodeNet.Network.Iface;
 
 namespace NodeNet.Network.Impl
 {
-    abstract class Orchectrator: IOrchestrator
+    public abstract class Orchestrator: IOrchestrator
     {
         public String Address { get; set; }
         public int Port { get; set; }
         public String Name { get; set; }
-        private List<INode> nodes { get; set; }
+        private List<INode> Nodes { get; set; }
         private INode self;
     
         private Socket socketServer;
 
-        public Orchectrator(string name, string address,int port, INode self)
+        public Orchestrator(string name, string address,int port, INode self)
         {
-            nodes = new List<INode>();
+            Nodes = new List<INode>();
         }
 
-        public Orchectrator(string name, string address, int port)
+        public Orchestrator(string name, string address, int port)
         {
             this.Name = name;
             this.Address = address;
             this.Port = port;
         }
 
-        public void listen()
+        public void Listen()
         {
-            discoverNodes();
+            DiscoverNodes();
             socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse(Address), Port));
             socketServer.Listen(10);
-            socketServer.BeginAccept(new AsyncCallback(connectCallback), socketServer);
+            socketServer.BeginAccept(new AsyncCallback(ConnectCallback), socketServer);
         }
 
 
-        private void connectCallback(IAsyncResult asyncResult)
+        private void ConnectCallback(IAsyncResult asyncResult)
         {
             Socket client = socketServer.EndAccept(asyncResult);
             Console.WriteLine("New Client connected address : " + ((IPEndPoint)client.RemoteEndPoint).Address + " port : " + ((IPEndPoint)client.RemoteEndPoint).Port);
         }
 
 
-        public abstract void mapData(DataInput input);
+      //  public abstract void mapData(DataInput input);
 
-        public abstract void reduceData(DataOutput output);
+      //  public abstract void reduceData(DataOutput output);
 
-        public void addNode(INode node)
+        public void AddNode(INode node)
         {
-            nodes.Add(node);
+            Nodes.Add(node);
             node.registerOrch(this);
         }
 
-        public void deleteNode(INode node)
+        public void DeleteNode(INode node)
         {
             node.stop();
-            nodes.Remove(node);
+            Nodes.Remove(node);
         }
 
-        public abstract void discoverNodes();
+        public abstract void DiscoverNodes();
 
-        public void stop()
+        public void Stop()
         {
-            foreach(INode node in nodes)
+            foreach(INode node in Nodes)
             {
-                deleteNode(node);
+                DeleteNode(node);
             }
         }
 

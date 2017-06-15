@@ -1,20 +1,13 @@
-﻿using NodeNet.impl;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NodeNet.Network.Iface
+﻿namespace NodeNet.Network.Iface
 {
     public interface IOrchestrator {
-        void discoverNodes();
-        void listen();
-        void stop();
+        void DiscoverNodes();
+        void Listen();
+        void Stop();
         //void mapData(DataInput input);
         //void reduceData(DataOutput output);
-        void addNode(INode node);
-        void deleteNode(INode node);
+        void AddNode(INode node);
+        void DeleteNode(INode node);
 
     }
 }
