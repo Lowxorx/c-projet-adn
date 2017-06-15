@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ADNet.Properties
+namespace NodeNet.Properties
 {
 
 

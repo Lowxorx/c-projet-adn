@@ -54,20 +54,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <Compile Include="GUI\View\ADNetLauncher.xaml.cs">
+      <DependentUpon>ADNetLauncher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Worker\Impl\DNAWorker1.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\Impl\DNAOrchestra.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -92,6 +89,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GUI\Model\" />
+    <Folder Include="GUI\ViewModel\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GUI\View\ADNetLauncher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NodeNet\NodeNet.csproj">
+      <Project>{2F6D15A6-E774-4E42-BBBF-1993994E7B85}</Project>
+      <Name>NodeNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace c_projet_adn
+namespace NodeNet
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
