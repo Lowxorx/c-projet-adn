@@ -1,7 +1,8 @@
 ﻿using NodeNet.Network.Iface;
 using NodeNet.Network.Impl;
 using System;
-namespace ADNet.impl
+
+namespace ADNet.Network.Impl
 {
     class DNAOrchestra : Orchestrator
     {

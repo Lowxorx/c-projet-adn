@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADNet", "c-projet-adn\ADNet.csproj", "{96EECED8-BE34-44CD-B814-F2AB2093AE09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADNet", "ADNet\ADNet.csproj", "{96EECED8-BE34-44CD-B814-F2AB2093AE09}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeNet", "NodeNet\NodeNet.csproj", "{2F6D15A6-E774-4E42-BBBF-1993994E7B85}"
 EndProject

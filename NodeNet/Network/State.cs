@@ -1,4 +1,4 @@
-﻿namespace NodeNet
+﻿namespace NodeNet.Network
 {
     public enum State
     {
