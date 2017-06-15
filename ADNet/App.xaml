@@ -5,11 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d1p1:Ignorable="d"
-    StartupUri="MainWindow.xaml">
+    StartupUri="GUI/View/ADNetLauncher.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <vm:ViewModelLocator
-                xmlns:vm="clr-namespace:NodeNet.GUI.ViewModel"
+                xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
                 x:Key="Locator"
                 d:IsDataSource="True" />
         </ResourceDictionary>

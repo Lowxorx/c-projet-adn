@@ -1,7 +1,0 @@
-﻿<Application
-    x:Class="ADNet.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    StartupUri="GUI/View/ADNetLauncher.xaml">
-    <Application.Resources />
-</Application>

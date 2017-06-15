@@ -1,8 +1,8 @@
 ﻿using NodeNet.Network.Iface;
 using System;
-using System.Threading.Tasks;
+using NodeNet.Network;
 
-namespace NodeNet.impl
+namespace ADNet.Worker.Impl
 {
     public class DNAWorker1<String, Boolean> : IWorker<string, bool>
     {
@@ -18,6 +18,11 @@ namespace NodeNet.impl
         }
 
         public State getState()
+        {
+            throw new NotImplementedException();
+        }
+
+        State IWorker<string, bool>.getState()
         {
             throw new NotImplementedException();
         }
