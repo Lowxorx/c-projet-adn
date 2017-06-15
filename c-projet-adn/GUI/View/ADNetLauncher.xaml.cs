@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace c_projet_adn
+namespace c_projet_adn.GUI.View
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
-    /// </summary> 
-    public partial class MainWindow : Window
+    /// Logique d'interaction pour ADNetLauncher.xaml
+    /// </summary>
+    public partial class ADNetLauncher : Window
     {
-        public MainWindow()
+        public ADNetLauncher()
         {
             InitializeComponent();
         }
