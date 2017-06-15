@@ -17,7 +17,7 @@ namespace c_projet_adn
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
-    /// </summary>
+    /// </summary> 
     public partial class MainWindow : Window
     {
         public MainWindow()
