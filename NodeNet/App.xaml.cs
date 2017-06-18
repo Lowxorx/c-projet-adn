@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace c_projet_adn
+namespace NodeNet
 {
     /// <summary>
     /// Logique d'interaction pour App.xaml

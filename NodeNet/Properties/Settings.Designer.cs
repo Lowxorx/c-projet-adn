@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace c_projet_adn.Properties
+namespace NodeNet.Properties
 {
 
 
