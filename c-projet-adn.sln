@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADNet", "ADNet\ADNet.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeNet", "NodeNet\NodeNet.csproj", "{2F6D15A6-E774-4E42-BBBF-1993994E7B85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POC client serveur", "..\..\Documents\POC client serveur\POC client serveur\POC client serveur.csproj", "{198A0609-97E1-4170-9DA4-1740F7E769F6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{2F6D15A6-E774-4E42-BBBF-1993994E7B85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F6D15A6-E774-4E42-BBBF-1993994E7B85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F6D15A6-E774-4E42-BBBF-1993994E7B85}.Release|Any CPU.Build.0 = Release|Any CPU
-		{198A0609-97E1-4170-9DA4-1740F7E769F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{198A0609-97E1-4170-9DA4-1740F7E769F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{198A0609-97E1-4170-9DA4-1740F7E769F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{198A0609-97E1-4170-9DA4-1740F7E769F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

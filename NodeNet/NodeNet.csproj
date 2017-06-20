@@ -74,10 +74,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\MainViewModel.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Network\Protocol.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GUI\View\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Network\Iface\INode.cs" />
     <Compile Include="Network\Iface\IOrchestrator.cs" />
     <Compile Include="Network\Iface\IWorker.cs" />
@@ -112,8 +117,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\Model\" />
-    <Folder Include="GUI\View\" />
     <Folder Include="Worker\Iface\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GUI\View\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
