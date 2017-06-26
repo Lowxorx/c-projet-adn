@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,14 +23,16 @@ namespace NodeNet.Network
             // Client socket.
             public Socket workSocket = null;
             // Size of receive buffer.
-            public const int BufferSize = 256;
+            public const int BufferSize = 4096;
             // Receive buffer.
             public byte[] buffer = new byte[BufferSize];
             // Received data string.
             public StringBuilder sb = new StringBuilder();
         }
 
-        private Protocol protocol = new Protocol();
+        //private Protocol protocol = new Protocol();
+
+        private GZipStream stream;
 
         private List<Socket> sockets = new List<Socket>();
         private Socket socket { get; set; }
@@ -65,7 +71,7 @@ namespace NodeNet.Network
             {
                 this.sockets.Add(await listener.AcceptSocketAsync());
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sockets.Last().RemoteEndPoint.ToString()));
-                Console.WriteLine(sockets.Count().ToString());
+                Receive(sockets.Last());
             }
         }
 
@@ -80,7 +86,6 @@ namespace NodeNet.Network
                 connectDone.WaitOne();
 
                 Receive(socket);
-
             }
             catch (Exception e)
             {
@@ -89,9 +94,45 @@ namespace NodeNet.Network
         }
         #endregion
 
-        private void TestCo()
+        private byte[] Serialize(object obj)
         {
+            if (obj == null)
+                return null;
+            BinaryFormatter bf = new BinaryFormatter();
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    bf.Serialize(ms, obj);
+                    Console.WriteLine(ms.Length);
+                    return ms.ToArray();
+                }
+            }
+            catch (SerializationException ex)
+            {
+                Console.WriteLine("Serialize Error : " + ex);
+                return null;
+            }
+        }
 
+        private T Deserialize<T>(byte[] data)
+        {
+            object obj = null;
+            try
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                using (MemoryStream ms = new MemoryStream(data))
+                {
+                    GZipStream zip = new GZipStream(ms, CompressionMode.Compress);
+                    obj = bf.Deserialize(ms);
+                }
+            }
+            catch (SerializationException ex)
+            {
+                Console.WriteLine("Deserialize Error : " + ex);
+            }
+
+            return (T)obj;
         }
 
         #region Méthodes envoi/réception
@@ -112,20 +153,26 @@ namespace NodeNet.Network
                 Console.WriteLine(e.ToString());
             }
         }
-        public void Send(string data)
+        public void Send(object obj)
         {
+           this.stream = new
+            byte[] data = Serialize(obj);
+            Console.WriteLine(data.Length);
             // Convert the string data to byte data using ASCII encoding.
-            byte[] byteData = this.protocol.encapsulate(Encoding.ASCII.GetBytes(data), Protocol.code.sendData);
+            //byte[] byteData = this.protocol.encapsulate(Encoding.ASCII.GetBytes(data), Protocol.code.sendData);
 
             foreach (Socket socket in sockets)
             {
                 try
                 {
-                    socket.BeginSend(byteData, 0, byteData.Length, 0,
+                    socket.BeginSend(data, 0, data.Length, 0,
                         new AsyncCallback(SendCallback), socket);
                 }
                 catch (SocketException ex)
                 {
+                    /// Client Down ///
+                    if (!socket.Connected)
+                        Console.WriteLine("Client " + socket.RemoteEndPoint.ToString() + " Disconnected");
                     Console.WriteLine(ex.ToString());
                 }
             }
@@ -135,49 +182,40 @@ namespace NodeNet.Network
         #region Méthodes Callback
         private void ReceiveCallback(IAsyncResult ar)
         {
+            // Retrieve the state object and the client socket 
+            // from the asynchronous state object.
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket client = state.workSocket;
             try
             {
-                // Retrieve the state object and the client socket 
-                // from the asynchronous state object.
-                StateObject state = (StateObject)ar.AsyncState;
-                Socket client = state.workSocket;
-
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
 
+                Console.WriteLine(bytesRead);
+
                 if (bytesRead > 0)
-                {
+                {                 
+                    byte[] data = state.buffer;
 
-                    NetworkStream stream = new NetworkStream(client);
+                    var input = Deserialize<DataInput<String, String>>(data);
 
-                    var data = new List<byte>();
-                    while(stream.DataAvailable)
-                        data.Add((byte)stream.ReadByte());
+                    Console.WriteLine(input.input);
 
-                    byte[] array = data
-                                    .Select(a => a)
-                                    .ToArray();
-
-                    Console.WriteLine(System.Text.Encoding.ASCII.GetString(array));
-
-
-                    //// There might be more data, so store the data received so far.
-                    //state.sb.Append(System.Text.Encoding.Default.GetString(state.buffer, 0, bytesRead));
-
-                    //// Get the rest of the data.
-                    //client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    //    new AsyncCallback(ReceiveCallback), state);
+                    // Get the rest of the data.
+                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReceiveCallback), state);
                 }
                 else
                 {
                     receiveDone.Set();
                 }
-                this.message = state.sb.ToString();
-                Console.WriteLine(message);
+                Console.WriteLine(state.sb.ToString());
+                this.message = state.sb.ToString(); 
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
                 Console.WriteLine(e.ToString());
+                Receive(client);
             }
         }
 

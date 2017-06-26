@@ -49,14 +49,14 @@ namespace NodeNet.View
             {
                 this.Title = "Client";
                 CliMessages.Text += "Client connecting to server ...\n";
-                //this.Manager.StartClient(getIp(), Int32.Parse(ConfigurationManager.AppSettings["port"]));
+                this.Manager.StartClient(getIp(), 8001);
             }
             else if (this.value == Mode.serveur)
             {
                 this.Title = "Serveur";
                 this.Send.Visibility = Visibility.Visible;
                 this.SendBtn.Visibility = Visibility.Visible;
-                //await this.Manager.StartServerAsync(getIp(), Int32.Parse(8001));
+                await this.Manager.StartServerAsync(getIp(), 8001);
             }
         }
 
@@ -97,9 +97,8 @@ namespace NodeNet.View
 
         private void SendBtn_Click(object sender, RoutedEventArgs e)
         {
-            String data = Send.Text;
-            this.Manager.Send(data);
-            Console.WriteLine("Sending : " + data + " to client ...");
+            DataInput<String, String> input = new DataInput<string, string>(Send.Text);
+            this.Manager.Send(input);
         }
         #endregion
 
