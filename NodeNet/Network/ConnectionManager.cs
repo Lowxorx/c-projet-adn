@@ -32,8 +32,6 @@ namespace NodeNet.Network
 
         //private Protocol protocol = new Protocol();
 
-        private GZipStream stream;
-
         private List<Socket> sockets = new List<Socket>();
         private Socket socket { get; set; }
         private string msg;
@@ -94,18 +92,66 @@ namespace NodeNet.Network
         }
         #endregion
 
+        #region Tools
+
+        /// <summary>
+        /// Compresse un tableau d'octets vers un nouveau tableau d'octets.
+        /// </summary>
+        public static byte[] Compress(byte[] raw)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                using (GZipStream gzip = new GZipStream(memory,
+                    CompressionMode.Compress, true))
+                {
+                    gzip.Write(raw, 0, raw.Length);
+                }
+                return memory.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Decompresse un tableau d'octets vers un nouveau tableau d'octets.
+        /// </summary>
+        static byte[] Decompress(byte[] gzip)
+        {
+            using (GZipStream stream = new GZipStream(new MemoryStream(gzip),
+                CompressionMode.Decompress))
+            {
+                const int size = 4096;
+                byte[] buffer = new byte[size];
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    int count = 0;
+                    do
+                    {
+                        count = stream.Read(buffer, 0, size);
+                        if (count > 0)
+                        {
+                            memory.Write(buffer, 0, count);
+                        }
+                    }
+                    while (count > 0);
+                    return memory.ToArray();
+                }
+            }
+        }
+
         private byte[] Serialize(object obj)
         {
             if (obj == null)
                 return null;
+
             BinaryFormatter bf = new BinaryFormatter();
             try
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
                     bf.Serialize(ms, obj);
-                    Console.WriteLine(ms.Length);
-                    return ms.ToArray();
+                    Console.WriteLine("Serialized Array Length : " + ms.Length);
+                    byte[] compressed = Compress(ms.ToArray());
+                    Console.WriteLine("Serialized and Compressed Array Length : " + compressed.Length);
+                    return compressed;
                 }
             }
             catch (SerializationException ex)
@@ -120,10 +166,10 @@ namespace NodeNet.Network
             object obj = null;
             try
             {
+                byte[] uncompressed = Decompress(data);
                 BinaryFormatter bf = new BinaryFormatter();
-                using (MemoryStream ms = new MemoryStream(data))
+                using (MemoryStream ms = new MemoryStream(uncompressed))
                 {
-                    GZipStream zip = new GZipStream(ms, CompressionMode.Compress);
                     obj = bf.Deserialize(ms);
                 }
             }
@@ -134,6 +180,9 @@ namespace NodeNet.Network
 
             return (T)obj;
         }
+
+        #endregion
+
 
         #region Méthodes envoi/réception
         private void Receive(Socket client)
@@ -154,12 +203,8 @@ namespace NodeNet.Network
             }
         }
         public void Send(object obj)
-        {
-           this.stream = new
+        {        
             byte[] data = Serialize(obj);
-            Console.WriteLine(data.Length);
-            // Convert the string data to byte data using ASCII encoding.
-            //byte[] byteData = this.protocol.encapsulate(Encoding.ASCII.GetBytes(data), Protocol.code.sendData);
 
             foreach (Socket socket in sockets)
             {
