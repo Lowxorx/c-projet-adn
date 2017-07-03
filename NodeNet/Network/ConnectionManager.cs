@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NodeNet.GUI.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -39,6 +40,7 @@ namespace NodeNet.Network
         private static ManualResetEvent sendDone = new ManualResetEvent(false);
         private static ManualResetEvent receiveDone = new ManualResetEvent(false);
 
+        private MainViewModel mvm { get; set; }
         private void RaisePropertyChanged(String property)
         {
             if (PropertyChanged != null)
@@ -49,12 +51,21 @@ namespace NodeNet.Network
         public String message
         {
             get { return msg; }
-            set { msg = value; RaisePropertyChanged("message"); Console.WriteLine("PropertyChange Raised"); }
+            set { msg = value; RaisePropertyChanged("message"); Console.WriteLine("Message Raised"); }
         }
 
-        #region Ctor
-        public ConnectionManager()
+        public List<Socket> Sockets
         {
+            get { return sockets; }
+            set { sockets = value; RaisePropertyChanged("Sockets"); Console.WriteLine("Socket Raised"); }
+        }
+
+
+
+        #region Ctor
+        public ConnectionManager(MainViewModel mvm)
+        {
+            this.mvm = mvm;
         }
         #endregion
 
@@ -62,6 +73,7 @@ namespace NodeNet.Network
 
         public async Task StartServerAsync(IPAddress ip, int port)
         {
+            Console.WriteLine(" TEST "+this.ToString());
             TcpListener listener = new TcpListener(ip, port);
             listener.Start();
 
@@ -183,7 +195,6 @@ namespace NodeNet.Network
 
         #endregion
 
-
         #region Méthodes envoi/réception
         private void Receive(Socket client)
         {
@@ -243,8 +254,9 @@ namespace NodeNet.Network
                     byte[] data = state.buffer;
 
                     var input = Deserialize<DataInput<String, String>>(data);
-
                     Console.WriteLine(input.input);
+
+                    this.mvm.Message = input.input;
 
                     // Get the rest of the data.
                     client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
@@ -255,7 +267,7 @@ namespace NodeNet.Network
                     receiveDone.Set();
                 }
                 Console.WriteLine(state.sb.ToString());
-                this.message = state.sb.ToString(); 
+                
             }
             catch (SocketException e)
             {

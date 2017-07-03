@@ -4,8 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="700">
-
+        Title="MainWindow" Height="500" Width="700"
+        xmlns:ViewModel="clr-namespace:NodeNet.GUI.ViewModel">
+    <Window.DataContext>
+        <ViewModel:MainViewModel />
+    </Window.DataContext>
 
     <StackPanel x:Name="SP" Grid.Column="0" Grid.Row="0">
         <Grid Height="500">
@@ -18,16 +21,16 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Button Grid.Column="0" Grid.Row="0" x:Name="srvBtn" Content="Serveur" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Server_Button_Click" />
-            <Button Grid.Column="1" Grid.Row="0" x:Name="cliBtn" Content="Client" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Client_Button_Click"/>
+            <Button Command="{Binding StartServer}" Grid.Column="0" Grid.Row="0" x:Name="srvBtn" Content="Serveur" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75"  />
+            <Button Command="{Binding StartClient}" Grid.Column="1" Grid.Row="0" x:Name="cliBtn" Content="Client" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" />
 
-            <Label Visibility="Hidden" Grid.Column="1" Grid.Row="1" x:Name="CliTitle" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Margin="0,20,20,10" Content="Réception" Width="75"/>
-            <TextBlock Visibility="Hidden" Text="{Binding message}" Grid.Column="1" Grid.Row="0" x:Name="CliMessages" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="25,40,25,25" TextWrapping="Wrap" Height="300" Width="181"/>
+            <Label Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Margin="0,20,20,10" Content="Réception" Width="75"/>
+            <TextBlock Text="{Binding Message, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,50,25,184" TextWrapping="Wrap" Height="183" Width="293"/>
 
             <Border BorderThickness="5">
-                <TextBox Visibility="Hidden" x:Name="Send" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="40" Margin="113,131,84,-98" Width="139"/>
+                <TextBox Text="{Binding SendMsg, UpdateSourceTrigger=PropertyChanged}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="40" Margin="113,131,84,-98" Width="139"/>
             </Border>
-            <Button Visibility="Hidden" x:Name="SendBtn" Grid.Column="0" Grid.Row="1" Content="Envoyer" HorizontalAlignment="Center" Margin="25,25,0,0" VerticalAlignment="Center" Height="25" Width="75" Click="SendBtn_Click"/>
+            <Button Command="{Binding Send}" Grid.Column="0" Grid.Row="1" Content="Envoyer" HorizontalAlignment="Center" Margin="25,25,0,0" VerticalAlignment="Center" Height="25" Width="75" />
 
 
         </Grid>

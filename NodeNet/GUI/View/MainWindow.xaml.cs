@@ -33,73 +33,45 @@ namespace NodeNet.View
         public MainWindow()
         {
             InitializeComponent();
-
-            this.Manager = new ConnectionManager();
-            this.DataContext = Manager;
+        
         }
 
         #region private methods
-        private async Task change_ViewAsync()
-        {
-            srvBtn.Visibility = Visibility.Hidden;
-            cliBtn.Visibility = Visibility.Hidden;
-            this.CliTitle.Visibility = Visibility.Visible;
-            this.CliMessages.Visibility = Visibility.Visible;
-            if (this.value == Mode.client)
-            {
-                this.Title = "Client";
-                CliMessages.Text += "Client connecting to server ...\n";
-                this.Manager.StartClient(getIp(), 8001);
-            }
-            else if (this.value == Mode.serveur)
-            {
-                this.Title = "Serveur";
-                this.Send.Visibility = Visibility.Visible;
-                this.SendBtn.Visibility = Visibility.Visible;
-                await this.Manager.StartServerAsync(getIp(), 8001);
-            }
-        }
+        //private async Task change_ViewAsync()
+        //{
+        //    srvBtn.Visibility = Visibility.Hidden;
+        //    cliBtn.Visibility = Visibility.Hidden;
+        //    this.CliTitle.Visibility = Visibility.Visible;
+        //    this.CliMessages.Visibility = Visibility.Visible;
+        //    if (this.value == Mode.client)
+        //    {
+        //        this.Title = "Client";
+        //        CliMessages.Text += "Client connecting to server ...\n";
+        //    }
+        //    else if (this.value == Mode.serveur)
+        //    {
+        //        this.Title = "Serveur";     
+        //    }
+        //}
 
-        private static IPAddress getIp()
-        {
-            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                {
-                    Console.WriteLine(ni.Name);
-                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                        {
-                            return ip.Address;
-                        }
-                    }
-                }
-            }
-            throw new Exception("IP NOT FOUND");
-        }
 
 
         #endregion
 
         #region listeners
-        private void Server_Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.value = Mode.serveur;
-            change_ViewAsync();
-        }
+        //private void Server_Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.value = Mode.serveur;
+        //    change_ViewAsync();
+        //}
 
-        private void Client_Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.value = Mode.client;
-            change_ViewAsync();
-        }
+        //private void Client_Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.value = Mode.client;
+        //    change_ViewAsync();
+        //}
 
-        private void SendBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DataInput<String, String> input = new DataInput<string, string>(Send.Text);
-            this.Manager.Send(input);
-        }
+
         #endregion
 
 
