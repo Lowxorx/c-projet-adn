@@ -1,0 +1,22 @@
+﻿<Window x:Class="ADNet.GUI.View.OrchView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
+        xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
+        mc:Ignorable="d"
+        Title="OrchView" Height="332" Width="489">
+    <Window.DataContext>
+        <vm:VMOrchView/>
+    </Window.DataContext>
+    <intr:Interaction.Triggers>
+        <intr:EventTrigger EventName="Loaded">
+            <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
+        </intr:EventTrigger>
+    </intr:Interaction.Triggers>
+    <Grid>
+        <sharecontrols:MonitoringUC />
+    </Grid>
+</Window>

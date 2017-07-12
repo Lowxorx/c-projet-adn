@@ -48,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -78,6 +79,10 @@
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GUI\View\MonitoringUC.xaml.cs">
+      <DependentUpon>MonitoringUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ViewModel\VMMonitoringUC.cs" />
     <Compile Include="Network\Iface\INode.cs" />
     <Compile Include="Network\Iface\IOrchestrator.cs" />
     <Compile Include="Network\Iface\IWorker.cs" />
@@ -112,8 +117,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\Model\" />
-    <Folder Include="GUI\View\" />
     <Folder Include="Worker\Iface\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GUI\View\MonitoringUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

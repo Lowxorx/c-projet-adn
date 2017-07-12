@@ -2,7 +2,6 @@
 using GalaSoft.MvvmLight.Command;
 using System.Windows.Input;
 using System;
-using Microsoft.Practices.ServiceLocation;
 
 namespace ADNet.GUI.ViewModel
 {
@@ -54,9 +53,5 @@ namespace ADNet.GUI.ViewModel
             TxtIpEnabled = false;
             RaisePropertyChanged("TxtIpEnabledProp");
         }
-
-
-
-
     }
 }
