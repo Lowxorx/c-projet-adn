@@ -2,8 +2,11 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using NodeNet.Network;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -28,6 +31,8 @@ namespace NodeNet.GUI.ViewModel
         public ICommand StartClient { get; private set; }
         public ICommand Send { get; private set; }
         private ConnectionManager Manager { get; set; }
+
+
         private string sendmsg;
 
         public string SendMsg
@@ -49,6 +54,17 @@ namespace NodeNet.GUI.ViewModel
                 Console.WriteLine("Message Raised");
                 message = value;
                 RaisePropertyChanged(() => Message);
+            }
+        }
+
+        List<KeyValuePair<string, string>> sockets = new List<KeyValuePair<string, string>>();      
+        public List<KeyValuePair<string, string>> Sockets
+        {
+            get { return sockets; }
+            set
+            {
+                sockets = value;
+                RaisePropertyChanged(() => Sockets);
             }
         }
 
@@ -74,7 +90,8 @@ namespace NodeNet.GUI.ViewModel
 
         private void Sending()
         {
-            DataInput<String, String> input = new DataInput<string, string>(SendMsg);
+            DataInput<String, String> input = new DataInput<string, string>(DataInput<string, string>.request.msg);
+            input.msg = SendMsg;
             this.Manager.Send(input);
         }
 

@@ -1,7 +1,7 @@
 ﻿using NodeNet.GUI.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace NodeNet.Network
 {
 
-    public class ConnectionManager : INotifyPropertyChanged
+    public class ConnectionManager
     {
 
         public class StateObject
@@ -31,7 +31,6 @@ namespace NodeNet.Network
             public StringBuilder sb = new StringBuilder();
         }
 
-        //private Protocol protocol = new Protocol();
 
         private List<Socket> sockets = new List<Socket>();
         private Socket socket { get; set; }
@@ -41,26 +40,8 @@ namespace NodeNet.Network
         private static ManualResetEvent receiveDone = new ManualResetEvent(false);
 
         private MainViewModel mvm { get; set; }
-        private void RaisePropertyChanged(String property)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        public String message
-        {
-            get { return msg; }
-            set { msg = value; RaisePropertyChanged("message"); Console.WriteLine("Message Raised"); }
-        }
-
-        public List<Socket> Sockets
-        {
-            get { return sockets; }
-            set { sockets = value; RaisePropertyChanged("Sockets"); Console.WriteLine("Socket Raised"); }
-        }
-
-
+        private List<Socket> Sockets = new List<Socket>();
 
         #region Ctor
         public ConnectionManager(MainViewModel mvm)
@@ -79,9 +60,10 @@ namespace NodeNet.Network
 
             while (true)
             {
-                this.sockets.Add(await listener.AcceptSocketAsync());
+                Sockets.Add(await listener.AcceptSocketAsync());
+                mvm.Sockets.Add(new KeyValuePair<string, string>( socket.RemoteEndPoint.ToString() , "Unknown"));
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sockets.Last().RemoteEndPoint.ToString()));
-                Receive(sockets.Last());
+                Receive(socket);
             }
         }
 
@@ -96,6 +78,8 @@ namespace NodeNet.Network
                 connectDone.WaitOne();
 
                 Receive(socket);
+
+
             }
             catch (Exception e)
             {
@@ -106,10 +90,24 @@ namespace NodeNet.Network
 
         #region Tools
 
+        private string GetCPU()
+        {
+            PerformanceCounter cpucounter = new PerformanceCounter();
+            string currentcpuusage = cpucounter.NextValue() + "%";
+            return currentcpuusage;
+        }
+   
+        private object SendCPU()
+        {
+            DataInput<string, string> input = new DataInput<string, string>(DataInput<string, string>.request.cpu);
+            input.cpu = GetCPU();
+            return input;
+        }
+
         /// <summary>
         /// Compresse un tableau d'octets vers un nouveau tableau d'octets.
         /// </summary>
-        public static byte[] Compress(byte[] raw)
+        static byte[] Compress(byte[] raw)
         {
             using (MemoryStream memory = new MemoryStream())
             {
@@ -149,6 +147,9 @@ namespace NodeNet.Network
             }
         }
 
+        /// <summary>
+        /// Sérialize un objet générique dans un tableau d'octets.
+        /// </summary>
         private byte[] Serialize(object obj)
         {
             if (obj == null)
@@ -173,6 +174,9 @@ namespace NodeNet.Network
             }
         }
 
+        /// <summary>
+        /// Désérialize un tableau d'octets en un objet générique.
+        /// </summary>
         private T Deserialize<T>(byte[] data)
         {
             object obj = null;
@@ -217,7 +221,7 @@ namespace NodeNet.Network
         {        
             byte[] data = Serialize(obj);
 
-            foreach (Socket socket in sockets)
+            foreach (Socket socket in Sockets)
             {
                 try
                 {
@@ -254,9 +258,26 @@ namespace NodeNet.Network
                     byte[] data = state.buffer;
 
                     var input = Deserialize<DataInput<String, String>>(data);
-                    Console.WriteLine(input.input);
 
-                    this.mvm.Message = input.input;
+                    switch (input.query)
+                    {
+                        case DataInput<string, string>.request.msg:
+                            this.mvm.Message = input.msg;
+                            break;
+
+                        case DataInput<string, string>.request.status:
+                            break;
+
+                        case DataInput<string, string>.request.data:
+                            break;
+
+                        case DataInput<string, string>.request.cpu:
+                            {
+                                KeyValuePair<string, string> pair = new KeyValuePair<string, string>(client.RemoteEndPoint.ToString(), input.cpu);
+                                this.mvm.Sockets.Add(pair);
+                                break;
+                            }    
+                    }
 
                     // Get the rest of the data.
                     client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
