@@ -29,7 +29,8 @@ namespace NodeNet.GUI.ViewModel
     {
         public ICommand StartServer { get; private set; }
         public ICommand StartClient { get; private set; }
-        public ICommand Send { get; private set; }
+        public ICommand SendMessage { get; private set; }
+        public ICommand AskStatus { get; private set; }
         private ConnectionManager Manager { get; set; }
 
 
@@ -57,8 +58,8 @@ namespace NodeNet.GUI.ViewModel
             }
         }
 
-        List<KeyValuePair<string, string>> sockets = new List<KeyValuePair<string, string>>();      
-        public List<KeyValuePair<string, string>> Sockets
+        List<Tuple<string, string, string>> sockets;      
+        public List<Tuple<string, string, string>> Sockets
         {
             get { return sockets; }
             set
@@ -76,23 +77,34 @@ namespace NodeNet.GUI.ViewModel
             this.Manager = new ConnectionManager(this);
             StartServer = new RelayCommand(StartServerAsync);
             StartClient = new RelayCommand(StartClientAsync);
-            Send = new RelayCommand(Sending);
+            SendMessage = new RelayCommand(Sending);
+            AskStatus = new RelayCommand(AskingStatus);
         }
 
         private void StartClientAsync()
         {
-            Manager.StartClient(getIp(), 8001);
+            Manager.mode = ConnectionManager.Mode.Node;
+            IPAddress ip = new IPAddress(new byte[] { 192, 168, 1, 99 });
+            Manager.StartClient(ip, 8002);
         }
-        private async void StartServerAsync()
+        private void StartServerAsync()
         {
-            await this.Manager.StartServerAsync(getIp(), 8001);
+            Manager.mode = ConnectionManager.Mode.Orchestrator;
+            IPAddress ip = new IPAddress(new byte[] { 192, 168, 1, 99 });
+            this.Manager.StartServerAsync(ip, 8002);
         }
 
         private void Sending()
         {
-            DataInput<String, String> input = new DataInput<string, string>(DataInput<string, string>.request.msg);
+            DataInput input = new DataInput(DataInput.request.msg);
             input.msg = SendMsg;
-            this.Manager.Send(input);
+            this.Manager.SendBroadcast(input);
+        }
+
+        private void AskingStatus()
+        {
+            DataInput input = new DataInput(DataInput.request.status);
+            this.Manager.SendBroadcast(input);
         }
 
         private static IPAddress getIp()
@@ -101,7 +113,7 @@ namespace NodeNet.GUI.ViewModel
             {
                 if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
                 {
-                    Console.WriteLine(ni.Name);
+
                     foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)

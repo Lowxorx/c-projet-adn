@@ -30,13 +30,16 @@
             <Border BorderThickness="5">
                 <TextBox Text="{Binding SendMsg, UpdateSourceTrigger=PropertyChanged}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="40" Margin="113,131,84,-98" Width="139"/>
             </Border>
-            <Button Command="{Binding Send}" Grid.Column="0" Grid.Row="1" Content="Envoyer" HorizontalAlignment="Center" Margin="25,25,0,0" VerticalAlignment="Center" Height="25" Width="75" />
-           
-            <ListView Grid.Column="1" HorizontalAlignment="Left" Height="187" Margin="19,46,0,0" Grid.Row="1" VerticalAlignment="Top" Width="278" ItemsSource="{Binding Sockets}">
+            <Button Command="{Binding Send}" Grid.Column="0" Grid.Row="1" Content="Envoyer Msg" HorizontalAlignment="Center" Margin="118,107,102,286" VerticalAlignment="Center" Height="24" Width="126" />
+            
+            <Button Command="{Binding AskStatus}" Grid.Column="0" Grid.Row="1" Content="Demander Statut" HorizontalAlignment="Center" Margin="118,185,102,208" VerticalAlignment="Center" Height="24" Width="126" />
+
+            <ListView Grid.Column="1" HorizontalAlignment="Left" Height="187" Margin="19,46,0,0" Grid.Row="1" VerticalAlignment="Top" Width="278" ItemsSource="{Binding Sockets,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Client" DisplayMemberBinding="{Binding Key}"/>
-                        <GridViewColumn Header="Etat" DisplayMemberBinding="{Binding Value}" />
+                        <GridViewColumn Header="Client" Width="100" DisplayMemberBinding="{Binding Item1}"/>
+                        <GridViewColumn Header="Etat" Width="100" DisplayMemberBinding="{Binding Item2}" />
+                        <GridViewColumn Header="CPU" Width="100" DisplayMemberBinding="{Binding Item3}" />
                     </GridView>
                 </ListView.View>
             </ListView>

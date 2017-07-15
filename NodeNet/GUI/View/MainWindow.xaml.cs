@@ -28,6 +28,5 @@ namespace NodeNet.View
         {
             InitializeComponent();
         }
-
     }
 }
