@@ -75,6 +75,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GUI\View\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Network\DataInput.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\MainViewModel.cs" />
@@ -123,6 +126,10 @@
     <Folder Include="Worker\Iface\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GUI\View\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="GUI\View\MonitoringUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
