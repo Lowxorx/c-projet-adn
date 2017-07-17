@@ -32,13 +32,14 @@ namespace NodeNet.Network
         }
 
         #region Properties
-        private List<Socket> sockets = new List<Socket>();
+        private int port { get; set; }
+        private IPAddress ip { get; set; }
         private Socket socket { get; set; }
         private string msg;
         private static ManualResetEvent connectDone = new ManualResetEvent(false);
         private static ManualResetEvent sendDone = new ManualResetEvent(false);
         private static ManualResetEvent receiveDone = new ManualResetEvent(false);
-
+        private PerformanceCounter cpucounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
         public enum Mode { Node, Orchestrator}
         public Mode mode { get;set;}
         private MainViewModel mvm { get; set; }
@@ -56,25 +57,30 @@ namespace NodeNet.Network
 
         #region Méthodes client/serveur
 
-        public async Task StartServerAsync(IPAddress ip, int port)
+        public async void StartServerAsync(IPAddress ip, int port)
         {
-            Console.WriteLine(" TEST "+this.ToString());
+            this.ip = ip;
+            this.port = port;
             TcpListener listener = new TcpListener(ip, port);
             listener.Start();
 
+            Console.WriteLine("Server started ...");
             while (true)
             {
                 Sockets.Add(await listener.AcceptSocketAsync());
-                mvm.Sockets.Add(new Tuple<string, string, string>( socket.RemoteEndPoint.ToString() , "Unknown",""));
-                Console.WriteLine(String.Format("Client Connection accepted from {0}", sockets.Last().RemoteEndPoint.ToString()));
-                Receive(socket);
+                mvm.Sockets.Add(new Tuple<string, string, string>(Sockets.Last().RemoteEndPoint.ToString() , "Unknown",""));
+                Console.WriteLine(String.Format("Client Connection accepted from {0}", Sockets.Last().RemoteEndPoint.ToString()));
+                Receive(Sockets.Last());
             }
         }
 
-        public async void StartClient(IPAddress ip, int port)
+        public void StartClient(IPAddress ip, int port)
         {
+            this.ip = ip;
+            this.port = port;
             IPEndPoint remoteEP = new IPEndPoint(ip, port);
             this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Console.WriteLine("Client started ...");
             try
             {
                 socket.BeginConnect(remoteEP, new AsyncCallback(ConnectCallback), socket);
@@ -82,7 +88,6 @@ namespace NodeNet.Network
                 connectDone.WaitOne();
 
                 Receive(socket);
-
 
             }
             catch (Exception e)
@@ -96,8 +101,8 @@ namespace NodeNet.Network
 
         private string GetCPU()
         {
-            PerformanceCounter cpucounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            string currentcpuusage = cpucounter.NextValue().ToString() + "%";
+            double cpu = Math.Round(cpucounter.NextValue());
+            string currentcpuusage = cpu.ToString() + "%";
             return currentcpuusage;
         }
 
@@ -266,7 +271,7 @@ namespace NodeNet.Network
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
 
-                Console.WriteLine(bytesRead);
+                Console.WriteLine("Number of bytes received : " +bytesRead);
 
                 if (bytesRead > 0)
                 {                 
@@ -274,11 +279,15 @@ namespace NodeNet.Network
 
                     var input = Deserialize<DataInput>(data);
 
+                    Console.WriteLine("Received request type : " + input.query.ToString());
+
                     switch (input.query)
                     {
                         case DataInput.request.msg:
-                            this.mvm.Message = input.msg;
-                            break;
+                            {
+                                this.mvm.Message = input.msg;
+                                break;
+                            }
 
                         case DataInput.request.status:
                             {
@@ -287,12 +296,14 @@ namespace NodeNet.Network
                                     DataInput output = new DataInput(DataInput.request.status);
                                     output.status = State.WORK;
                                     output.cpu = GetCPU();
+                                    Console.WriteLine("Status sent :" + output.cpu.ToString() + " " + output.status.ToString());
                                     SendUnicast(client, output);
                                 }
                                 else
                                 {
-                                    for(int i =0; i < this.mvm.Sockets.LongCount(); i++)
-                                    {
+                                    Console.WriteLine("Status received : " + input.cpu.ToString() + " " + input.status.ToString());
+                                    for (int i =0; i < this.mvm.Sockets.LongCount(); i++)
+                                    {                                        
                                         if (mvm.Sockets[i].Item1 == client.RemoteEndPoint.ToString())
                                             mvm.Sockets[i] = new Tuple<string, string, string>(mvm.Sockets[i].Item1, input.status.ToString(), input.cpu);
                                         else
@@ -320,7 +331,7 @@ namespace NodeNet.Network
             catch (SocketException e)
             {
                 Console.WriteLine(e.ToString());
-                Receive(client);
+                StartClient(ip, port);
             }
         }
 
@@ -364,7 +375,6 @@ namespace NodeNet.Network
                 Console.WriteLine(e.ToString());
             }
         }
-
         #endregion
 
 

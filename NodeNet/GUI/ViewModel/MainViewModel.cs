@@ -79,19 +79,18 @@ namespace NodeNet.GUI.ViewModel
             StartClient = new RelayCommand(StartClientAsync);
             SendMessage = new RelayCommand(Sending);
             AskStatus = new RelayCommand(AskingStatus);
+            this.Sockets = new List<Tuple<string, string, string>>();
         }
 
         private void StartClientAsync()
         {
             Manager.mode = ConnectionManager.Mode.Node;
-            IPAddress ip = new IPAddress(new byte[] { 192, 168, 1, 99 });
-            Manager.StartClient(ip, 8002);
+            Manager.StartClient(getIp(), 8002);
         }
         private void StartServerAsync()
         {
             Manager.mode = ConnectionManager.Mode.Orchestrator;
-            IPAddress ip = new IPAddress(new byte[] { 192, 168, 1, 99 });
-            this.Manager.StartServerAsync(ip, 8002);
+            this.Manager.StartServerAsync(getIp(), 8002);
         }
 
         private void Sending()
@@ -109,23 +108,11 @@ namespace NodeNet.GUI.ViewModel
 
         private static IPAddress getIp()
         {
-            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                {
-
-                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                        {
-                            return ip.Address;
-                        }
-                    }
-                }
-            }
-            throw new Exception("IP NOT FOUND");
+            IPAddress ipv4Address = Array.Find(
+            Dns.GetHostEntry(string.Empty).AddressList,
+            a => a.AddressFamily == AddressFamily.InterNetwork);
+            return ipv4Address;
         }
-
 
     }
 }
