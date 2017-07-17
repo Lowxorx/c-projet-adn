@@ -75,8 +75,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Network\DataInput.cs" />
+    <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\MainViewModel.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Network\Protocol.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\View\MonitoringUC.xaml.cs">
