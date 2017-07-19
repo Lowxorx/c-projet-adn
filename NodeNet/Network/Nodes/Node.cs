@@ -149,7 +149,7 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        private void ReceiveCallback(IAsyncResult ar)
+        public virtual void ReceiveCallback(IAsyncResult ar)
         {
             // Retrieve the state object and the client socket 
             // from the asynchronous state object.
@@ -173,7 +173,7 @@ namespace NodeNet.Network.Nodes
                         if (res != null)
                         {
                             res.msgType = MessageType.RESPONSE;
-                            SendData(node, input);
+                            SendData(Orch, res);
                         }
                     }
                     // Dans le cas d'un noeud serveur

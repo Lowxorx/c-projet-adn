@@ -58,5 +58,8 @@ namespace NodeNet.Network.Orch
                 }
             }
         }
-    }
+
+        public override void ReceiveCallback(IAsyncResult ar)
+        {
+        }
 }

@@ -15,7 +15,12 @@ namespace ADNet.Worker.Impl
         public DataInput DoWork(DataInput input)
         {
             Console.WriteLine("Display message msg : " + DataFormater.Deserialize<String>(input.Data));
-            return null;
+            DataInput res = new DataInput()
+            {
+                Data = DataFormater.Serialize("Reponse du client"),
+                msgType = MessageType.RESPONSE
+            };
+            return res;
         }
     }
 }
