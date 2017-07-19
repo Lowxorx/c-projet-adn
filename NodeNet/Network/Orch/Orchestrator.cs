@@ -36,6 +36,17 @@ namespace NodeNet.Network.Orch
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 Receive(connectedNode);
             }
+            //ServerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //ServerSocket.Bind(new IPEndPoint(IPAddress.Parse(Address), Port));
+            //ServerSocket.Listen(10);
+            //ServerSocket.BeginAccept(new AsyncCallback(ConnectCallback), ServerSocket);
+        }
+
+        private void ConnectCallback(IAsyncResult asyncResult)
+        {
+            Socket client = ServerSocket.EndAccept(asyncResult);
+            //Console.WriteLine("New Client connected address : " + ((IPEndPoint)client.RemoteEndPoint).Address + " port : " + ((IPEndPoint)client.RemoteEndPoint).Port);
+            Receive(this);
         }
 
         public void SendDataToAllNodes(DataInput input)

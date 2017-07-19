@@ -87,10 +87,10 @@ namespace NodeNet.Network.Nodes
 
                 // Signal that the connection has been made.
                 connectDone.Set();
-                while (true)
-                {
+                //while (true)
+                //{
                     Receive(Orch);
-                }
+                //}
             }
             catch (SocketException e)
             {
@@ -140,6 +140,7 @@ namespace NodeNet.Network.Nodes
         {
             try
             {
+                Console.Write("Hey lo " + node.NodeSocket);
                 // Begin receiving the data from the remote device.
                 byte[] buffer = new byte[BUFFER_SIZE];
                 node.NodeSocket.BeginReceive(buffer, 0, BUFFER_SIZE, 0,
@@ -186,7 +187,7 @@ namespace NodeNet.Network.Nodes
             //    }
             //    else
             //    {
-            //        receiveDone.Set();
+                    receiveDone.Set();
             //    }
             //}
             //catch (SocketException e)
