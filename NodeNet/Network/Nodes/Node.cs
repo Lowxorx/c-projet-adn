@@ -6,6 +6,7 @@ using NodeNet.Network.Orch;
 using NodeNet.Network.Data;
 using NodeNet.Worker;
 using NodeNet.Worker.Impl;
+using System.Collections.Generic;
 
 namespace NodeNet.Network.Nodes
 {
@@ -19,7 +20,8 @@ namespace NodeNet.Network.Nodes
         public Socket ServerSocket { get; set; }
         public static int BUFFER_SIZE = 4096;
         public GenericWorkerFactory WorkerFactory { get; set; }
-        
+        protected List<byte[]> bytearrayList { get; set; }
+
         protected static ManualResetEvent sendDone = new ManualResetEvent(false);
         protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
         protected static ManualResetEvent connectDone = new ManualResetEvent(false);

@@ -1,8 +1,13 @@
 ﻿
 using ADNet.Worker.Impl;
 using NodeNet.Network.Data;
+using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
+using NodeNet.Worker;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
 
 namespace ADNet.Network.Impl
 {
@@ -26,9 +31,71 @@ namespace ADNet.Network.Impl
             SendDataToAllNodes(input);
         }
 
+        public override void ReceiveCallback(IAsyncResult ar)
+        {
+            base.ReceiveCallback(ar);
+            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
+            byte[] buffer = state.Item2;
+            Node node = state.Item1;
+            Socket client = node.NodeSocket;
+            try
+            {
+                // Read data from the remote device.
+                int bytesRead = client.EndReceive(ar);
+                Console.WriteLine("Number of bytes received : " + bytesRead);
+                this.bytearrayList = new List<byte[]>();
+
+
+                if (bytesRead == 4096)
+                {
+                    byte[] data = buffer;
+                    this.bytearrayList.Add(data);
+
+                }
+                else
+                {
+                    DataInput input;
+                    if (bytearrayList.Count > 0)
+                    {
+                        byte[] data = bytearrayList
+                                     .SelectMany(a => a)
+                                     .ToArray();
+                         input = DataFormater.Deserialize<DataInput>(data);
+                    }
+                    else
+                    {
+                        input = DataFormater.Deserialize<DataInput>(buffer);
+                    }
+
+                   
+                    IWorker worker = WorkerFactory.GetWorker(input.Method);
+                    worker.ProcessResponse(ProcessDisplayMessageFunction(input));
+                    // Dans le cas d'un noeud client
+                    Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
+                    receiveDone.Set();
+                }
+
+                Receive(node);
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+        }
+
+
+
+
+
         public new void Stop()
         {
             throw new NotImplementedException();
+        }
+
+        public void ProcessDisplayMessageFunction(DataInput input)
+        {
+
         }
     }
 }

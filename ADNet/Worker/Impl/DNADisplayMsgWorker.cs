@@ -22,5 +22,10 @@ namespace ADNet.Worker.Impl
             };
             return res;
         }
+
+        public void ProcessResponse(Func<DataInput> ProcessFunction)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

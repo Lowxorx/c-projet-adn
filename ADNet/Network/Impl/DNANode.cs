@@ -37,7 +37,7 @@ namespace c_projet_adn.Network.Impl
                 {
                     DataInput input = DataFormater.Deserialize<DataInput>(buffer);
                     IWorker worker = WorkerFactory.GetWorker(input.Method);
-                     DataInput res = worker.DoWork(input);
+                    DataInput res = worker.DoWork(input);
                         if (res != null)
                         {
                             res.msgType = MessageType.RESPONSE;

@@ -61,36 +61,5 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        public override void ReceiveCallback(IAsyncResult ar)
-        {
-            base.ReceiveCallback(ar);
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
-            try
-            {
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
-                if (bytesRead > 0)
-                {
-                    DataInput input = DataFormater.Deserialize<DataInput>(buffer);
-                    IWorker worker = WorkerFactory.GetWorker(input.Method);
-                    // Dans le cas d'un noeud client
-                    Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
-                }
-                else
-                {
-                    receiveDone.Set();
-                }
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.ToString());
-
-            }
-
-        }
     }
 }
