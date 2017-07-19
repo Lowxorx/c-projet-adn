@@ -10,6 +10,5 @@ namespace NodeNet.Network.Nodes
         void Receive(Node node);
         void Stop();
         void RegisterOrch(Orchestrator orch);
-        void ProcessReceive(Node node, DataInput input);
     }
 }

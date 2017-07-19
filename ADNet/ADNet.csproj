@@ -77,7 +77,6 @@
     <Compile Include="GUI\View\ADNetLauncher.xaml.cs">
       <DependentUpon>ADNetLauncher.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GUI\ViewModel\MainViewModel.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
     <Compile Include="GUI\View\OrchView.xaml.cs">
       <DependentUpon>OrchView.xaml</DependentUpon>

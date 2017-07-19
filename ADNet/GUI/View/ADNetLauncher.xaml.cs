@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using ADNet.GUI.ViewModel;
+using System;
+using System.Windows;
 
 namespace ADNet.GUI.View
 {
@@ -10,6 +12,10 @@ namespace ADNet.GUI.View
         public ADNetLauncher()
         {
             InitializeComponent();
+            VMADNetLauncher vm = (VMADNetLauncher)DataContext;
+            if ( vm.CloseAction == null)
+                vm.CloseAction = new Action(() => Close());
         }
+
     }
 }

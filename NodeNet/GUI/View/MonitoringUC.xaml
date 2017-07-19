@@ -5,18 +5,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sharecontrols="NodeNet.GUI.View"
-    xmlns:vm="clr-namespace:NodeNet.GUI.ViewModel"
     Margin="0"
     d:DesignHeight="510"
     d:DesignWidth="550"
     mc:Ignorable="d">
-    <UserControl.DataContext>
-        <vm:VMMonitoringUC />
-    </UserControl.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
-            <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
+            <intr:InvokeCommandAction Command="{Binding MonitoringUcLoaded}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
     <Grid>
@@ -31,25 +26,25 @@
             x:Name="NodeList"
             Width="450"
             Height="360"
-            Margin="-1,76,0,0"
+            Margin="0,76,0,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Center"
-            ItemsSource="{Binding Nodes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            ItemsSource="{Binding NodeList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn
                         Width="150"
-                        DisplayMemberBinding="{Binding Node.name}"
+                        DisplayMemberBinding="{Binding Name}"
                         Header="Client" />
                     <GridViewColumn
                         Width="150"
-                        DisplayMemberBinding="{Binding Node.name}"
-                        Header="Etat" />
+                        DisplayMemberBinding="{Binding Address}"
+                        Header="Adresse" />
                     <GridViewColumn
                         Width="150"
-                        DisplayMemberBinding="{Binding Node.name}"
-                        Header="CPU" />
+                        DisplayMemberBinding="{Binding Port}"
+                        Header="Port" />
                 </GridView>
             </ListView.View>
         </ListView>

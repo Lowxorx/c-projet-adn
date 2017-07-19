@@ -81,7 +81,6 @@
     </Compile>
     <Compile Include="Network\Data\DataInput.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
-    <Compile Include="GUI\ViewModel\MainViewModel.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
     <Compile Include="Network\Data\MessageType.cs" />
     <Compile Include="Network\Protocol.cs" />

@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using System;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
-using NodeNet.Network.Nodes;
+﻿using NodeNet.GUI.ViewModel;
 using NodeNet.Network.Data;
-using NodeNet.Worker;
-using NodeNet.Worker.Impl;
+using NodeNet.Network.Nodes;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace NodeNet.Network.Orch
 {
     public abstract class Orchestrator : Node, IOrchestrator
     {
-        private List<INode> Nodes { get; set; }
+        private List<Node> Nodes { get; set; }
 
         private static ManualResetEvent connectDone = new ManualResetEvent(false);
         private static ManualResetEvent sendDone = new ManualResetEvent(false);
@@ -20,7 +19,7 @@ namespace NodeNet.Network.Orch
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
-            Nodes = new List<INode>();
+            Nodes = new List<Node>();
         }
 
         public async void Listen()
@@ -33,6 +32,7 @@ namespace NodeNet.Network.Orch
                 Socket sock = await listener.AcceptSocketAsync();
                 Node connectedNode = new Node("Node ", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
                 Nodes.Add(connectedNode);
+                ViewModelLocator.VMLMonitorUcStatic.NodeList.Add(connectedNode);
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 Receive(connectedNode);
             }

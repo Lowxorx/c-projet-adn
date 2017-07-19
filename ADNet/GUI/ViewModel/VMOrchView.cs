@@ -1,7 +1,7 @@
 ﻿using ADNet.Network.Impl;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Microsoft.Practices.ServiceLocation;
+using NodeNet.GUI.ViewModel;
 using System;
 using System.Windows.Input;
 
@@ -40,12 +40,18 @@ namespace ADNet.GUI.ViewModel
             }
         }
 
+
+
+
+
+
         #endregion
 
-
+        public VMMonitoringUC UcVmMonitoring { get; set; }
         public VMOrchView()
         {
             WindowLoaded = new RelayCommand(OnLoad);
+            UcVmMonitoring = NodeNet.GUI.ViewModel.ViewModelLocator.VMLMonitorUcStatic;
             ICommandBtnSend = new RelayCommand(SendMessage);
         }
 
@@ -64,6 +70,11 @@ namespace ADNet.GUI.ViewModel
         public void SetMessage(string s)
         {
             ClientResponse = s;
+        }
+
+        private void RefreshNodesInfos()
+        {
+
         }
     }
 }

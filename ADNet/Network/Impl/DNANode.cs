@@ -1,15 +1,11 @@
 ﻿using ADNet.Worker.Impl;
-using NodeNet.Network.Nodes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NodeNet.Network.Data;
-using System.Net.Sockets;
+using NodeNet.Network.Nodes;
 using NodeNet.Worker;
+using System;
+using System.Net.Sockets;
 
-namespace c_projet_adn.Network.Impl
+namespace ADNet.Network.Impl
 {
     public class DNANode : Node
     {
