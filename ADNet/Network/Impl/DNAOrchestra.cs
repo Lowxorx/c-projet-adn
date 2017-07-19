@@ -1,5 +1,4 @@
-﻿
-using ADNet.Worker.Impl;
+﻿using ADNet.Worker.Impl;
 using NodeNet.Network.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
@@ -69,7 +68,7 @@ namespace ADNet.Network.Impl
 
                    
                     IWorker worker = WorkerFactory.GetWorker(input.Method);
-                    worker.ProcessResponse(ProcessDisplayMessageFunction(input));
+                    worker.ProcessResponse(input, () => ProcessDisplayMessageFunction(input));
                     // Dans le cas d'un noeud client
                     Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
                     receiveDone.Set();
@@ -83,10 +82,6 @@ namespace ADNet.Network.Impl
 
             }
         }
-
-
-
-
 
         public new void Stop()
         {

@@ -1,6 +1,5 @@
 ﻿using NodeNet.Network.Data;
 using System;
-using NodeNet.Network.Data;
 
 
 namespace NodeNet.Worker
@@ -9,7 +8,7 @@ namespace NodeNet.Worker
     {
         DataInput DoWork(DataInput input);
 
-        void ProcessResponse(Action<DataInput> ProcessFunction);
+        void ProcessResponse(DataInput d, Action ProcessFunction);
 
         void CancelWork();
 
