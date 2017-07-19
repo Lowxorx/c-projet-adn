@@ -72,6 +72,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="GUI\ViewModel\VMADNetLauncher.cs" />
+    <Compile Include="GUI\ViewModel\VMClientView.cs" />
     <Compile Include="GUI\ViewModel\VMOrchView.cs" />
     <Compile Include="GUI\View\ADNetLauncher.xaml.cs">
       <DependentUpon>ADNetLauncher.xaml</DependentUpon>
@@ -81,7 +82,11 @@
     <Compile Include="GUI\View\OrchView.xaml.cs">
       <DependentUpon>OrchView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Worker\Impl\DNAWorker1.cs" />
+    <Compile Include="GUI\View\ClientView.xaml.cs">
+      <DependentUpon>ClientView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Network\Impl\DNANode.cs" />
+    <Compile Include="Worker\Impl\DNADisplayMsgWorker.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -124,6 +129,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GUI\View\OrchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\View\ClientView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

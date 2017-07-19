@@ -2,6 +2,8 @@
 using GalaSoft.MvvmLight.Command;
 using System.Windows.Input;
 using System;
+using ADNet.GUI.View;
+using c_projet_adn.GUI.View;
 
 namespace ADNet.GUI.ViewModel
 {
@@ -12,19 +14,33 @@ namespace ADNet.GUI.ViewModel
         public ICommand IcommandRdbCliClick { get; set; }
         public ICommand IcommandRdbServClick { get; set; }
 
-        private Boolean TxtIpEnabled = false;
+        private Boolean txtIpEnabled = false;
 
         public Boolean TxtIpEnabledProp
         {
             get
             {
-                return TxtIpEnabled;
+                return txtIpEnabled;
+            }
+        }
+
+        private String txtIp;
+        public String TxtIpProp
+        {
+            get
+            {
+                return txtIp;
+            }
+            set
+            {
+                txtIp = value;
+                RaisePropertyChanged("TxtIpProp");
             }
         }
 
         public VMADNetLauncher()
         {
-            WindowLoaded = new RelayCommand(Test);
+            WindowLoaded = new RelayCommand(OnLoad);
             IcommandBtnClick = new RelayCommand(AppuiBTN);
             IcommandRdbCliClick = new RelayCommand(ModeCliClick);
             IcommandRdbServClick = new RelayCommand(ModeServClick);
@@ -32,25 +48,33 @@ namespace ADNet.GUI.ViewModel
 
         private void AppuiBTN()
         {
-            System.Windows.Forms.MessageBox.Show("Appui BTN");
+            if (txtIpEnabled)
+            {
+                ClientView cliView = new ClientView(txtIp);
+                cliView.Show();
+            }
+            else
+            {
+                OrchView orchView = new OrchView();
+                orchView.Show();
+            }
         }
 
-        public void Test()
+        public void OnLoad()
         {
-            TxtIpEnabled = false;
+            txtIpEnabled = false;
             RaisePropertyChanged("TxtIpEnabledProp");
-            System.Windows.Forms.MessageBox.Show("On load");
         }
 
         public void ModeCliClick()
         {
-            TxtIpEnabled = true;
+            txtIpEnabled = true;
             RaisePropertyChanged("TxtIpEnabledProp");
         }
 
         public void ModeServClick()
         {
-            TxtIpEnabled = false;
+            txtIpEnabled = false;
             RaisePropertyChanged("TxtIpEnabledProp");
         }
     }

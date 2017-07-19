@@ -1,30 +1,64 @@
-﻿<UserControl x:Class="NodeNet.GUI.View.MonitoringUC"
-             xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:vm="clr-namespace:NodeNet.GUI.ViewModel"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:sharecontrols="NodeNet.GUI.View"
-             mc:Ignorable="d" 
-             d:DesignHeight="510" d:DesignWidth="550">
+﻿<UserControl
+    x:Class="NodeNet.GUI.View.MonitoringUC"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sharecontrols="NodeNet.GUI.View"
+    xmlns:vm="clr-namespace:NodeNet.GUI.ViewModel"
+    Margin="0"
+    d:DesignHeight="510"
+    d:DesignWidth="550"
+    mc:Ignorable="d">
     <UserControl.DataContext>
-        <vm:VMMonitoringUC/>
+        <vm:VMMonitoringUC />
     </UserControl.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
-    <Grid >
-        <Label Content="Monitoring" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" FontSize="16"/>
-        <ListView x:Name="NodeList" HorizontalAlignment="Center" Height="360" Margin="10,76,0,0" VerticalAlignment="Top" Width="516" HorizontalContentAlignment="Center">
+    <Grid>
+        <Label
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Monitoring"
+            FontSize="16"
+            FontWeight="Bold" />
+        <ListView
+            x:Name="NodeList"
+            Width="450"
+            Height="360"
+            Margin="-1,76,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            ItemsSource="{Binding Nodes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn/>
+                    <GridViewColumn
+                        Width="150"
+                        DisplayMemberBinding="{Binding Node.name}"
+                        Header="Client" />
+                    <GridViewColumn
+                        Width="150"
+                        DisplayMemberBinding="{Binding Node.name}"
+                        Header="Etat" />
+                    <GridViewColumn
+                        Width="150"
+                        DisplayMemberBinding="{Binding Node.name}"
+                        Header="CPU" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label Content="Liste des noeuds connectés" HorizontalAlignment="Center" Margin="-5,45,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Label
+            Margin="-5,45,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Liste des noeuds connectés" />
     </Grid>
 </UserControl>

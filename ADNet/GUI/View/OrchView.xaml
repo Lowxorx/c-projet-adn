@@ -1,15 +1,18 @@
-﻿<Window x:Class="ADNet.GUI.View.OrchView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
-        xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
-        mc:Ignorable="d"
-        Title="OrchView" Height="332" Width="489">
+﻿<Window
+    x:Class="ADNet.GUI.View.OrchView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
+    xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
+    Title="OrchView"
+    Width="879"
+    Height="497"
+    mc:Ignorable="d">
     <Window.DataContext>
-        <vm:VMOrchView/>
+        <vm:VMOrchView />
     </Window.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
@@ -17,6 +20,46 @@
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
     <Grid>
-        <sharecontrols:MonitoringUC />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="450*" />
+            <ColumnDefinition Width="450*" />
+        </Grid.ColumnDefinitions>
+
+        <sharecontrols:MonitoringUC
+            Grid.Column="0"
+            Margin="10,0,0,0"
+            HorizontalAlignment="Left" />
+        <Separator Grid.Row="1" />
+        <Label
+            Grid.Column="1"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Traitement ADN"
+            FontSize="16"
+            FontWeight="Bold" />
+        <Label
+            Grid.Column="1"
+            Margin="25,45,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Envoit de message" />
+        <TextBox
+            Grid.Column="1"
+            Width="369"
+            Height="74"
+            Margin="25,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding TxtMsgProp, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+        <Button
+            Grid.Column="1"
+            Width="75"
+            Margin="25,170,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding ICommandBtnSend}"
+            Content="Envoyer" />
     </Grid>
 </Window>

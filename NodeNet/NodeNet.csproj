@@ -75,14 +75,20 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Network\Data\DataFormater.cs" />
     <Compile Include="GUI\View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Network\DataInput.cs" />
+    <Compile Include="Network\Data\DataInput.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\MainViewModel.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Network\Data\MessageType.cs" />
     <Compile Include="Network\Protocol.cs" />
+    <Compile Include="Misc\StateTools.cs" />
+    <Compile Include="Worker\Impl\CPUStateWorker.cs" />
+    <Compile Include="Worker\GenericWorkerFactory.cs" />
+    <Compile Include="Worker\IWorkerFactory.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
@@ -91,12 +97,12 @@
       <DependentUpon>MonitoringUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUI\ViewModel\VMMonitoringUC.cs" />
-    <Compile Include="Network\Iface\INode.cs" />
-    <Compile Include="Network\Iface\IOrchestrator.cs" />
-    <Compile Include="Network\Iface\IWorker.cs" />
-    <Compile Include="Network\Impl\Orchestrator.cs" />
-    <Compile Include="Network\Impl\Node.cs" />
-    <Compile Include="Network\State.cs" />
+    <Compile Include="Network\Nodes\INode.cs" />
+    <Compile Include="Network\Orch\IOrchestrator.cs" />
+    <Compile Include="Worker\IWorker.cs" />
+    <Compile Include="Network\Orch\Orchestrator.cs" />
+    <Compile Include="Network\Nodes\Node.cs" />
+    <Compile Include="Network\State\State.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -125,7 +131,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\Model\" />
-    <Folder Include="Worker\Iface\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="GUI\View\MainWindow.xaml">
