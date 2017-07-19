@@ -2,10 +2,6 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
@@ -22,11 +18,24 @@ namespace ADNet.GUI.ViewModel
 
         private void OnLoad()
         {
+            // TODO : Implémenter l'attribution automatique des ports 
             DNANode dnaNode = new DNANode("Node 1", "127.0.0.1", 3001);
-            // TODO récupérer le txt sur la fenêtre d'avant
-            dnaNode.Connect("127.0.0.1",3000);
+            dnaNode.Connect(TxtIp, 3000);
             Console.WriteLine("OK client CO");
         }
+
+        private string txtIp;
+
+        public string TxtIp
+        {
+            get { return txtIp; }
+            set
+            {
+                txtIp = value;
+                RaisePropertyChanged("TxtIp");
+            }
+        }
+
 
         private void AppuiBTN()
         {

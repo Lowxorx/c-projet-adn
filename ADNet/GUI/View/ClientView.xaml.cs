@@ -19,16 +19,9 @@ namespace c_projet_adn.GUI.View
     /// </summary>
     public partial class ClientView : Window
     {
-        private string txtIp;
 
         public ClientView()
         {
-            InitializeComponent();
-        }
-
-        public ClientView(string txtIp)
-        {
-            this.txtIp = txtIp;
             InitializeComponent();
         }
     }
