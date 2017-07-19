@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
     Title="ADNetLauncher"
     Width="300"
     Height="300"
@@ -13,10 +12,8 @@
     VerticalAlignment="Center"
     HorizontalContentAlignment="Center"
     VerticalContentAlignment="Center"
+    DataContext="{Binding VMLlauncher, Source={StaticResource Locator}}"
     mc:Ignorable="d">
-    <Window.DataContext>
-        <vm:VMADNetLauncher />
-    </Window.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />

@@ -1,17 +1,3 @@
-/*
-  In App.xaml:
-  <Application.Resources>
-      <vm:ViewModelLocator xmlns:vm="clr-namespace:c_projet_adn"
-                           x:Key="Locator" />
-  </Application.Resources>
-  
-  In the View:
-  DataContext="{Binding Source={StaticResource Locator}, Path=ViewModelName}"
-
-  You can also use Blend to do all this with the tool's support.
-  See http://www.galasoft.ch/mvvm
-*/
-
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
 
@@ -29,29 +15,38 @@ namespace ADNet.GUI.ViewModel
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-
-            ////if (ViewModelBase.IsInDesignModeStatic)
-            ////{
-            ////    // Create design time view services and models
-            ////    SimpleIoc.Default.Register<IDataService, DesignDataService>();
-            ////}
-            ////else
-            ////{
-            ////    // Create run time view services and models
-            ////    SimpleIoc.Default.Register<IDataService, DataService>();
-            ////}
-
-            SimpleIoc.Default.Register<MainViewModel>();
         }
 
-        public MainViewModel Main
+        private static VMADNetLauncher vMADNetLauncher;
+        public static VMADNetLauncher VMADNetLauncherStatic
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MainViewModel>();
+                if (vMADNetLauncher == null)
+                    vMADNetLauncher = new VMADNetLauncher();
+                return vMADNetLauncher;
             }
         }
-        
+        public VMADNetLauncher VMLlauncher
+        {
+            get { return VMADNetLauncherStatic; }
+        }
+
+        private static VMOrchView vMLOrch;
+        public static VMOrchView VMLOrchStatic
+        {
+            get
+            {
+                if (vMLOrch == null)
+                    vMLOrch = new VMOrchView();
+                return vMLOrch;
+            }
+        }
+        public VMOrchView VMLOrch
+        {
+            get { return VMLOrchStatic; }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

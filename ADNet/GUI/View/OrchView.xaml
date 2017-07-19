@@ -6,14 +6,11 @@
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
-    xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
     Title="OrchView"
     Width="879"
     Height="497"
+    DataContext="{Binding VMLOrch, Source={StaticResource Locator}}"
     mc:Ignorable="d">
-    <Window.DataContext>
-        <vm:VMOrchView />
-    </Window.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
@@ -61,5 +58,14 @@
             VerticalAlignment="Top"
             Command="{Binding ICommandBtnSend}"
             Content="Envoyer" />
+        <TextBox
+            Grid.Column="1"
+            Width="369"
+            Height="23"
+            Margin="25,231,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding ClientResponse}"
+            TextWrapping="Wrap" />
     </Grid>
 </Window>

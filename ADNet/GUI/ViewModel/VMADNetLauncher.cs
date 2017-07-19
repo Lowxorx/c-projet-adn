@@ -7,7 +7,7 @@ using c_projet_adn.GUI.View;
 
 namespace ADNet.GUI.ViewModel
 {
-    class VMADNetLauncher : ViewModelBase
+    public class VMADNetLauncher : ViewModelBase
     {
         public ICommand WindowLoaded { get; set; }
         public ICommand IcommandBtnClick { get; set; }

@@ -1,12 +1,13 @@
 ﻿using ADNet.Network.Impl;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using Microsoft.Practices.ServiceLocation;
 using System;
 using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
 {
-    class VMOrchView : ViewModelBase
+    public class VMOrchView : ViewModelBase
     {
         #region Properties
         public ICommand WindowLoaded { get; set; }
@@ -26,6 +27,19 @@ namespace ADNet.GUI.ViewModel
                 RaisePropertyChanged("TxtMsgProp");
             }
         }
+
+        private string clientResponse;
+
+        public string ClientResponse
+        {
+            get { return clientResponse; }
+            set
+            {
+                clientResponse = value;
+                RaisePropertyChanged("ClientResponse");
+            }
+        }
+
         #endregion
 
 
@@ -45,6 +59,11 @@ namespace ADNet.GUI.ViewModel
         {
             Console.WriteLine("Sending message " + txtMsg + " to all clients");
             orch.SendMessage(txtMsg);
+        }
+
+        public void SetMessage(string s)
+        {
+            ClientResponse = s;
         }
     }
 }

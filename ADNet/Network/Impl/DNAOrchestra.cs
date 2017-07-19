@@ -1,4 +1,5 @@
-﻿using ADNet.Worker.Impl;
+﻿using ADNet.GUI.ViewModel;
+using ADNet.Worker.Impl;
 using NodeNet.Network.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
@@ -91,6 +92,7 @@ namespace ADNet.Network.Impl
         public void ProcessDisplayMessageFunction(DataInput input)
         {
             Console.WriteLine("In process Display from DNAOrchestra");
+            ViewModelLocator.VMLOrchStatic.SetMessage("anus");
         }
     }
 }
