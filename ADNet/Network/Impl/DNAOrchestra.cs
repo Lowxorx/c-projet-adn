@@ -15,12 +15,14 @@ namespace ADNet.Network.Impl
             WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker());
         }
 
-        public void sendMessage(String msg)
+        public void SendMessage(String msg)
         {
-            DataInput input = new DataInput();
-            input.Method = DISPLAY_MESSAGE_METHOD;
-            input.Data = DataFormater.Serialize(msg);
-            input.msgType = MessageType.CALL;
+            DataInput input = new DataInput()
+            {
+                Method = DISPLAY_MESSAGE_METHOD,
+                Data = DataFormater.Serialize(msg),
+                msgType = MessageType.CALL
+            };
             SendDataToAllNodes(input);
         }
 
