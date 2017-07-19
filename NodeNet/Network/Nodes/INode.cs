@@ -1,4 +1,5 @@
-﻿using NodeNet.Network.Orch;
+﻿using NodeNet.Network.Data;
+using NodeNet.Network.Orch;
 
 namespace NodeNet.Network.Nodes
 {
@@ -9,5 +10,6 @@ namespace NodeNet.Network.Nodes
         void Receive(Node node);
         void Stop();
         void RegisterOrch(Orchestrator orch);
+        void ProcessReceive(Node node, DataInput input);
     }
 }

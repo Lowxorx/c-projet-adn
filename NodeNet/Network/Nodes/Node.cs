@@ -20,9 +20,9 @@ namespace NodeNet.Network.Nodes
         public static int BUFFER_SIZE = 4096;
         public GenericWorkerFactory WorkerFactory { get; set; }
         
-        private static ManualResetEvent sendDone = new ManualResetEvent(false);
-        private static ManualResetEvent receiveDone = new ManualResetEvent(false);
-        private static ManualResetEvent connectDone = new ManualResetEvent(false);
+        protected static ManualResetEvent sendDone = new ManualResetEvent(false);
+        protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
+        protected static ManualResetEvent connectDone = new ManualResetEvent(false);
 
         public Node(String name, String adress, int port)
         {
@@ -151,47 +151,50 @@ namespace NodeNet.Network.Nodes
 
         public virtual void ReceiveCallback(IAsyncResult ar)
         {
-            // Retrieve the state object and the client socket 
-            // from the asynchronous state object.
-            Tuple<Node, byte[]> state = (Tuple < Node, byte[] > )ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
-            try
-            {
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
-                if (bytesRead > 0)
-                {
-                    DataInput input = DataFormater.Deserialize<DataInput>(buffer);
-                    IWorker worker = WorkerFactory.GetWorker(input.Method);
-                    // Dans le cas d'un noeud client
-                    if (input.msgType == MessageType.CALL)
-                    {
-                        DataInput res = worker.DoWork(input);
-                        if (res != null)
-                        {
-                            res.msgType = MessageType.RESPONSE;
-                            SendData(Orch, res);
-                        }
-                    }
-                    // Dans le cas d'un noeud serveur
-                    else
-                    {
-                        // TODO traiter réponses -> mettre à jour l'état des noeuds sur l'IHM etc...
-                    }
-                }
-                else
-                {
-                    receiveDone.Set();
-                }
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.ToString());
+            //// Retrieve the state object and the client socket 
+            //// from the asynchronous state object.
+            //Tuple<Node, byte[]> state = (Tuple < Node, byte[] > )ar.AsyncState;
+            //byte[] buffer = state.Item2;
+            //Node node = state.Item1;
+            //Socket client = node.NodeSocket;
+            //try
+            //{
+            //    // Read data from the remote device.
+            //    int bytesRead = client.EndReceive(ar);
+            //    Console.WriteLine("Number of bytes received : " + bytesRead);
+            //    if (bytesRead > 0)
+            //    {
+            //        DataInput input = DataFormater.Deserialize<DataInput>(buffer);
+            //        IWorker worker = WorkerFactory.GetWorker(input.Method);
+            //        // Dans le cas d'un noeud client
+            //        if (input.msgType == MessageType.CALL)
+            //        {
+            //            DataInput res = worker.DoWork(input);
+            //            if (res != null)
+            //            {
+            //                res.msgType = MessageType.RESPONSE;
+            //                SendData(Orch, res);
+            //            }
+            //        }
+            //        // Dans le cas d'un noeud serveur
+            //        else
+            //        {
+            //            // TODO traiter réponses -> mettre à jour l'état des noeuds sur l'IHM etc...
+            //        }
+            //    }
+            //    else
+            //    {
+            //        receiveDone.Set();
+            //    }
+            //}
+            //catch (SocketException e)
+            //{
+            //    Console.WriteLine(e.ToString());
 
-            }
+            //}
+        }
+        public virtual void ProcessReceive(Node node, DataInput input)
+        {
 
         }
     }
