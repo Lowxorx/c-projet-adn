@@ -26,7 +26,7 @@ namespace NodeNet.Network.Nodes
 
         public Node(String name, String adress, int port)
         {
-            WorkerFactory = GenericWorkerFactory.getInstance();
+            WorkerFactory = GenericWorkerFactory.GetInstance();
             try
             {
                 WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker());

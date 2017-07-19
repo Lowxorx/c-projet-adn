@@ -12,7 +12,7 @@ namespace NodeNet.Worker
             workers = new Dictionary<string, IWorker>();
         }
 
-        public static GenericWorkerFactory getInstance()
+        public static GenericWorkerFactory GetInstance()
         {
             if(instance == null)
             {

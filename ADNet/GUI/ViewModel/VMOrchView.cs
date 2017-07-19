@@ -44,7 +44,7 @@ namespace ADNet.GUI.ViewModel
         public void SendMessage()
         {
             Console.WriteLine("Sending message " + txtMsg + " to all clients");
-            orch.sendMessage(txtMsg);
+            orch.SendMessage(txtMsg);
         }
     }
 }

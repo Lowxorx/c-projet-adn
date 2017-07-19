@@ -17,9 +17,11 @@ namespace NodeNet.Worker.Impl
 
         public DataInput DoWork(DataInput input)
         {
-            DataInput res = new DataInput();
-            res.Data = DataFormater.Serialize(StateTools.GetCPU());
-            res.msgType = MessageType.RESPONSE;
+            DataInput res = new DataInput()
+            {
+                Data = DataFormater.Serialize(StateTools.GetCPU()),
+                msgType = MessageType.RESPONSE
+            };
             return res;
         }
     }

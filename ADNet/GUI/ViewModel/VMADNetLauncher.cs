@@ -24,16 +24,16 @@ namespace ADNet.GUI.ViewModel
             }
         }
 
-        private String txtIp;
+        private String txtIpProp;
         public String TxtIpProp
         {
             get
             {
-                return txtIp;
+                return txtIpProp;
             }
             set
             {
-                txtIp = value;
+                txtIpProp = value;
                 RaisePropertyChanged("TxtIpProp");
             }
         }
@@ -50,7 +50,9 @@ namespace ADNet.GUI.ViewModel
         {
             if (txtIpEnabled)
             {
-                ClientView cliView = new ClientView(txtIp);
+                ClientView cliView = new ClientView();
+                VMClientView vm = (VMClientView)cliView.DataContext;
+                vm.TxtIp = TxtIpProp;
                 cliView.Show();
             }
             else

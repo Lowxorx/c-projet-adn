@@ -53,7 +53,9 @@ namespace NodeNet.Network.Orch
                 {
                     /// Client Down ///
                     if (!node.NodeSocket.Connected)
+                    {
                         Console.WriteLine("Client " + node.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
+                    }
                     Console.WriteLine(ex.ToString());
                 }
             }
