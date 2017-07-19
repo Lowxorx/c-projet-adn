@@ -40,7 +40,8 @@ namespace c_projet_adn.Network.Impl
                     DataInput res = worker.DoWork(input);
                         if (res != null)
                         {
-                            res.msgType = MessageType.RESPONSE;
+                            res.MsgType = MessageType.RESPONSE;
+                            res.Method = DISPLAY_MESSAGE_METHOD;
                             SendData(node, res);
                         }
                 }

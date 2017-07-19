@@ -18,14 +18,14 @@ namespace ADNet.Worker.Impl
             DataInput res = new DataInput()
             {
                 Data = DataFormater.Serialize("Reponse du client"),
-                msgType = MessageType.RESPONSE
+                MsgType = MessageType.RESPONSE
             };
             return res;
         }
 
-        public void ProcessResponse(Func<DataInput> ProcessFunction)
+        public void ProcessResponse(DataInput d, Action<DataInput> ProcessFunction)
         {
-            throw new NotImplementedException();
+            ProcessFunction(d);
         }
     }
 }

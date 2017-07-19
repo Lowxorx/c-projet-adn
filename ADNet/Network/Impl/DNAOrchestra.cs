@@ -25,7 +25,7 @@ namespace ADNet.Network.Impl
             {
                 Method = DISPLAY_MESSAGE_METHOD,
                 Data = DataFormater.Serialize(msg),
-                msgType = MessageType.CALL
+                MsgType = MessageType.CALL
             };
             SendDataToAllNodes(input);
         }
@@ -68,7 +68,7 @@ namespace ADNet.Network.Impl
 
                    
                     IWorker worker = WorkerFactory.GetWorker(input.Method);
-                    worker.ProcessResponse(input, () => ProcessDisplayMessageFunction(input));
+                    worker.ProcessResponse(input, (d) => ProcessDisplayMessageFunction(input));
                     // Dans le cas d'un noeud client
                     Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
                     receiveDone.Set();
@@ -90,7 +90,7 @@ namespace ADNet.Network.Impl
 
         public void ProcessDisplayMessageFunction(DataInput input)
         {
-
+            Console.WriteLine("In process Display from DNAOrchestra");
         }
     }
 }

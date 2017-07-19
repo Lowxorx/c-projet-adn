@@ -20,9 +20,14 @@ namespace NodeNet.Worker.Impl
             DataInput res = new DataInput()
             {
                 Data = DataFormater.Serialize(StateTools.GetCPU()),
-                msgType = MessageType.RESPONSE
+                MsgType = MessageType.RESPONSE
             };
             return res;
+        }
+
+        public void ProcessResponse(DataInput d, Action<DataInput> ProcessFunction)
+        {
+            ProcessFunction(d);
         }
     }
 }

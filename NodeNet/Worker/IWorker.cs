@@ -8,7 +8,7 @@ namespace NodeNet.Worker
     {
         DataInput DoWork(DataInput input);
 
-        void ProcessResponse(DataInput d, Action ProcessFunction);
+        void ProcessResponse(DataInput d, Action<DataInput> ProcessFunction);
 
         void CancelWork();
 
