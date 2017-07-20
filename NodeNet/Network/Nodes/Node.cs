@@ -31,7 +31,7 @@ namespace NodeNet.Network.Nodes
             WorkerFactory = GenericWorkerFactory.GetInstance();
             try
             {
-                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker<String>());
+                //WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker<String>());
             }
             catch (Exception e)
             {

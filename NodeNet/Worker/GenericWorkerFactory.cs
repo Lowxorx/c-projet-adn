@@ -23,7 +23,7 @@ namespace NodeNet.Worker
             return instance;
         }
 
-        public void AddWorker<R,T>(String methodName, IWorker<R,T> worker, Action method)
+        public void AddWorker<R,T>(String methodName, IWorker<R,T> worker, Action<Object> method)
         {
             GenericDictionary subDict = new GenericDictionary();
             subDict.Add(worker, method);
@@ -32,7 +32,7 @@ namespace NodeNet.Worker
         // TODO check if method name exists
         public IWorker<R,T> GetWorker<R, T>(String methodName)
         {
-            return _dict[methodName].GetWorker<IWorker<R,T>>();
+            return (IWorker < R, T > )_dict[methodName].GetWorker<Object,Object>();
         }
 
         public Action<Object> GetMethod(String methodName)

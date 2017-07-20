@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NodeNet.Worker;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace NodeNet.Data
 {
-    public class GenericDictionary<T>
+    public class GenericDictionary
     {
-        private Dictionary<object, Action<T>> _dict = new Dictionary<object, Action<T>>();
+        private Dictionary<object, Action<Object>> _dict = new Dictionary<object, Action<Object>>();
 
-        public void Add<T>(T key, Action<T> value) where T : class
+        public void Add<T>(T key, Action<Object> value) where T : class
         {
             _dict.Add(key, value);
         }
@@ -20,12 +21,12 @@ namespace NodeNet.Data
             return _dict[key] as T;
         }
 
-        public T GetWorker<T>() where T : class
+        public Object GetWorker<T,R>() where T : class
         {
-            return (T)_dict.First().Key;
+            return _dict.First().Key;
         }
 
-        public Action<T> GetMethod<T>() where T : class
+        public Action<Object> GetMethod<T>() where T : class
         {
             return _dict.First().Value;
         }

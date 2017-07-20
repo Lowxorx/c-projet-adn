@@ -18,7 +18,7 @@ namespace ADNet.Network.Impl
 
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>(), (() => ProcessDisplayMessageFunction(null)));
+            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>(), ProcessDisplayMessageFunction);
         }
 
         public void SendMessage(String msg)
@@ -34,16 +34,18 @@ namespace ADNet.Network.Impl
         
 
 
-        public void ProcessDisplayMessageFunction(Object input)
-        {
-            Console.WriteLine("In process Display from DNAOrchestra");
-            ViewModelLocator.VMLOrchStatic.SetMessage((String)input);
-        }
+       
 
         public override void ProcessInput(DataInput input)
         {
             Action<Object> act = WorkerFactory.GetMethod(input.Method);
             WorkerFactory.GetWorker<Object, Object>(input.Method).ProcessResponse(input.Data, act);
+        }
+
+        public void ProcessDisplayMessageFunction(Object input)
+        {
+            Console.WriteLine("In process Display from DNAOrchestra");
+            ViewModelLocator.VMLOrchStatic.SetMessage("esdsdsds");
         }
     }
 }
