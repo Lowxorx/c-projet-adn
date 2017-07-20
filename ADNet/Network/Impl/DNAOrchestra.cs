@@ -3,6 +3,7 @@ using ADNet.Worker.Impl;
 using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
+using NodeNet.Worker.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,9 +67,9 @@ namespace ADNet.Network.Impl
                         input = DataFormater.Deserialize<DataInput>(buffer);
                     }
 
-                   
-                    //IWorker worker = WorkerFactory.GetWorker(input.Method).DoWork;
-                    //worker.ProcessResponse(input, (d) => ProcessDisplayMessageFunction(input));
+
+                    GenericWorker<Object, Object> worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                    worker.ProcessResponse(input, (d) => ProcessDisplayMessageFunction(input));
                     // Dans le cas d'un noeud client
                     Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
                     receiveDone.Set();

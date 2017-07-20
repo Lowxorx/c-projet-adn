@@ -31,5 +31,9 @@ namespace NodeNet.Worker
         {
             return workers.GetValue<IWorker<R,T>>(methodName);
         }
+
+        public void AddWorker<String>(String methodName, IWorker<String,String> worker) {
+            workers.Add(Convert.ToString(methodName), worker);
+        }
     }
 }

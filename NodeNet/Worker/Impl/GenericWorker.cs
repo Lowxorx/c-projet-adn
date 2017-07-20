@@ -11,11 +11,12 @@ namespace NodeNet.Worker.Impl
     {
         public IMapper<R,T> mapper { get; set; }
         public IReducer<R, T> reducer { get; set; }
+
         public abstract void CancelWork();
 
         public abstract R DoWork(T input);
 
-        public T PrepareData(byte[] data)
+        public static T PrepareData(byte[] data)
         {
             return DataFormater.Deserialize<T>(data);
         }

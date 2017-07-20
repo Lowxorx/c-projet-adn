@@ -2,6 +2,7 @@
 using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Worker;
+using NodeNet.Worker.Impl;
 using System;
 using System.Net.Sockets;
 
@@ -12,7 +13,7 @@ namespace ADNet.Network.Impl
         public const String DISPLAY_MESSAGE_METHOD = "DISPLAY_MSG";
         public DNANode(String name, String address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>());
+            WorkerFactory.AddWorker<String>(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>());
             Name = name;
             Address = address;
             Port = port;
@@ -32,14 +33,14 @@ namespace ADNet.Network.Impl
                 if (bytesRead > 0)
                 {
                     DataInput input = DataFormater.Deserialize<DataInput>(buffer);
-                    //IWorker worker = WorkerFactory.GetWorker(input.Method);
-                    //DataInput res = worker.DoWork(input);
-                        //if (res != null)
-                        //{
-                        //    res.MsgType = MessageType.RESPONSE;
-                        //    res.Method = DISPLAY_MESSAGE_METHOD;
-                        //    SendData(node, res);
-                        //}
+                    String res = WorkerFactory.GetWorker(input.Method).DoWork(GenericWorker<Object,Object>.PrepareData(input.Data));
+                    
+                    if (res != null)
+                    {
+                        //res.MsgType = MessageType.RESPONSE;
+                        //res.Method = DISPLAY_MESSAGE_METHOD;
+                        //SendData(node, res);
+                    }
                 }
                 else
                 {
