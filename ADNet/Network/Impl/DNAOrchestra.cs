@@ -1,9 +1,8 @@
 ﻿using ADNet.GUI.ViewModel;
 using ADNet.Worker.Impl;
-using NodeNet.Network.Data;
+using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
-using NodeNet.Worker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +16,7 @@ namespace ADNet.Network.Impl
 
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker());
+            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>());
         }
 
         public void SendMessage(String msg)
@@ -68,8 +67,8 @@ namespace ADNet.Network.Impl
                     }
 
                    
-                    IWorker worker = WorkerFactory.GetWorker(input.Method);
-                    worker.ProcessResponse(input, (d) => ProcessDisplayMessageFunction(input));
+                    //IWorker worker = WorkerFactory.GetWorker(input.Method).DoWork;
+                    //worker.ProcessResponse(input, (d) => ProcessDisplayMessageFunction(input));
                     // Dans le cas d'un noeud client
                     Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
                     receiveDone.Set();
@@ -92,7 +91,7 @@ namespace ADNet.Network.Impl
         public void ProcessDisplayMessageFunction(DataInput input)
         {
             Console.WriteLine("In process Display from DNAOrchestra");
-            ViewModelLocator.VMLOrchStatic.SetMessage("anus");
+            ViewModelLocator.VMLOrchStatic.SetMessage("URanus");
         }
     }
 }

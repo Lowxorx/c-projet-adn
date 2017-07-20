@@ -1,4 +1,4 @@
-﻿using NodeNet.Network.Data;
+﻿using NodeNet.Data;
 
 namespace NodeNet.Network.Orch
 {

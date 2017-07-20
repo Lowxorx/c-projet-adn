@@ -3,10 +3,10 @@ using System.Net.Sockets;
 using System.Net;
 using System.Threading;
 using NodeNet.Network.Orch;
-using NodeNet.Network.Data;
+using NodeNet.Data;
 using NodeNet.Worker;
-using NodeNet.Worker.Impl;
 using System.Collections.Generic;
+using NodeNet.Worker.Impl;
 
 namespace NodeNet.Network.Nodes
 {
@@ -31,7 +31,7 @@ namespace NodeNet.Network.Nodes
             WorkerFactory = GenericWorkerFactory.GetInstance();
             try
             {
-                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker());
+                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker<String>());
             }
             catch (Exception e)
             {

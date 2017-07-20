@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using NodeNet.Data;
 
 namespace NodeNet.Worker
 {
     public class GenericWorkerFactory : IWorkerFactory
     {
         private static GenericWorkerFactory instance;
-        private Dictionary<String, IWorker> workers;
+        private GenericDictionary workers;
 
         private GenericWorkerFactory(){
-            workers = new Dictionary<string, IWorker>();
+            workers = new GenericDictionary();
         }
 
         public static GenericWorkerFactory GetInstance()
@@ -21,14 +22,14 @@ namespace NodeNet.Worker
             return instance;
         }
 
-        public void AddWorker(String methodName, IWorker worker)
+        public void AddWorker<R,T>(String methodName, IWorker<R,T> worker)
         {
             workers.Add(methodName, worker);
         }
         // TODO check if method name exists
-        public IWorker GetWorker(String methodName)
+        public IWorker<R,T> GetWorker<R, T>(String methodName)
         {
-            return workers[methodName];
+            return workers.GetValue<IWorker<R,T>>(methodName);
         }
     }
 }

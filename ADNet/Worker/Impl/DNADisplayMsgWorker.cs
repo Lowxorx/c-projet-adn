@@ -1,31 +1,26 @@
 ﻿using System;
 using NodeNet.Network;
-using NodeNet.Network.Data;
+using NodeNet.Data;
 using NodeNet.Worker;
+using NodeNet.Worker.Impl;
 
 namespace ADNet.Worker.Impl
 {
-    public class DNADisplayMsgWorker : IWorker
+    public class DNADisplayMsgWorker<String> : GenericWorker<String, String>
     {
-        public void CancelWork()
+        public override void CancelWork()
         {
             throw new NotImplementedException();
         }
 
-        public DataInput DoWork(DataInput input)
+        public override String DoWork(String input)
         {
-            Console.WriteLine("Display message msg : " + DataFormater.Deserialize<String>(input.Data));
-            DataInput res = new DataInput()
-            {
-                Data = DataFormater.Serialize("Reponse du client"),
-                MsgType = MessageType.RESPONSE
-            };
-            return res;
+            throw new NotImplementedException();
         }
 
-        public void ProcessResponse(DataInput d, Action<DataInput> ProcessFunction)
+        public override void ProcessResponse(String d, Func<String, String> ProcessFunction)
         {
-            ProcessFunction(d);
+            throw new NotImplementedException();
         }
     }
 }

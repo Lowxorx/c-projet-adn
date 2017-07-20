@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NodeNet.Network.Data
+namespace NodeNet.Data
 {
-    public enum MessageType
+    public interface IReducer<R,T>
     {
-        CALL,
-        RESPONSE
+        R reduce(T input);
     }
 }

@@ -1,34 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NodeNet.Network.Data;
 using NodeNet.Tools;
 
 namespace NodeNet.Worker.Impl
 {
-    class CPUStateWorker : IWorker
+    class CPUStateWorker<String> : GenericWorker<String, String>
     {
-        public void CancelWork()
+        public override void CancelWork()
         {
             throw new NotImplementedException();
         }
 
-        public DataInput DoWork(DataInput input)
+        public override String DoWork(String input)
         {
-            DataInput res = new DataInput()
-            {
-                Data = DataFormater.Serialize(StateTools.GetCPU()),
-                Method = input.Method,
-                MsgType = MessageType.RESPONSE
-            };
-            return res;
+            
+            return (String)(Object)StateTools.GetCPU();
         }
 
-        public void ProcessResponse(DataInput d, Action<DataInput> ProcessFunction)
+        public override void ProcessResponse(String d, Func<String, String> ProcessFunction)
         {
-            ProcessFunction(d);
+            throw new NotImplementedException();
         }
     }
 }

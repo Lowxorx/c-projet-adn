@@ -1,14 +1,16 @@
-﻿using NodeNet.Network.Data;
+﻿using NodeNet.Data;
 using System;
 
 
 namespace NodeNet.Worker
 {
-    public interface IWorker
+    public interface IWorker<R,T>
     {
-        DataInput DoWork(DataInput input);
+        T PrepareData(byte[] data);
 
-        void ProcessResponse(DataInput d, Action<DataInput> ProcessFunction);
+        R DoWork(T input);
+
+        void ProcessResponse(R d, Func<R,T> ProcessFunction);
 
         void CancelWork();
 

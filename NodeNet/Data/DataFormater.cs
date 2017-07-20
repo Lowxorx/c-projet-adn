@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 
-namespace NodeNet.Network.Data
+namespace NodeNet.Data
 {
     public class DataFormater
     {

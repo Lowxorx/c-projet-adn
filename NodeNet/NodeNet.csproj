@@ -75,15 +75,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Network\Data\DataFormater.cs" />
-    <Compile Include="Network\Data\DataInput.cs" />
+    <Compile Include="Data\DataFormater.cs" />
+    <Compile Include="Data\DataInput.cs" />
+    <Compile Include="Data\GenericDictionnary.cs" />
+    <Compile Include="Data\IMapper.cs" />
+    <Compile Include="Data\IReducer.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Network\Data\MessageType.cs" />
+    <Compile Include="Data\MessageType.cs" />
     <Compile Include="Network\Protocol.cs" />
     <Compile Include="Misc\StateTools.cs" />
     <Compile Include="Worker\Impl\CPUStateWorker.cs" />
     <Compile Include="Worker\GenericWorkerFactory.cs" />
+    <Compile Include="Worker\Impl\GenericWorker.cs" />
     <Compile Include="Worker\IWorkerFactory.cs" />
   </ItemGroup>
   <ItemGroup>

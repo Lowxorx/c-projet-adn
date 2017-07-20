@@ -11,7 +11,7 @@ namespace NodeNet.Tools
     {
         private static PerformanceCounter cpucounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
-        public static string GetCPU()
+        public static String GetCPU()
         {
             double cpu = Math.Round(cpucounter.NextValue());
             string currentcpuusage = cpu.ToString() + "%";

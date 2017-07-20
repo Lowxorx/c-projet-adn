@@ -1,5 +1,5 @@
 ﻿using NodeNet.GUI.ViewModel;
-using NodeNet.Network.Data;
+using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using System;
 using System.Collections.Generic;

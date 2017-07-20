@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NodeNet.Network.Data
+namespace NodeNet.Data
 {
     [Serializable]
     public class DataInput
