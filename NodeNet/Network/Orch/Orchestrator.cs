@@ -13,10 +13,6 @@ namespace NodeNet.Network.Orch
     {
         private List<Node> Nodes { get; set; }
 
-        private static ManualResetEvent connectDone = new ManualResetEvent(false);
-        private static ManualResetEvent sendDone = new ManualResetEvent(false);
-        private static ManualResetEvent receiveDone = new ManualResetEvent(false);
-
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
             Nodes = new List<Node>();
@@ -36,17 +32,7 @@ namespace NodeNet.Network.Orch
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 Receive(connectedNode);
             }
-            //ServerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //ServerSocket.Bind(new IPEndPoint(IPAddress.Parse(Address), Port));
-            //ServerSocket.Listen(10);
-            //ServerSocket.BeginAccept(new AsyncCallback(ConnectCallback), ServerSocket);
-        }
-
-        private void ConnectCallback(IAsyncResult asyncResult)
-        {
-            Socket client = ServerSocket.EndAccept(asyncResult);
-            //Console.WriteLine("New Client connected address : " + ((IPEndPoint)client.RemoteEndPoint).Address + " port : " + ((IPEndPoint)client.RemoteEndPoint).Port);
-            Receive(this);
+ 
         }
 
         public void SendDataToAllNodes(DataInput input)

@@ -20,6 +20,7 @@ namespace NodeNet.Worker.Impl
             DataInput res = new DataInput()
             {
                 Data = DataFormater.Serialize(StateTools.GetCPU()),
+                Method = input.Method,
                 MsgType = MessageType.RESPONSE
             };
             return res;

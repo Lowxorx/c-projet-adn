@@ -42,9 +42,12 @@ namespace NodeNet.Network.Nodes
             Port = port;
         }
 
-        public Node(string name, string adress, int port, Socket sock) : this(name, adress, port)
+        public Node(string name, string adress, int port, Socket sock) 
         {
-            this.NodeSocket = sock;
+            Name = name;
+            Address = adress;
+            Port = port;
+            NodeSocket = sock;
         }
 
         public void Stop()

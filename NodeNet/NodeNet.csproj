@@ -76,9 +76,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Network\Data\DataFormater.cs" />
-    <Compile Include="GUI\View\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Network\Data\DataInput.cs" />
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
@@ -130,10 +127,6 @@
     <Folder Include="GUI\Model\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="GUI\View\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="GUI\View\MonitoringUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
