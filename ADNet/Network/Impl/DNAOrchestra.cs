@@ -67,9 +67,7 @@ namespace ADNet.Network.Impl
                         input = DataFormater.Deserialize<DataInput>(buffer);
                     }
 
-
-                    GenericWorker<Object, Object> worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                    worker.ProcessResponse(input, (d) => ProcessDisplayMessageFunction(input));
+                    WorkerFactory.GetWorker<String, String>(input.Method).ProcessResponse(GenericWorker<String, String>.PrepareData(input.Data), ProcessDisplayMessageFunction);
                     // Dans le cas d'un noeud client
                     Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
                     receiveDone.Set();
@@ -89,10 +87,11 @@ namespace ADNet.Network.Impl
             throw new NotImplementedException();
         }
 
-        public void ProcessDisplayMessageFunction(DataInput input)
+        public String ProcessDisplayMessageFunction(String input)
         {
             Console.WriteLine("In process Display from DNAOrchestra");
             ViewModelLocator.VMLOrchStatic.SetMessage("URanus");
+            return "URanus";
         }
     }
 }

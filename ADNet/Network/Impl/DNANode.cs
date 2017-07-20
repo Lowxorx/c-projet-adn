@@ -33,13 +33,16 @@ namespace ADNet.Network.Impl
                 if (bytesRead > 0)
                 {
                     DataInput input = DataFormater.Deserialize<DataInput>(buffer);
-                    String res = WorkerFactory.GetWorker(input.Method).DoWork(GenericWorker<Object,Object>.PrepareData(input.Data));
-                    
-                    if (res != null)
+                    Object result = WorkerFactory.GetWorker<Object, Object>(input.Method).DoWork(GenericWorker<Object, Object>.PrepareData(input.Data));
+                    if (result != null)
                     {
-                        //res.MsgType = MessageType.RESPONSE;
-                        //res.Method = DISPLAY_MESSAGE_METHOD;
-                        //SendData(node, res);
+                        DataInput res = new DataInput()
+                        {
+                            MsgType = MessageType.RESPONSE,
+                            Method = input.Method,
+                            Data = DataFormater.Serialize(result)
+                        };
+                        SendData(node, res);
                     }
                 }
                 else
