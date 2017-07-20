@@ -87,7 +87,6 @@
     <Compile Include="Misc\StateTools.cs" />
     <Compile Include="Worker\Impl\CPUStateWorker.cs" />
     <Compile Include="Worker\GenericWorkerFactory.cs" />
-    <Compile Include="Worker\Impl\GenericWorker.cs" />
     <Compile Include="Worker\IWorkerFactory.cs" />
   </ItemGroup>
   <ItemGroup>

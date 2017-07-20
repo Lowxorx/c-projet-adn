@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Linq;
 
 namespace NodeNet.Network.Orch
 {
@@ -35,6 +36,11 @@ namespace NodeNet.Network.Orch
  
         }
 
+        public new void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
         public void SendDataToAllNodes(DataInput input)
         {
             byte[] data = DataFormater.Serialize(input);
@@ -58,5 +64,55 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        public override void ReceiveCallback(IAsyncResult ar)
+        {
+            base.ReceiveCallback(ar);
+            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
+            byte[] buffer = state.Item2;
+            Node node = state.Item1;
+            Socket client = node.NodeSocket;
+            try
+            {
+                // Read data from the remote device.
+                int bytesRead = client.EndReceive(ar);
+                Console.WriteLine("Number of bytes received : " + bytesRead);
+                this.bytearrayList = new List<byte[]>();
+
+
+                if (bytesRead == 4096)
+                {
+                    byte[] data = buffer;
+                    this.bytearrayList.Add(data);
+
+                }
+                else
+                {
+                    DataInput input;
+                    if (bytearrayList.Count > 0)
+                    {
+                        byte[] data = bytearrayList
+                                     .SelectMany(a => a)
+                                     .ToArray();
+                        input = DataFormater.Deserialize<DataInput>(data);
+                    }
+                    else
+                    {
+                        input = DataFormater.Deserialize<DataInput>(buffer);
+                    }
+
+                    ProcessInput(input);
+                    receiveDone.Set();
+                }
+
+                Receive(node);
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+        }
+
+        public abstract void ProcessInput(DataInput input);
     }
 }

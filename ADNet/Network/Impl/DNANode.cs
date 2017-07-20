@@ -13,7 +13,7 @@ namespace ADNet.Network.Impl
         public const String DISPLAY_MESSAGE_METHOD = "DISPLAY_MSG";
         public DNANode(String name, String address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker<String>(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>());
+            WorkerFactory.AddWorker<String,String>(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>());
             Name = name;
             Address = address;
             Port = port;
@@ -33,14 +33,14 @@ namespace ADNet.Network.Impl
                 if (bytesRead > 0)
                 {
                     DataInput input = DataFormater.Deserialize<DataInput>(buffer);
-                    Object result = WorkerFactory.GetWorker<Object, Object>(input.Method).DoWork(GenericWorker<Object, Object>.PrepareData(input.Data));
+                    Object result = WorkerFactory.GetWorker<Object, Object>(input.Method).DoWork(input.Data);
                     if (result != null)
                     {
                         DataInput res = new DataInput()
                         {
                             MsgType = MessageType.RESPONSE,
                             Method = input.Method,
-                            Data = DataFormater.Serialize(result)
+                            Data = result
                         };
                         SendData(node, res);
                     }

@@ -1,22 +1,26 @@
 ﻿using System;
+using NodeNet.Data;
 using NodeNet.Tools;
 
 namespace NodeNet.Worker.Impl
 {
-    class CPUStateWorker<String> : GenericWorker<String, String>
+    class CPUStateWorker<String> : IWorker<String, String>
     {
-        public override void CancelWork()
+        public IMapper<String, String> mapper { get; set; }
+        public IReducer<String, String> reducer { get; set; }
+
+        public void CancelWork()
         {
             throw new NotImplementedException();
         }
 
-        public override String DoWork(String input)
+        public String DoWork(String input)
         {
             
             return (String)(Object)StateTools.GetCPU();
         }
 
-        public override void ProcessResponse(String d, Func<String, String> ProcessFunction)
+        public void ProcessResponse(object data, Func<object, object> ProcessFunction)
         {
             throw new NotImplementedException();
         }

@@ -3,6 +3,7 @@ using ADNet.Worker.Impl;
 using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
+using NodeNet.Worker;
 using NodeNet.Worker.Impl;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace ADNet.Network.Impl
 
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>());
+            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>(), (() => ProcessDisplayMessageFunction(null)));
         }
 
         public void SendMessage(String msg)
@@ -30,68 +31,19 @@ namespace ADNet.Network.Impl
             };
             SendDataToAllNodes(input);
         }
-
-        public override void ReceiveCallback(IAsyncResult ar)
-        {
-            base.ReceiveCallback(ar);
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
-            try
-            {
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
-                this.bytearrayList = new List<byte[]>();
+        
 
 
-                if (bytesRead == 4096)
-                {
-                    byte[] data = buffer;
-                    this.bytearrayList.Add(data);
-
-                }
-                else
-                {
-                    DataInput input;
-                    if (bytearrayList.Count > 0)
-                    {
-                        byte[] data = bytearrayList
-                                     .SelectMany(a => a)
-                                     .ToArray();
-                         input = DataFormater.Deserialize<DataInput>(data);
-                    }
-                    else
-                    {
-                        input = DataFormater.Deserialize<DataInput>(buffer);
-                    }
-
-                    WorkerFactory.GetWorker<String, String>(input.Method).ProcessResponse(GenericWorker<String, String>.PrepareData(input.Data), ProcessDisplayMessageFunction);
-                    // Dans le cas d'un noeud client
-                    Console.WriteLine("Get res from client : " + DataFormater.Deserialize<String>(input.Data));
-                    receiveDone.Set();
-                }
-
-                Receive(node);
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.ToString());
-
-            }
-        }
-
-        public new void Stop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public String ProcessDisplayMessageFunction(String input)
+        public void ProcessDisplayMessageFunction(Object input)
         {
             Console.WriteLine("In process Display from DNAOrchestra");
-            ViewModelLocator.VMLOrchStatic.SetMessage("URanus");
-            return "URanus";
+            ViewModelLocator.VMLOrchStatic.SetMessage((String)input);
+        }
+
+        public override void ProcessInput(DataInput input)
+        {
+            Action<Object> act = WorkerFactory.GetMethod(input.Method);
+            WorkerFactory.GetWorker<Object, Object>(input.Method).ProcessResponse(input.Data, act);
         }
     }
 }

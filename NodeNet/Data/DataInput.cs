@@ -7,6 +7,6 @@ namespace NodeNet.Data
     {
         public MessageType MsgType;
         public String Method { get; set; }
-        public byte[] Data { get; set; }
+        public Object Data { get; set; }
     }
 }
