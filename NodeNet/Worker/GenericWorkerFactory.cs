@@ -1,43 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using NodeNet.Data;
-using System.Collections;
 
 namespace NodeNet.Worker
 {
     public class GenericWorkerFactory 
     {
         private static GenericWorkerFactory instance;
-        private Dictionary<String, GenericDictionary> _dict;
+        private static GenericDictionary workers;
 
-        private GenericWorkerFactory(){
-            _dict = new Dictionary<String, GenericDictionary>();
-        }
+        private GenericWorkerFactory(){}
 
         public static GenericWorkerFactory GetInstance()
         {
             if(instance == null)
             {
                 instance = new GenericWorkerFactory();
+                workers = new GenericDictionary();
             }
             return instance;
         }
 
-        public void AddWorker<R,T>(String methodName, IWorker<R,T> worker, Action<Object> method)
-        {
-            GenericDictionary subDict = new GenericDictionary();
-            subDict.Add(worker, method);
-            _dict.Add(methodName, subDict);
+        public void AddWorker<R,T>(String methodName, IWorker<R,T> worker)
+        { 
+            workers.Add(methodName, worker);
         }
         // TODO check if method name exists
-        public IWorker<R,T> GetWorker<R, T>(String methodName)
+        public dynamic GetWorker<R, T>(String methodName)
         {
-            return (IWorker < R, T > )_dict[methodName].GetWorker<Object,Object>();
-        }
-
-        public Action<Object> GetMethod(String methodName)
-        {
-            return _dict[methodName].GetMethod<Object>();
+            return workers.GetValue<IWorker<R, T>>(methodName);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace NodeNet.Worker
 
         R DoWork(T input);
 
-        void ProcessResponse(Object data, Action<Object> ProcessFunction);
+        void ProcessResponse(T input);
 
         void CancelWork();
     }

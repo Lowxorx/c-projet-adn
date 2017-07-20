@@ -20,7 +20,7 @@ namespace NodeNet.Worker.Impl
             return (String)(Object)StateTools.GetCPU();
         }
 
-        public void ProcessResponse(object data, Action<object> ProcessFunction)
+        public void ProcessResponse(String input)
         {
             throw new NotImplementedException();
         }

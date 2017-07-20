@@ -9,26 +9,16 @@ namespace NodeNet.Data
 {
     public class GenericDictionary
     {
-        private Dictionary<object, Action<Object>> _dict = new Dictionary<object, Action<Object>>();
+        private Dictionary<string, object> dict = new Dictionary<string, object>();
 
-        public void Add<T>(T key, Action<Object> value) where T : class
+        public void Add<T>(string key, T value) where T : class
         {
-            _dict.Add(key, value);
+            dict.Add(key, value);
         }
 
-        public T GetValue<T>(String key) where T : class
+        public dynamic GetValue<T>(string key) where T : class
         {
-            return _dict[key] as T;
-        }
-
-        public Object GetWorker<T,R>() where T : class
-        {
-            return _dict.First().Key;
-        }
-
-        public Action<Object> GetMethod<T>() where T : class
-        {
-            return _dict.First().Value;
+            return dict[key];
         }
     }
 }

@@ -15,10 +15,10 @@ namespace ADNet.Network.Impl
     class DNAOrchestra : Orchestrator
     {
         public const String DISPLAY_MESSAGE_METHOD = "DISPLAY_MSG";
-
+        delegate void DisplayDel(string message);
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker<String>(), ProcessDisplayMessageFunction);
+            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker(ProcessDisplayMessageFunction));
         }
 
         public void SendMessage(String msg)
@@ -31,21 +31,18 @@ namespace ADNet.Network.Impl
             };
             SendDataToAllNodes(input);
         }
-        
-
-
-       
 
         public override void ProcessInput(DataInput input)
         {
-            Action<Object> act = WorkerFactory.GetMethod(input.Method);
-            WorkerFactory.GetWorker<Object, Object>(input.Method).ProcessResponse(input.Data, act);
+            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+            worker.ProcessResponse("dfsd");
         }
 
-        public void ProcessDisplayMessageFunction(Object input)
+        public void ProcessDisplayMessageFunction(String input)
         {
             Console.WriteLine("In process Display from DNAOrchestra");
             ViewModelLocator.VMLOrchStatic.SetMessage("esdsdsds");
+        
         }
     }
 }

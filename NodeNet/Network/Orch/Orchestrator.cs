@@ -7,16 +7,27 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Linq;
+using NodeNet.Worker;
+using NodeNet.Worker.Impl;
 
 namespace NodeNet.Network.Orch
 {
     public abstract class Orchestrator : Node, IOrchestrator
     {
         private List<Node> Nodes { get; set; }
+       
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
             Nodes = new List<Node>();
+            try
+            {
+                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker<String>());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public async void Listen()
