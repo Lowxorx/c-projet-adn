@@ -18,45 +18,11 @@ namespace ADNet.Network.Impl
             Address = address;
             Port = port;
         }
-        public override void ReceiveCallback(IAsyncResult ar)
+        public override Object ProcessInput(DataInput input)
         {
-            base.ReceiveCallback(ar);
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
-            try
-            {
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
-                if (bytesRead > 0)
-                {
-                    DataInput input = DataFormater.Deserialize<DataInput>(buffer);
-                    dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                    Object result = worker.DoWork("qssqd");
-                    if (result != null)
-                    {
-                        DataInput res = new DataInput()
-                        {
-                            MsgType = MessageType.RESPONSE,
-                            Method = input.Method,
-                            Data = result
-                        };
-                        SendData(node, res);
-                    }
-                }
-                else
-                {
-                    receiveDone.Set();
-                }
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.ToString());
-
-            }
-
+            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+            Object result = worker.DoWork("qssqd");
+            return result;
         }
     }
 }

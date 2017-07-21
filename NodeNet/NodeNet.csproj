@@ -83,6 +83,7 @@
     <Compile Include="Network\ConnectionManager.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
     <Compile Include="Data\MessageType.cs" />
+    <Compile Include="Network\Nodes\DefaultNode.cs" />
     <Compile Include="Network\Protocol.cs" />
     <Compile Include="Misc\StateTools.cs" />
     <Compile Include="Worker\Impl\CPUStateWorker.cs" />

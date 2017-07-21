@@ -38,7 +38,7 @@ namespace NodeNet.Network.Orch
             while (true)
             {
                 Socket sock = await listener.AcceptSocketAsync();
-                Node connectedNode = new Node("Node ", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
+                DefaultNode connectedNode = new DefaultNode("Node ", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
                 Nodes.Add(connectedNode);
                 ViewModelLocator.VMLMonitorUcStatic.NodeList.Add(connectedNode);
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
@@ -123,7 +123,5 @@ namespace NodeNet.Network.Orch
 
             }
         }
-
-        public abstract void ProcessInput(DataInput input);
     }
 }

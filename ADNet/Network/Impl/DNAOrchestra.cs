@@ -32,10 +32,11 @@ namespace ADNet.Network.Impl
             SendDataToAllNodes(input);
         }
 
-        public override void ProcessInput(DataInput input)
+        public override Object ProcessInput(DataInput input)
         {
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
             worker.ProcessResponse("dfsd");
+            return null;
         }
 
         public void ProcessDisplayMessageFunction(String input)
@@ -44,5 +45,6 @@ namespace ADNet.Network.Impl
             ViewModelLocator.VMLOrchStatic.SetMessage("esdsdsds");
         
         }
+
     }
 }

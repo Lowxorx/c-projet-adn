@@ -10,7 +10,7 @@ using NodeNet.Worker.Impl;
 
 namespace NodeNet.Network.Nodes
 {
-    public class Node : INode
+    public abstract class Node : INode
     {
         public Node Orch { get; set; }
         public String Address { get; set; }
@@ -64,7 +64,7 @@ namespace NodeNet.Network.Nodes
         {
             IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(address), port);
             ServerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            Orch = new Node("Orch", address, port, ServerSocket);
+            Orch = new DefaultNode("Orch", address, port, ServerSocket);
             Console.WriteLine("Client started ...");
             try
             {
@@ -152,6 +152,44 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public virtual void ReceiveCallback(IAsyncResult ar) {}
+        public virtual void ReceiveCallback(IAsyncResult ar) {
+            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
+            byte[] buffer = state.Item2;
+            Node node = state.Item1;
+            Socket client = node.NodeSocket;
+            try
+            {
+                // Read data from the remote device.
+                int bytesRead = client.EndReceive(ar);
+                Console.WriteLine("Number of bytes received : " + bytesRead);
+                if (bytesRead > 0)
+                {
+                    DataInput input = DataFormater.Deserialize<DataInput>(buffer);
+                    Object result = ProcessInput(input);
+                    if (result != null)
+                    {
+                        DataInput res = new DataInput()
+                        {
+                            MsgType = MessageType.RESPONSE,
+                            Method = input.Method,
+                            Data = result
+                        };
+                        SendData(node, res);
+                    }
+                }
+                else
+                {
+                    receiveDone.Set();
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+
+        }
+
+        public abstract Object ProcessInput(DataInput input);
     }
 }
