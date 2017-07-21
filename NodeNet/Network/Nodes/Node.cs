@@ -1,17 +1,16 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
-using NodeNet.Network.Orch;
-using NodeNet.Data;
-using NodeNet.Worker;
-using System.Collections.Generic;
-using NodeNet.Worker.Impl;
-using System.Diagnostics;
-using System.ComponentModel;
+﻿using NodeNet.Data;
 using NodeNet.GUI.ViewModel;
+using NodeNet.Network.Orch;
+using NodeNet.Worker;
+using NodeNet.Worker.Impl;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Management;
-using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace NodeNet.Network.Nodes
 {
