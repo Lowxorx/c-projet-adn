@@ -26,7 +26,7 @@ namespace ADNet.Network.Impl
             DataInput input = new DataInput()
             {
                 Method = DISPLAY_MESSAGE_METHOD,
-                Data = DataFormater.Serialize(msg),
+                Data = msg,
                 MsgType = MessageType.CALL
             };
             SendDataToAllNodes(input);
