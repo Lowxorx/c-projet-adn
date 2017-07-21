@@ -1,10 +1,7 @@
 ﻿using ADNet.Worker.Impl;
 using NodeNet.Data;
 using NodeNet.Network.Nodes;
-using NodeNet.Worker;
-using NodeNet.Worker.Impl;
 using System;
-using System.Net.Sockets;
 
 namespace ADNet.Network.Impl
 {

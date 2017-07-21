@@ -2,7 +2,12 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using NodeNet.GUI.ViewModel;
+using NodeNet.Network.Nodes;
 using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
@@ -39,12 +44,6 @@ namespace ADNet.GUI.ViewModel
                 RaisePropertyChanged("ClientResponse");
             }
         }
-
-
-
-
-
-
         #endregion
 
         public VMMonitoringUC UcVmMonitoring { get; set; }
@@ -59,11 +58,12 @@ namespace ADNet.GUI.ViewModel
         {
             orch = new DNAOrchestra("Orchestrator","127.0.0.1",3000);
             orch.Listen();
+            //StartMonitorNodes();
         }
 
         public void SendMessage()
         {
-            Console.WriteLine("Sending message " + txtMsg + " to all clients");
+            Console.WriteLine("Sending message " + txtMsg + " to all clients");   
             orch.SendMessage(txtMsg);
         }
 
@@ -72,9 +72,37 @@ namespace ADNet.GUI.ViewModel
             ClientResponse = s;
         }
 
-        private void RefreshNodesInfos()
+        private void StartMonitorNodes()
         {
+            BackgroundWorker bw = new BackgroundWorker()
+            {
+                WorkerSupportsCancellation = true
+            };
+            bw.DoWork += (o, a) =>
+            {
+                while (true)
+                {
+                    ObservableCollection<Node> list = new ObservableCollection<Node>();
+                    foreach (Node n in UcVmMonitoring.NodeList)
+                    {
+                        //n.RefreshNodesInfos();
+                        list.Add(n);
+                    }
+                    UcVmMonitoring.NodeList = null;
+                    UcVmMonitoring.NodeList = list;
+                    Thread.Sleep(3000);
+                }
+            };
+            bw.RunWorkerAsync();
+            // Méthode avec Thread
+            //Thread monitor = new Thread(() =>
+            //{
 
+            //})
+            //{
+            //    Name = "MonitoringThread"
+            //};
+            //monitor.Start();
         }
     }
 }

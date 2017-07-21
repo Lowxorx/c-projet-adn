@@ -8,8 +8,8 @@ namespace ADNet.Worker.Impl
 {
     public class DNADisplayMsgWorker : GenericWorker<String, String>
     {
-        public override IMapper<String, String> mapper { get ; set; }
-        public override IReducer<String, String> reducer { get ; set; }
+        public override IMapper<String, String> Mapper { get ; set; }
+        public override IReducer<String, String> Reducer { get ; set; }
 
         public Action<String> ProcessFunction;
 
@@ -33,7 +33,7 @@ namespace ADNet.Worker.Impl
             ProcessFunction(input);
         }
 
-        public override string PrepareData(object data)
+        public override string CastData(object data)
         {
             return (String)data;
         }

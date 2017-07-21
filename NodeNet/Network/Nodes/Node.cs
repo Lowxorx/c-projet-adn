@@ -7,6 +7,9 @@ using NodeNet.Data;
 using NodeNet.Worker;
 using System.Collections.Generic;
 using NodeNet.Worker.Impl;
+using System.Diagnostics;
+using System.ComponentModel;
+using NodeNet.GUI.ViewModel;
 
 namespace NodeNet.Network.Nodes
 {
@@ -19,9 +22,16 @@ namespace NodeNet.Network.Nodes
         public Socket NodeSocket { get; set; }
         public Socket ServerSocket { get; set; }
         public static int BUFFER_SIZE = 4096;
+        public PerformanceCounter PerfCpu { get; set; }
+        public PerformanceCounter PerfRam { get; set; }
+
+        private float cpuValue { get; set; }
+        public float CpuValue { get { return (float)(Math.Truncate(cpuValue * 100.0) / 100.0); } set { cpuValue = value; } }
+        private float ramValue { get; set; }
+        public float RamValue { get { return (float)(Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
+
         public GenericWorkerFactory WorkerFactory { get; set; }
         protected List<byte[]> bytearrayList { get; set; }
-
         protected static ManualResetEvent sendDone = new ManualResetEvent(false);
         protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
         protected static ManualResetEvent connectDone = new ManualResetEvent(false);
@@ -31,7 +41,7 @@ namespace NodeNet.Network.Nodes
             WorkerFactory = GenericWorkerFactory.GetInstance();
             try
             {
-                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker<String>());
+                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker(RefreshCpuState));
             }
             catch (Exception e)
             {
@@ -42,7 +52,7 @@ namespace NodeNet.Network.Nodes
             Port = port;
         }
 
-        public Node(string name, string adress, int port, Socket sock) 
+        public Node(string name, string adress, int port, Socket sock)
         {
             Name = name;
             Address = adress;
@@ -92,6 +102,7 @@ namespace NodeNet.Network.Nodes
                 // Signal that the connection has been made.
                 connectDone.Set();
                 Receive(Orch);
+                
             }
             catch (SocketException e)
             {
@@ -152,7 +163,8 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public virtual void ReceiveCallback(IAsyncResult ar) {
+        public virtual void ReceiveCallback(IAsyncResult ar)
+        {
             Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
             byte[] buffer = state.Item2;
             Node node = state.Item1;
@@ -191,5 +203,46 @@ namespace NodeNet.Network.Nodes
         }
 
         public abstract Object ProcessInput(DataInput input);
+
+        public virtual void RefreshCpuState(Tuple<float, float> values)
+        {
+            ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(values);
+        }
+
+        public void StartMonitoring()
+        {
+            BackgroundWorker bw = new BackgroundWorker()
+            {
+                WorkerSupportsCancellation = true
+            };
+            bw.DoWork += (o, a) =>
+            {
+                if (PerfCpu == null)
+                {
+                    PerfCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+                }
+                if (PerfRam == null)
+                {
+                    PerfRam = new PerformanceCounter("Memory", "Available MBytes");
+                }
+                while (true)
+                {
+                    dynamic worker = WorkerFactory.GetWorker<Object, Object>("GET_CPU");
+
+                    object result = worker.DoWork(new Tuple<PerformanceCounter, PerformanceCounter>(PerfCpu, PerfRam));
+
+                    DataInput perfInfo = new DataInput()
+                    {
+                        MsgType = MessageType.RESPONSE,
+                        Method = "GET_CPU",
+                        Data = worker.CastData(result)
+                    };
+                    SendData(Orch, perfInfo);
+                    Console.WriteLine("Send node info to server");
+                    Thread.Sleep(3000);
+                }
+            };
+            bw.RunWorkerAsync();
+        }
     }
 }

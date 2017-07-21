@@ -22,6 +22,7 @@ namespace ADNet.GUI.ViewModel
             DNANode dnaNode = new DNANode("Node 1", "127.0.0.1", 3001);
             dnaNode.Connect(TxtIp, 3000);
             Console.WriteLine("OK client CO");
+            dnaNode.StartMonitoring();
         }
 
         private string txtIp;

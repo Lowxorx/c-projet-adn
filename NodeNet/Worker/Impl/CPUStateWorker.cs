@@ -1,28 +1,41 @@
 ﻿using System;
 using NodeNet.Data;
-using NodeNet.Tools;
+using System.Diagnostics;
 
 namespace NodeNet.Worker.Impl
 {
-    class CPUStateWorker<String> : IWorker<String, String>
+    class CPUStateWorker : GenericWorker<Tuple<float, float>, Tuple<PerformanceCounter, PerformanceCounter>>
     {
-        public IMapper<String, String> mapper { get; set; }
-        public IReducer<String, String> reducer { get; set; }
+        public override IMapper<Tuple<float, float>, Tuple<PerformanceCounter, PerformanceCounter>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IReducer<Tuple<float, float>, Tuple<PerformanceCounter, PerformanceCounter>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public void CancelWork()
+        private Action<Tuple<float, float>> processFunction;
+
+        public CPUStateWorker(Action<Tuple<float, float>> func)
+        {
+            processFunction = func;
+        }
+
+        public override void CancelWork()
         {
             throw new NotImplementedException();
         }
 
-        public String DoWork(String input)
+        public override Tuple<float, float> DoWork(Tuple<PerformanceCounter, PerformanceCounter> input)
         {
-            
-            return (String)(Object)StateTools.GetCPU();
+            float cpuCount = input.Item1.NextValue();
+            float ramCount = input.Item2.NextValue();
+            return new Tuple<float, float>(cpuCount, ramCount);
         }
 
-        public void ProcessResponse(String input)
+        public override void ProcessResponse(Tuple<float, float> input)
         {
-            throw new NotImplementedException();
+            processFunction(input);
+        }
+
+        public override Tuple<float, float> CastData(object data)
+        {
+            return (Tuple<float, float>)data;
         }
     }
 }

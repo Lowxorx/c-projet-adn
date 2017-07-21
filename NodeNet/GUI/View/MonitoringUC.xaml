@@ -34,17 +34,25 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn
-                        Width="150"
+                        Width="100"
                         DisplayMemberBinding="{Binding Name}"
                         Header="Client" />
                     <GridViewColumn
-                        Width="150"
+                        Width="100"
                         DisplayMemberBinding="{Binding Address}"
                         Header="Adresse" />
                     <GridViewColumn
-                        Width="150"
+                        Width="100"
                         DisplayMemberBinding="{Binding Port}"
                         Header="Port" />
+                    <GridViewColumn
+                        Width="60"
+                        DisplayMemberBinding="{Binding CpuValue}"
+                        Header="CPU (%)" />
+                    <GridViewColumn
+                        Width="90"
+                        DisplayMemberBinding="{Binding RamValue}"
+                        Header="RAM (MB)" />
                 </GridView>
             </ListView.View>
         </ListView>

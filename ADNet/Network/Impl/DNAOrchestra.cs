@@ -18,7 +18,7 @@ namespace ADNet.Network.Impl
         delegate void DisplayDel(string message);
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker(ProcessDisplayMessageFunction));
+           WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker(ProcessDisplayMessageFunction));
         }
 
         public void SendMessage(String msg)
@@ -35,7 +35,7 @@ namespace ADNet.Network.Impl
         public override Object ProcessInput(DataInput input)
         {
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            worker.ProcessResponse((worker.PrepareData(input.Data)));
+            worker.ProcessResponse((worker.CastData(input.Data)));
             return null;
         }
 

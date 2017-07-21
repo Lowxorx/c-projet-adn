@@ -20,14 +20,6 @@ namespace NodeNet.Network.Orch
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
             Nodes = new List<Node>();
-            try
-            {
-                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker<String>());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
         }
 
         public async void Listen()
@@ -121,6 +113,16 @@ namespace NodeNet.Network.Orch
                 Console.WriteLine(e.ToString());
 
             }
+        }
+
+        public override object ProcessInput(DataInput input)
+        {
+            if (input.Method == "GET_CPU")
+            {
+                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                worker.ProcessResponse(worker.ProcessResponse(worker.PrepareData(input.Data)));
+            }
+            return null;
         }
     }
 }

@@ -6,12 +6,12 @@ namespace NodeNet.Worker
 {
     public interface IWorker<R,T>
     {
-        IMapper<R, T> mapper { get; set; }
-        IReducer<R, T> reducer { get; set; }
+        IMapper<R, T> Mapper { get; set; }
+        IReducer<R, T> Reducer { get; set; }
 
         R DoWork(T input);
 
-        void ProcessResponse(T input);
+        void ProcessResponse(R input);
 
         void CancelWork();
     }

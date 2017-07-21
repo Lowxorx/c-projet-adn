@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using NodeNet.GUI.ViewModel;
+using System;
+using System.Windows.Controls;
 
 namespace NodeNet.GUI.View
 {
