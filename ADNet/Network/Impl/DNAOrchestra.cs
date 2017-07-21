@@ -35,7 +35,7 @@ namespace ADNet.Network.Impl
         public override Object ProcessInput(DataInput input)
         {
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            worker.ProcessResponse((worker.CastData(input.Data)));
+            worker.ProcessResponse((worker.CastOrchData(input.Data)));
             return null;
         }
 
@@ -43,7 +43,6 @@ namespace ADNet.Network.Impl
         {
             Console.WriteLine("In process Display from DNAOrchestra");
             ViewModelLocator.VMLOrchStatic.SetMessage(input);
-        
         }
 
     }

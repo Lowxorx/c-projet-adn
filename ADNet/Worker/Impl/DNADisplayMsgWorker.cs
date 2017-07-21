@@ -6,10 +6,10 @@ using NodeNet.Worker.Impl;
 
 namespace ADNet.Worker.Impl
 {
-    public class DNADisplayMsgWorker : GenericWorker<String, String>
+    public class DNADisplayMsgWorker : IWorker<String, String>
     {
-        public override IMapper<String, String> Mapper { get ; set; }
-        public override IReducer<String, String> Reducer { get ; set; }
+        public IMapper<String, String> Mapper { get ; set; }
+        public IReducer<String, String> Reducer { get ; set; }
 
         public Action<String> ProcessFunction;
 
@@ -18,22 +18,27 @@ namespace ADNet.Worker.Impl
             ProcessFunction = function;
         }
 
-        public override void CancelWork()
+        public void CancelWork()
         {
             throw new NotImplementedException();
         }
 
-        public override String DoWork(String input)
+        public String DoWork(String input)
         {
             return input;
         }
 
-        public override void ProcessResponse(string input)
+        public void ProcessResponse(string input)
         {
             ProcessFunction(input);
         }
 
-        public override string CastData(object data)
+        public string CastInputData(object data)
+        {
+            return (String)data;
+        }
+
+        public string CastOutputData(object data)
         {
             return (String)data;
         }

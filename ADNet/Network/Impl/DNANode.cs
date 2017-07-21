@@ -18,7 +18,7 @@ namespace ADNet.Network.Impl
         public override Object ProcessInput(DataInput input)
         {
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            Object result = worker.DoWork(worker.PrepareData(input.Data));
+            Object result = worker.DoWork(worker.CastNodeData(input.Data));
             return result;
         }
     }

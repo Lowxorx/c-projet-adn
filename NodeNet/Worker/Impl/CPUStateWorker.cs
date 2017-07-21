@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace NodeNet.Worker.Impl
 {
-    class CPUStateWorker : GenericWorker<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>>
+    public class CPUStateWorker : IWorker<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>>
     {
-        public override IMapper<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override IReducer<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IMapper<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IReducer<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private Action<Tuple<float, double>> processFunction;
 
@@ -18,12 +18,12 @@ namespace NodeNet.Worker.Impl
             processFunction = func;
         }
 
-        public override void CancelWork()
+        public void CancelWork()
         {
             throw new NotImplementedException();
         }
 
-        public override Tuple<float, double> DoWork(Tuple<PerformanceCounter, ManagementObjectSearcher> input)
+        public Tuple<float, double> DoWork(Tuple<PerformanceCounter, ManagementObjectSearcher> input)
         {
             float cpuCount = input.Item1.NextValue();
             var memoryValues = input.Item2.Get().Cast<ManagementObject>().Select(mo => new
@@ -39,12 +39,17 @@ namespace NodeNet.Worker.Impl
             return new Tuple<float, double>(cpuCount, ramCount);
         }
 
-        public override void ProcessResponse(Tuple<float, double> input)
+        public void ProcessResponse(Tuple<float, double> input)
         {
             processFunction(input);
         }
 
-        public override Tuple<float, double> CastData(object data)
+        public Tuple<PerformanceCounter, ManagementObjectSearcher> CastInputData(object data)
+        {
+            return (Tuple<PerformanceCounter, ManagementObjectSearcher>) data;
+        }
+
+        public Tuple<float, double> CastOutputData(object data)
         {
             return (Tuple<float, double>)data;
         }

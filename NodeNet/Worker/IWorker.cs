@@ -14,5 +14,11 @@ namespace NodeNet.Worker
         void ProcessResponse(R input);
 
         void CancelWork();
+
+        T CastInputData(Object data);
+
+        R CastOutputData(Object data);
+
+        
     }
 }

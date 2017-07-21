@@ -78,9 +78,7 @@ namespace NodeNet.Network.Orch
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
                 Console.WriteLine("Number of bytes received : " + bytesRead);
-                this.bytearrayList = new List<byte[]>();
-
-
+                bytearrayList = new List<byte[]>();
                 if (bytesRead == 4096)
                 {
                     byte[] data = buffer;
@@ -119,7 +117,7 @@ namespace NodeNet.Network.Orch
             if (input.Method == "GET_CPU")
             {
                 dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                worker.ProcessResponse(worker.ProcessResponse(worker.CastData(input.Data)));
+                worker.ProcessResponse(worker.ProcessResponse(worker.CastOrchData(input.Data)));
             }
             return null;
         }

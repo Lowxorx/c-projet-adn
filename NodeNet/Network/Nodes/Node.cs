@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
@@ -174,9 +175,25 @@ namespace NodeNet.Network.Nodes
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
                 Console.WriteLine("Number of bytes received : " + bytesRead);
-                if (bytesRead > 0)
+                if (bytesRead == 4096)
                 {
-                    DataInput input = DataFormater.Deserialize<DataInput>(buffer);
+                    byte[] data = buffer;
+                    bytearrayList.Add(data);
+                }
+                else
+                {
+                    DataInput input;
+                    if (bytearrayList.Count > 0)
+                    {
+                        byte[] data = bytearrayList
+                                     .SelectMany(a => a)
+                                     .ToArray();
+                        input = DataFormater.Deserialize<DataInput>(data);
+                    }
+                    else
+                    {
+                        input = DataFormater.Deserialize<DataInput>(buffer);
+                    }
                     Object result = ProcessInput(input);
                     if (result != null)
                     {
@@ -186,13 +203,10 @@ namespace NodeNet.Network.Nodes
                             Method = input.Method,
                             Data = result
                         };
+                        receiveDone.Set();
                         SendData(node, res);
                     }
-                }
-                else
-                {
-                    receiveDone.Set();
-                }
+                }             
             }
             catch (SocketException e)
             {
@@ -233,7 +247,7 @@ namespace NodeNet.Network.Nodes
                     {
                         MsgType = MessageType.RESPONSE,
                         Method = "GET_CPU",
-                        Data = worker.CastData(result)
+                        Data = worker.CastOrchData(result)
                     };
                     SendData(Orch, perfInfo);
                     Console.WriteLine("Send node info to server");
