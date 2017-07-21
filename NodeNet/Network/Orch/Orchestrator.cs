@@ -111,7 +111,6 @@ namespace NodeNet.Network.Orch
             catch (SocketException e)
             {
                 Console.WriteLine(e.ToString());
-
             }
         }
 
@@ -120,7 +119,7 @@ namespace NodeNet.Network.Orch
             if (input.Method == "GET_CPU")
             {
                 dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                worker.ProcessResponse(worker.ProcessResponse(worker.PrepareData(input.Data)));
+                worker.ProcessResponse(worker.ProcessResponse(worker.CastData(input.Data)));
             }
             return null;
         }

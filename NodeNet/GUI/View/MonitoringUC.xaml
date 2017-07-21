@@ -42,17 +42,17 @@
                         DisplayMemberBinding="{Binding Address}"
                         Header="Adresse" />
                     <GridViewColumn
-                        Width="100"
+                        Width="70"
                         DisplayMemberBinding="{Binding Port}"
                         Header="Port" />
                     <GridViewColumn
                         Width="60"
-                        DisplayMemberBinding="{Binding CpuValue}"
-                        Header="CPU (%)" />
+                        DisplayMemberBinding="{Binding CpuValue, StringFormat='{}{0} %'}"
+                        Header="CPU" />
                     <GridViewColumn
                         Width="90"
-                        DisplayMemberBinding="{Binding RamValue}"
-                        Header="RAM (MB)" />
+                        DisplayMemberBinding="{Binding RamValue, StringFormat='{}{0} %'}"
+                        Header="RAM" />
                 </GridView>
             </ListView.View>
         </ListView>

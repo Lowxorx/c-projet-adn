@@ -29,7 +29,7 @@ namespace NodeNet.GUI.ViewModel
             }
         }
 
-        public void RefreshNodesInfo(Tuple<float,float> values)
+        public void RefreshNodesInfo(Tuple<float, double> values)
         {
             ObservableCollection<Node> list = new ObservableCollection<Node>();
             foreach (Node n in NodeList)

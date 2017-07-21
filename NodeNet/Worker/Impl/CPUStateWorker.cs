@@ -1,17 +1,19 @@
 ﻿using System;
 using NodeNet.Data;
 using System.Diagnostics;
+using System.Management;
+using System.Linq;
 
 namespace NodeNet.Worker.Impl
 {
-    class CPUStateWorker : GenericWorker<Tuple<float, float>, Tuple<PerformanceCounter, PerformanceCounter>>
+    class CPUStateWorker : GenericWorker<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>>
     {
-        public override IMapper<Tuple<float, float>, Tuple<PerformanceCounter, PerformanceCounter>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override IReducer<Tuple<float, float>, Tuple<PerformanceCounter, PerformanceCounter>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IMapper<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IReducer<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        private Action<Tuple<float, float>> processFunction;
+        private Action<Tuple<float, double>> processFunction;
 
-        public CPUStateWorker(Action<Tuple<float, float>> func)
+        public CPUStateWorker(Action<Tuple<float, double>> func)
         {
             processFunction = func;
         }
@@ -21,21 +23,30 @@ namespace NodeNet.Worker.Impl
             throw new NotImplementedException();
         }
 
-        public override Tuple<float, float> DoWork(Tuple<PerformanceCounter, PerformanceCounter> input)
+        public override Tuple<float, double> DoWork(Tuple<PerformanceCounter, ManagementObjectSearcher> input)
         {
             float cpuCount = input.Item1.NextValue();
-            float ramCount = input.Item2.NextValue();
-            return new Tuple<float, float>(cpuCount, ramCount);
+            var memoryValues = input.Item2.Get().Cast<ManagementObject>().Select(mo => new
+            {
+                FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
+                TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+            }).FirstOrDefault();
+            double ramCount = 0;
+            if (memoryValues != null)
+            {
+                ramCount = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
+            }
+            return new Tuple<float, double>(cpuCount, ramCount);
         }
 
-        public override void ProcessResponse(Tuple<float, float> input)
+        public override void ProcessResponse(Tuple<float, double> input)
         {
             processFunction(input);
         }
 
-        public override Tuple<float, float> CastData(object data)
+        public override Tuple<float, double> CastData(object data)
         {
-            return (Tuple<float, float>)data;
+            return (Tuple<float, double>)data;
         }
     }
 }

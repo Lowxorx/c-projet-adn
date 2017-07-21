@@ -10,6 +10,8 @@ using NodeNet.Worker.Impl;
 using System.Diagnostics;
 using System.ComponentModel;
 using NodeNet.GUI.ViewModel;
+using System.Management;
+using System.Linq;
 
 namespace NodeNet.Network.Nodes
 {
@@ -27,8 +29,8 @@ namespace NodeNet.Network.Nodes
 
         private float cpuValue { get; set; }
         public float CpuValue { get { return (float)(Math.Truncate(cpuValue * 100.0) / 100.0); } set { cpuValue = value; } }
-        private float ramValue { get; set; }
-        public float RamValue { get { return (float)(Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
+        private double ramValue { get; set; }
+        public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
 
         public GenericWorkerFactory WorkerFactory { get; set; }
         protected List<byte[]> bytearrayList { get; set; }
@@ -98,11 +100,10 @@ namespace NodeNet.Network.Nodes
                 // Complete the connection.
                 client.EndConnect(ar);
                 Console.WriteLine(String.Format("Connection accepted to {0} ", client.RemoteEndPoint.ToString()));
-
                 // Signal that the connection has been made.
                 connectDone.Set();
                 Receive(Orch);
-                
+
             }
             catch (SocketException e)
             {
@@ -204,7 +205,7 @@ namespace NodeNet.Network.Nodes
 
         public abstract Object ProcessInput(DataInput input);
 
-        public virtual void RefreshCpuState(Tuple<float, float> values)
+        public virtual void RefreshCpuState(Tuple<float, double> values)
         {
             ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(values);
         }
@@ -217,19 +218,17 @@ namespace NodeNet.Network.Nodes
             };
             bw.DoWork += (o, a) =>
             {
+                ManagementObjectSearcher wmiObject = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
                 if (PerfCpu == null)
                 {
                     PerfCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 }
-                if (PerfRam == null)
-                {
-                    PerfRam = new PerformanceCounter("Memory", "Available MBytes");
-                }
+
                 while (true)
                 {
                     dynamic worker = WorkerFactory.GetWorker<Object, Object>("GET_CPU");
 
-                    object result = worker.DoWork(new Tuple<PerformanceCounter, PerformanceCounter>(PerfCpu, PerfRam));
+                    object result = worker.DoWork(new Tuple<PerformanceCounter, ManagementObjectSearcher>(PerfCpu, wmiObject));
 
                     DataInput perfInfo = new DataInput()
                     {
