@@ -77,7 +77,6 @@ namespace NodeNet.Network.Orch
 
         public override void ReceiveCallback(IAsyncResult ar)
         {
-            base.ReceiveCallback(ar);
             Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
             byte[] buffer = state.Item2;
             Node node = state.Item1;

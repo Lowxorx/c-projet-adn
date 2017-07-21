@@ -86,6 +86,7 @@
     <Compile Include="Network\Nodes\DefaultNode.cs" />
     <Compile Include="Network\Protocol.cs" />
     <Compile Include="Misc\StateTools.cs" />
+    <Compile Include="Worker\GenericWorker.cs" />
     <Compile Include="Worker\Impl\CPUStateWorker.cs" />
     <Compile Include="Worker\GenericWorkerFactory.cs" />
     <Compile Include="Worker\IWorkerFactory.cs" />

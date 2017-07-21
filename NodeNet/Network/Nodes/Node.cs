@@ -99,7 +99,7 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public void SendData(Node node, object obj)
+        public void SendData(Node node, DataInput obj)
         {
             byte[] data = DataFormater.Serialize(obj);
 

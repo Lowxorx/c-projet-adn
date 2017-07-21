@@ -35,14 +35,14 @@ namespace ADNet.Network.Impl
         public override Object ProcessInput(DataInput input)
         {
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            worker.ProcessResponse("dfsd");
+            worker.ProcessResponse((worker.PrepareData(input.Data)));
             return null;
         }
 
         public void ProcessDisplayMessageFunction(String input)
         {
             Console.WriteLine("In process Display from DNAOrchestra");
-            ViewModelLocator.VMLOrchStatic.SetMessage("esdsdsds");
+            ViewModelLocator.VMLOrchStatic.SetMessage(input);
         
         }
 
