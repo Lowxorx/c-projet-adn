@@ -32,19 +32,19 @@ namespace ADNet.GUI.ViewModel
             get { return VMADNetLauncherStatic; }
         }
 
-        private static VMOrchView vMLOrch;
-        public static VMOrchView VMLOrchStatic
+        private static VMClientView vMLCli;
+        public static VMClientView VMLCliStatic
         {
             get
             {
-                if (vMLOrch == null)
-                    vMLOrch = new VMOrchView();
-                return vMLOrch;
+                if (vMLCli == null)
+                    vMLCli = new VMClientView();
+                return vMLCli;
             }
         }
-        public VMOrchView VMLOrch
+        public VMClientView VMLCli
         {
-            get { return VMLOrchStatic; }
+            get { return VMLCliStatic; }
         }
 
         public static void Cleanup()

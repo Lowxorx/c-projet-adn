@@ -1,47 +1,71 @@
 ﻿<Window
-    x:Class="c_projet_adn.GUI.View.ClientView"
+    x:Class="ADNet.GUI.View.ClientView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
-    Title="Client Mode"
-    Width="300"
-    Height="300"
+    xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
+    Title="ClientView"
+    Width="879"
+    Height="497"
+    DataContext="{Binding VMLCli, Source={StaticResource Locator}}"
     mc:Ignorable="d">
-    <Window.DataContext>
-        <vm:VMClientView />
-    </Window.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="450*" />
+            <ColumnDefinition Width="450*" />
+        </Grid.ColumnDefinitions>
+        <sharecontrols:MonitoringUC
+            Grid.Column="0"
+            Width="436"
+            HorizontalAlignment="Left"
+            DataContext="{Binding UcVmMonitoring}" />
+        <Separator Margin="0,2" />
         <Label
+            Grid.Column="1"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center"
-            Content="ADNet"
+            Content="Traitement ADN"
             FontSize="16"
             FontWeight="Bold" />
         <Label
-            Margin="0,34,0,0"
-            HorizontalAlignment="Center"
+            Grid.Column="1"
+            Margin="25,45,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch"
-            Content="Mode Client"
-            FontWeight="Bold" />
+            Content="Envoit de message" />
+        <TextBox
+            Grid.Column="1"
+            Width="369"
+            Height="74"
+            Margin="25,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding TxtMsgProp, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
         <Button
-            x:Name="BtnStopCli"
-            Width="55"
-            Margin="0,100,0,0"
-            HorizontalAlignment="Center"
+            Grid.Column="1"
+            Width="75"
+            Margin="25,170,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Command="{Binding IcommandBtnClick}"
-            Content="Stop" />
-
+            Command="{Binding ICommandBtnSend}"
+            Content="Envoyer" />
+        <TextBox
+            Grid.Column="1"
+            Width="369"
+            Height="23"
+            Margin="25,231,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding ClientResponse}"
+            TextWrapping="Wrap" />
     </Grid>
 </Window>

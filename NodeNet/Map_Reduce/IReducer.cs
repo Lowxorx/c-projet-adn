@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NodeNet.Data
+namespace NodeNet.Map_Reduce
 {
     public interface IReducer<R,T>
     {
-        R reduce(T input);
+        R reduce(R concat,T input);
     }
 }

@@ -17,10 +17,10 @@ namespace c_projet_adn.GUI.View
     /// <summary>
     /// Logique d'interaction pour Window1.xaml
     /// </summary>
-    public partial class OrchView : Window
+    public partial class NodeView : Window
     {
 
-        public OrchView()
+        public NodeView()
         {
             InitializeComponent();
         }

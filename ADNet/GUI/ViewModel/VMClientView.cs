@@ -1,46 +1,109 @@
 ﻿using ADNet.Network.Impl;
+using c_projet_adn.Network.Impl;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using NodeNet.GUI.ViewModel;
+using NodeNet.Network.Nodes;
 using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
 {
-    class VMClientView : ViewModelBase
+    public class VMClientView : ViewModelBase
     {
+        #region Properties
         public ICommand WindowLoaded { get; set; }
-        public ICommand IcommandBtnClick { get; set; }
-        public VMClientView()
-        {
-            IcommandBtnClick = new RelayCommand(AppuiBTN);
-            WindowLoaded = new RelayCommand(OnLoad);
-        }
+        public ICommand ICommandBtnSend { get; set; }
+        private DNAClient client;
 
-        private void OnLoad()
+        private String txtMsg;
+        public String TxtMsgProp
         {
-            // TODO : Implémenter l'attribution automatique des ports 
-            DNANode dnaNode = new DNANode("Node 1", "127.0.0.1", 3001);
-            dnaNode.Connect(TxtIp, 3000);
-            Console.WriteLine("OK client CO");
-            dnaNode.StartMonitoring();
-        }
-
-        private string txtIp;
-
-        public string TxtIp
-        {
-            get { return txtIp; }
+            get
+            {
+                return txtMsg;
+            }
             set
             {
-                txtIp = value;
-                RaisePropertyChanged("TxtIp");
+                txtMsg = value;
+                RaisePropertyChanged("TxtMsgProp");
             }
         }
 
+        private string clientResponse;
 
-        private void AppuiBTN()
+        public string ClientResponse
         {
-           // TODO STOP This Node
+            get { return clientResponse; }
+            set
+            {
+                clientResponse = value;
+                RaisePropertyChanged("ClientResponse");
+            }
+        }
+        #endregion
+
+        public VMMonitoringUC UcVmMonitoring { get; set; }
+        public VMClientView()
+        {
+            WindowLoaded = new RelayCommand(OnLoad);
+            UcVmMonitoring = NodeNet.GUI.ViewModel.ViewModelLocator.VMLMonitorUcStatic;
+            ICommandBtnSend = new RelayCommand(SendMessage);
+        }
+
+        public void OnLoad()
+        {
+            client = new DNAClient("Client","127.0.0.1",3001);
+            client.Connect("127.0.0.1", 3000);
+            //StartMonitorNodes();
+        }
+
+        public void SendMessage()
+        {
+            Console.WriteLine("Sending message " + txtMsg + " to all clients");
+            client.SendMessage(txtMsg);
+        }
+
+        public void SetMessage(string s)
+        {
+            ClientResponse = s;
+        }
+
+        private void StartMonitorNodes()
+        {
+            BackgroundWorker bw = new BackgroundWorker()
+            {
+                WorkerSupportsCancellation = true
+            };
+            bw.DoWork += (o, a) =>
+            {
+                while (true)
+                {
+                    ObservableCollection<Node> list = new ObservableCollection<Node>();
+                    foreach (Node n in UcVmMonitoring.NodeList)
+                    {
+                        //n.RefreshNodesInfos();
+                        list.Add(n);
+                    }
+                    UcVmMonitoring.NodeList = null;
+                    UcVmMonitoring.NodeList = list;
+                    Thread.Sleep(3000);
+                }
+            };
+            bw.RunWorkerAsync();
+            // Méthode avec Thread
+            //Thread monitor = new Thread(() =>
+            //{
+
+            //})
+            //{
+            //    Name = "MonitoringThread"
+            //};
+            //monitor.Start();
         }
     }
 }

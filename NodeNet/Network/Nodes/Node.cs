@@ -1,8 +1,6 @@
 ﻿using NodeNet.Data;
-using NodeNet.GUI.ViewModel;
 using NodeNet.Network.Orch;
 using NodeNet.Worker;
-using NodeNet.Worker.Impl;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,12 +15,17 @@ namespace NodeNet.Network.Nodes
 {
     public abstract class Node : INode
     {
+        public String NodeGUID;
+
         public Node Orch { get; set; }
+
         public String Address { get; set; }
         public int Port { get; set; }
         public String Name { get; set; }
+
         public Socket NodeSocket { get; set; }
         public Socket ServerSocket { get; set; }
+
         public static int BUFFER_SIZE = 4096;
         public PerformanceCounter PerfCpu { get; set; }
         public PerformanceCounter PerfRam { get; set; }
@@ -33,7 +36,9 @@ namespace NodeNet.Network.Nodes
         public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
 
         public GenericWorkerFactory WorkerFactory { get; set; }
+
         protected List<byte[]> bytearrayList { get; set; }
+
         protected static ManualResetEvent sendDone = new ManualResetEvent(false);
         protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
         protected static ManualResetEvent connectDone = new ManualResetEvent(false);
@@ -41,17 +46,10 @@ namespace NodeNet.Network.Nodes
         public Node(String name, String adress, int port)
         {
             WorkerFactory = GenericWorkerFactory.GetInstance();
-            try
-            {
-                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker(RefreshCpuState));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
             Name = name;
             Address = adress;
             Port = port;
+            NodeGUID = name + " " + Address + " " + Port;
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -175,6 +173,7 @@ namespace NodeNet.Network.Nodes
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
                 Console.WriteLine("Number of bytes received : " + bytesRead);
+                bytearrayList = new List<byte[]>();
                 if (bytesRead == 4096)
                 {
                     byte[] data = buffer;
@@ -194,14 +193,16 @@ namespace NodeNet.Network.Nodes
                     {
                         input = DataFormater.Deserialize<DataInput>(buffer);
                     }
-                    Object result = ProcessInput(input);
+                    Object result = ProcessInput(input,node);
                     if (result != null)
                     {
                         DataInput res = new DataInput()
                         {
                             MsgType = MessageType.RESPONSE,
                             Method = input.Method,
-                            Data = result
+                            Data = result,
+                            ClientGUID = input.ClientGUID,
+                            NodeGUID = this.NodeGUID
                         };
                         receiveDone.Set();
                         SendData(node, res);
@@ -216,12 +217,9 @@ namespace NodeNet.Network.Nodes
 
         }
 
-        public abstract Object ProcessInput(DataInput input);
+        public abstract Object ProcessInput(DataInput input,Node node);
 
-        public virtual void RefreshCpuState(Tuple<float, double> values)
-        {
-            ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(values);
-        }
+        
 
         public void StartMonitoring()
         {
@@ -236,18 +234,17 @@ namespace NodeNet.Network.Nodes
                 {
                     PerfCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 }
-
                 while (true)
                 {
                     dynamic worker = WorkerFactory.GetWorker<Object, Object>("GET_CPU");
 
-                    object result = worker.DoWork(new Tuple<PerformanceCounter, ManagementObjectSearcher>(PerfCpu, wmiObject));
+                    object result = worker.NodeWork(new Tuple<PerformanceCounter, ManagementObjectSearcher>(PerfCpu, wmiObject));
 
                     DataInput perfInfo = new DataInput()
                     {
                         MsgType = MessageType.RESPONSE,
                         Method = "GET_CPU",
-                        Data = worker.CastOrchData(result)
+                        Data = worker.CastInputData(result)
                     };
                     SendData(Orch, perfInfo);
                     Console.WriteLine("Send node info to server");

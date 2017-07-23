@@ -1,8 +1,10 @@
 ﻿using System;
 using NodeNet.Network;
-using NodeNet.Data;
+using NodeNet.Map_Reduce;
 using NodeNet.Worker;
 using NodeNet.Worker.Impl;
+using NodeNet.Data;
+using System.Collections.Generic;
 
 namespace ADNet.Worker.Impl
 {
@@ -11,10 +13,14 @@ namespace ADNet.Worker.Impl
         public IMapper<String, String> Mapper { get ; set; }
         public IReducer<String, String> Reducer { get ; set; }
 
-        public Action<String> ProcessFunction;
+        public String Result;
 
-        public DNADisplayMsgWorker(Action<String> function)
+        public Action<DataInput> ProcessFunction;
+
+        public DNADisplayMsgWorker(Action<DataInput> function, IMapper<String, String> mapper, IReducer<String, String> reducer)
         {
+            Mapper = mapper;
+            Reducer = reducer;
             ProcessFunction = function;
         }
 
@@ -23,12 +29,13 @@ namespace ADNet.Worker.Impl
             throw new NotImplementedException();
         }
 
-        public String DoWork(String input)
+        public String NodeWork(String input)
         {
+            Console.WriteLine("Node process display and return message");
             return input;
         }
 
-        public void ProcessResponse(string input)
+        public void OrchWork(DataInput input)
         {
             ProcessFunction(input);
         }
@@ -38,9 +45,9 @@ namespace ADNet.Worker.Impl
             return (String)data;
         }
 
-        public string CastOutputData(object data)
+        public void ClientWork(DataInput input)
         {
-            return (String)data;
+            ProcessFunction(input);
         }
     }
 }

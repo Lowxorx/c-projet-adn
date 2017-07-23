@@ -1,6 +1,6 @@
 ﻿using NodeNet.Data;
 using System;
-using NodeNet.Worker.Impl;
+using NodeNet.Map_Reduce;
 
 namespace NodeNet.Worker
 {
@@ -9,16 +9,15 @@ namespace NodeNet.Worker
         IMapper<R, T> Mapper { get; set; }
         IReducer<R, T> Reducer { get; set; }
 
-        R DoWork(T input);
+        R NodeWork(T input);
 
-        void ProcessResponse(R input);
+        void OrchWork(DataInput data);
+
+        void ClientWork(DataInput data);
 
         void CancelWork();
 
         T CastInputData(Object data);
 
-        R CastOutputData(Object data);
-
-        
     }
 }

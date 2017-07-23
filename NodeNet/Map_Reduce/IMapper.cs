@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NodeNet.Data
+namespace NodeNet.Map_Reduce
 {
     public interface IMapper<R,T>
     {
-        R map(T input);
+        List<R> map(T input);
     }
 }

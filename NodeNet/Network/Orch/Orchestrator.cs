@@ -14,12 +14,21 @@ namespace NodeNet.Network.Orch
 {
     public abstract class Orchestrator : Node, IOrchestrator
     {
-        private List<Node> Nodes { get; set; }
-       
+        /* Multi Client */
+        private List<Tuple<String, Node>> UnidentifiedNodes { get; set; }
+        /* Multi Client */
+        private List<Tuple<String, Node>> Nodes { get; set; }
+        /* Multi Client */
+        private List<Tuple<String, Node>> Clients { get; set; }
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
-            Nodes = new List<Node>();
+            /* Multi Client */
+            UnidentifiedNodes = new List<Tuple<String, Node>>();
+            Nodes = new List<Tuple<String, Node>>();
+            Clients = new List<Tuple<String, Node>>();
+            WorkerFactory.AddWorker("IDENT", new IdentitifierWorker(IdentNode));
+            WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker(ProcessCPUStateOrder));
         }
 
         public async void Listen()
@@ -31,12 +40,25 @@ namespace NodeNet.Network.Orch
             {
                 Socket sock = await listener.AcceptSocketAsync();
                 DefaultNode connectedNode = new DefaultNode("Node ", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
-                Nodes.Add(connectedNode);
+                /* Multi Client */
+                UnidentifiedNodes.Add(new Tuple<string, Node>(connectedNode.Address + " " + connectedNode.Port, connectedNode));
                 ViewModelLocator.VMLMonitorUcStatic.NodeList.Add(connectedNode);
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 Receive(connectedNode);
+                /* Multi Client */
+                GetIdentityOfNode(connectedNode);
             }
- 
+
+        }
+
+        private void GetIdentityOfNode(DefaultNode connectedNode)
+        {
+            DataInput input = new DataInput()
+            {
+                Method = "IDENT",
+                NodeGUID = NodeGUID
+            };
+            SendData(connectedNode, input);
         }
 
         public new void Stop()
@@ -47,20 +69,21 @@ namespace NodeNet.Network.Orch
         public void SendDataToAllNodes(DataInput input)
         {
             byte[] data = DataFormater.Serialize(input);
-
-            foreach (Node node in Nodes)
+            Console.WriteLine("Send Data to " + Nodes.Count + " Node in orch Nodes list");
+            /* Multi Client */
+            foreach (Tuple<String, Node> tuple in Nodes)
             {
                 try
                 {
-                    node.NodeSocket.BeginSend(data, 0, data.Length, 0,
-                        new AsyncCallback(SendCallback), node.NodeSocket);
+                    tuple.Item2.NodeSocket.BeginSend(data, 0, data.Length, 0,
+                        new AsyncCallback(SendCallback), tuple.Item2.NodeSocket);
                 }
                 catch (SocketException ex)
                 {
                     /// Client Down ///
-                    if (!node.NodeSocket.Connected)
+                    if (!tuple.Item2.NodeSocket.Connected)
                     {
-                        Console.WriteLine("Client " + node.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
+                        Console.WriteLine("Client " + tuple.Item2.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
                     }
                     Console.WriteLine(ex.ToString());
                 }
@@ -82,8 +105,7 @@ namespace NodeNet.Network.Orch
                 if (bytesRead == 4096)
                 {
                     byte[] data = buffer;
-                    this.bytearrayList.Add(data);
-
+                    bytearrayList.Add(data);
                 }
                 else
                 {
@@ -100,7 +122,7 @@ namespace NodeNet.Network.Orch
                         input = DataFormater.Deserialize<DataInput>(buffer);
                     }
 
-                    ProcessInput(input);
+                    ProcessInput(input,node);
                     receiveDone.Set();
                 }
 
@@ -112,14 +134,80 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        public override object ProcessInput(DataInput input)
+        public override object ProcessInput(DataInput input, Node node)
         {
             if (input.Method == "GET_CPU")
             {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                worker.ProcessResponse(worker.ProcessResponse(worker.CastOrchData(input.Data)));
+                    dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                    worker.OrchWork(input);
+            }
+            else if (input.Method == "IDENT"){
+                input.Data = node;
+                IdentNode(input);
             }
             return null;
+        }
+
+        /* Multi Client */
+        public void IdentNode(DataInput data)
+        {
+            Console.WriteLine("Process Ident On Orch");
+            Node sender = (Node)data.Data;
+            // Si Item1 == True alors c'est un client, sinon c'est un simple Node
+            foreach (Tuple<String, Node> tuple in UnidentifiedNodes)
+            {
+                if (sender.NodeGUID == tuple.Item2.NodeGUID)
+                {
+                    tuple.Item2.NodeGUID = data.NodeGUID;
+                    if (data.ClientGUID != null)
+                    {
+                        Clients.Add(tuple);
+                    }
+                    else if (data.NodeGUID != null)
+                    {
+                        Nodes.Add(tuple);
+                    }
+                    // TODO Check si je peux remove l'item de la liste quand je le parcours
+                    UnidentifiedNodes.Remove(tuple);
+                    break;
+                }
+            }  
+        }
+
+        protected Tuple<Boolean, Node> GetNodeFromGUID(String guid)
+        {
+            foreach (Tuple<String, Node> tuple in Clients)
+            {
+                if (tuple.Item1.Equals(guid))
+                {
+                    return new Tuple<bool, Node>(true, tuple.Item2);
+                }
+            }
+            foreach (Tuple<String, Node> tuple in Nodes)
+            {
+                if (tuple.Item1.Equals(guid))
+                {
+                    return new Tuple<bool, Node>(false, tuple.Item2);
+                }
+            }
+            throw new Exception();
+        }
+
+        protected Node GetClientFromGUID(String guid)
+        {
+            foreach (Tuple<String, Node> tuple in Clients)
+            {
+                if (tuple.Item1.Equals(guid))
+                {
+                    return tuple.Item2;
+                }
+            }
+            throw new Exception();
+        }
+
+        private void ProcessCPUStateOrder(DataInput obj)
+        {
+            SendDataToAllNodes(obj);
         }
     }
 }

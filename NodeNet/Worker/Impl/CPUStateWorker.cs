@@ -1,8 +1,9 @@
 ﻿using System;
-using NodeNet.Data;
+using NodeNet.Map_Reduce;
 using System.Diagnostics;
 using System.Management;
 using System.Linq;
+using NodeNet.Data;
 
 namespace NodeNet.Worker.Impl
 {
@@ -11,9 +12,9 @@ namespace NodeNet.Worker.Impl
         public IMapper<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IReducer<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        private Action<Tuple<float, double>> processFunction;
+        private Action<DataInput> processFunction;
 
-        public CPUStateWorker(Action<Tuple<float, double>> func)
+        public CPUStateWorker(Action<DataInput> func)
         {
             processFunction = func;
         }
@@ -23,7 +24,7 @@ namespace NodeNet.Worker.Impl
             throw new NotImplementedException();
         }
 
-        public Tuple<float, double> DoWork(Tuple<PerformanceCounter, ManagementObjectSearcher> input)
+        public Tuple<float, double> NodeWork(Tuple<PerformanceCounter, ManagementObjectSearcher> input)
         {
             float cpuCount = input.Item1.NextValue();
             var memoryValues = input.Item2.Get().Cast<ManagementObject>().Select(mo => new
@@ -39,9 +40,14 @@ namespace NodeNet.Worker.Impl
             return new Tuple<float, double>(cpuCount, ramCount);
         }
 
-        public void ProcessResponse(Tuple<float, double> input)
+        public void OrchWork(DataInput data)
         {
-            processFunction(input);
+            processFunction(data);
+        }
+
+        public void ClientWork(DataInput data)
+        {
+            processFunction(data);
         }
 
         public Tuple<PerformanceCounter, ManagementObjectSearcher> CastInputData(object data)
@@ -49,9 +55,6 @@ namespace NodeNet.Worker.Impl
             return (Tuple<PerformanceCounter, ManagementObjectSearcher>) data;
         }
 
-        public Tuple<float, double> CastOutputData(object data)
-        {
-            return (Tuple<float, double>)data;
-        }
+       
     }
 }

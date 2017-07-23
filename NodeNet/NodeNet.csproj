@@ -79,16 +79,18 @@
     <Compile Include="Data\DataFormater.cs" />
     <Compile Include="Data\DataInput.cs" />
     <Compile Include="Data\GenericDictionnary.cs" />
-    <Compile Include="Data\IMapper.cs" />
-    <Compile Include="Data\IReducer.cs" />
-    <Compile Include="Network\ConnectionManager.cs" />
+    <Compile Include="Map_Reduce\IMapper.cs" />
+    <Compile Include="Map_Reduce\Impl\DisplayMapper.cs" />
+    <Compile Include="Map_Reduce\Impl\DisplayReducer.cs" />
+    <Compile Include="Map_Reduce\IReducer.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
     <Compile Include="Data\MessageType.cs" />
+    <Compile Include="Network\DefaultClient.cs" />
     <Compile Include="Network\Nodes\DefaultNode.cs" />
-    <Compile Include="Network\Protocol.cs" />
     <Compile Include="Misc\StateTools.cs" />
     <Compile Include="Worker\Impl\CPUStateWorker.cs" />
     <Compile Include="Worker\GenericWorkerFactory.cs" />
+    <Compile Include="Worker\Impl\IdentitifierWorker.cs" />
     <Compile Include="Worker\IWorkerFactory.cs" />
   </ItemGroup>
   <ItemGroup>

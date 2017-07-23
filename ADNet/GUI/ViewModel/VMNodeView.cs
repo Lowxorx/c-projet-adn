@@ -6,11 +6,11 @@ using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
 {
-    class VMOrchView : ViewModelBase
+    class VMNodeView : ViewModelBase
     {
         public ICommand WindowLoaded { get; set; }
         public ICommand IcommandBtnClick { get; set; }
-        public VMOrchView()
+        public VMNodeView()
         {
             IcommandBtnClick = new RelayCommand(AppuiBTN);
             WindowLoaded = new RelayCommand(OnLoad);
@@ -18,8 +18,11 @@ namespace ADNet.GUI.ViewModel
 
         private void OnLoad()
         {
-            DNAOrchestra orch = new DNAOrchestra("Orchestrator", TxtIp, 3000);
-            orch.Listen();
+            // TODO : Implémenter l'attribution automatique des ports 
+            DNANode dnaNode = new DNANode("Node 1", "127.0.0.1", 3002);
+            dnaNode.Connect(TxtIp, 3000);
+            Console.WriteLine("OK client CO");
+            //dnaNode.StartMonitoring();
         }
 
         private string txtIp;

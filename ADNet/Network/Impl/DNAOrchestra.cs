@@ -1,6 +1,7 @@
 ﻿using ADNet.GUI.ViewModel;
 using ADNet.Worker.Impl;
 using NodeNet.Data;
+using NodeNet.Map_Reduce.Impl;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
 using NodeNet.Worker;
@@ -15,35 +16,63 @@ namespace ADNet.Network.Impl
     class DNAOrchestra : Orchestrator
     {
         public const String DISPLAY_MESSAGE_METHOD = "DISPLAY_MSG";
-        delegate void DisplayDel(string message);
+        private DNADisplayMsgWorker displayWorker;
+
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-           WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker(ProcessDisplayMessageFunction));
+            displayWorker = new DNADisplayMsgWorker(ProcessDisplayMessageFunction, new DisplayMapper(), new DisplayReducer());
+            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, displayWorker);
         }
 
-        public void SendMessage(String msg)
+        public override Object ProcessInput(DataInput input,Node node)
         {
-            DataInput input = new DataInput()
+            base.ProcessInput(input, node);
+            if (input.Method != "GET_CPU" && input.Method != "IDENT")
             {
-                Method = DISPLAY_MESSAGE_METHOD,
-                Data = msg,
-                MsgType = MessageType.CALL
-            };
-            SendDataToAllNodes(input);
-        }
+                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                worker.OrchWork(input);
 
-        public override Object ProcessInput(DataInput input)
-        {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            worker.ProcessResponse((worker.CastOrchData(input.Data)));
+            }
             return null;
         }
 
-        public void ProcessDisplayMessageFunction(String input)
+        public void ProcessDisplayMessageFunction(DataInput input)
         {
-            Console.WriteLine("In process Display from DNAOrchestra");
-            ViewModelLocator.VMLOrchStatic.SetMessage(input);
-        }
+            Console.WriteLine("Process Display Function on Orch");
+            if (input.MsgType == MessageType.CALL)
+            {
+                // MAP
+                String message = (String)input.Data;
+                List<String> letters = displayWorker.Mapper.map(message);
+                String concat = " Conact :";
+                foreach (String letter in letters) {
+                    concat += letter;
+                }
 
+                DataInput res = new DataInput()
+                {
+                    MsgType = MessageType.RESPONSE,
+                    Method = DISPLAY_MESSAGE_METHOD,
+                    Data = concat,
+                    ClientGUID = input.ClientGUID,
+                    NodeGUID = this.NodeGUID,
+                };
+                SendDataToAllNodes(res);
+            }
+            else if (input.MsgType == MessageType.RESPONSE)
+            {
+                String message = (String)input.Data;
+                displayWorker.Result = displayWorker.Reducer.reduce(displayWorker.Result, message);
+                // TODO check si tous les nodes ont finis
+                DataInput res = new DataInput()
+                {
+                    Method = DISPLAY_MESSAGE_METHOD,
+                    Data = displayWorker.Result,
+                    ClientGUID = input.ClientGUID,
+                    NodeGUID = this.NodeGUID,
+                };
+                SendData(GetClientFromGUID(input.ClientGUID),res);
+            }
+        }
     }
 }

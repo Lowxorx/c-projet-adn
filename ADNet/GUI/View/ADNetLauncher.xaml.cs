@@ -16,6 +16,5 @@ namespace ADNet.GUI.View
             if ( vm.CloseAction == null)
                 vm.CloseAction = new Action(() => Close());
         }
-
     }
 }
