@@ -1,15 +1,11 @@
-﻿using ADNet.GUI.ViewModel;
-using ADNet.Worker.Impl;
+﻿using ADNet.Worker.Impl;
 using NodeNet.Data;
 using NodeNet.Map_Reduce.Impl;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.Orch;
-using NodeNet.Worker;
-using NodeNet.Worker.Impl;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+
 
 namespace ADNet.Network.Impl
 {
@@ -31,7 +27,6 @@ namespace ADNet.Network.Impl
             {
                 dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
                 worker.OrchWork(input);
-
             }
             return null;
         }
