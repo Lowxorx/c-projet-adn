@@ -8,6 +8,7 @@ using NodeNet.Data;
 using System.Net.Sockets;
 using NodeNet.GUI.ViewModel;
 using NodeNet.Worker.Impl;
+using System.ComponentModel;
 
 namespace NodeNet.Network
 {
@@ -25,6 +26,7 @@ namespace NodeNet.Network
 
         public override object ProcessInput(DataInput input,Node node)
         {
+            Console.WriteLine("ProcessInput in Client");
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
             worker.ClientWork(input);
             return null;
@@ -34,7 +36,6 @@ namespace NodeNet.Network
 
         public void ProcessIdent(DataInput data)
         {
-            Console.WriteLine("ProcessInput Ident in Client");
             data.Data =  new Tuple<bool, string>(true, NodeGUID);
             data.ClientGUID = NodeGUID;
             data.NodeGUID = NodeGUID;

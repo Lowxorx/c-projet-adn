@@ -39,7 +39,7 @@ namespace ADNet.Network.Impl
                 // MAP
                 String message = (String)input.Data;
                 List<String> letters = displayWorker.Mapper.map(message);
-                String concat = " Conact :";
+                String concat = " Concat :";
                 foreach (String letter in letters) {
                     concat += letter;
                 }

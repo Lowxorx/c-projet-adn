@@ -26,6 +26,7 @@ namespace c_projet_adn.Network.Impl
 
         public override object ProcessInput(DataInput input,Node node)
         {
+            Console.WriteLine("In ProcessInput DNAClient");
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
             worker.ClientWork(input);
             return null;
@@ -33,7 +34,7 @@ namespace c_projet_adn.Network.Impl
 
         public void SendMessage(String msg)
         {
-            Console.WriteLine("Send MEssage from Client");
+            Console.WriteLine("Send Msssage from Client : " + msg);
             DataInput input = new DataInput()
             {
                 Method = DISPLAY_MESSAGE_METHOD,
@@ -48,7 +49,7 @@ namespace c_projet_adn.Network.Impl
 
         public void ProcessDisplayMessageFunction(DataInput input)
         {
-            Console.WriteLine("Client Process Display Response From Orchestrator");
+            Console.WriteLine("Client Process Display Response From Orchestrator Msg : " + input.Data);
             ViewModelLocator.VMLCliStatic.SetMessage((String)input.Data);
         }
 

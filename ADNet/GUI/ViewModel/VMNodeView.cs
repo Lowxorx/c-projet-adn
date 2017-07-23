@@ -20,6 +20,7 @@ namespace ADNet.GUI.ViewModel
         {
             // TODO : Implémenter l'attribution automatique des ports 
             DNANode dnaNode = new DNANode("Node 1", "127.0.0.1", 3002);
+
             dnaNode.Connect(TxtIp, 3000);
             Console.WriteLine("OK client CO");
             //dnaNode.StartMonitoring();

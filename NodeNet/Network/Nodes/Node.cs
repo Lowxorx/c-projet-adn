@@ -102,6 +102,7 @@ namespace NodeNet.Network.Nodes
                 connectDone.Set();
                 Receive(Orch);
 
+
             }
             catch (SocketException e)
             {
@@ -115,8 +116,9 @@ namespace NodeNet.Network.Nodes
 
             try
             {
+                Console.WriteLine("Send data : " + obj + " to : " + node);
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
-                    new AsyncCallback(SendCallback), node.NodeSocket);
+                    new AsyncCallback(SendCallback),node);
             }
             catch (SocketException ex)
             {
@@ -131,12 +133,13 @@ namespace NodeNet.Network.Nodes
         {
             try
             {
+                Node node = (Node)ar.AsyncState;
                 // Retrieve the socket from the state object.
-                Socket client = (Socket)ar.AsyncState;
+                Socket client = node.NodeSocket;
 
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to Node.", bytesSent);
+                Console.WriteLine("Sent {0} bytes to Node : {1}", bytesSent,node);
 
                 // Signal that all bytes have been sent.
                 sendDone.Set();
@@ -164,6 +167,7 @@ namespace NodeNet.Network.Nodes
 
         public virtual void ReceiveCallback(IAsyncResult ar)
         {
+            Console.WriteLine("Hey le node reçoit quelquechose !!!");
             Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
             byte[] buffer = state.Item2;
             Node node = state.Item1;
@@ -204,10 +208,12 @@ namespace NodeNet.Network.Nodes
                             ClientGUID = input.ClientGUID,
                             NodeGUID = this.NodeGUID
                         };
-                        receiveDone.Set();
+                        
                         SendData(node, res);
+                        receiveDone.Set();
                     }
-                }             
+                }
+                Receive(node);
             }
             catch (SocketException e)
             {
@@ -252,6 +258,10 @@ namespace NodeNet.Network.Nodes
                 }
             };
             bw.RunWorkerAsync();
+        }
+        public override string ToString()
+        {
+            return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGUID; 
         }
     }
 }

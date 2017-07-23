@@ -33,6 +33,7 @@ namespace NodeNet.Network.Nodes
 
         public override object ProcessInput(DataInput input,Node node)
         {
+            Console.WriteLine("Process input in defualt node");
             if (input.Method == "IDENT")
             {
                 DataInput resp = new DataInput()
@@ -41,6 +42,7 @@ namespace NodeNet.Network.Nodes
                     NodeGUID = NodeGUID,
                     MsgType = MessageType.RESPONSE
                 };
+                return resp;
             }
             return null;
         }

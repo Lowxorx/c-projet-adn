@@ -18,7 +18,7 @@ namespace ADNet.Network.Impl
         public override Object ProcessInput(DataInput input,Node node)
         {
             base.ProcessInput(input,node);
-            Console.WriteLine("ProcessInput for " + input.Method + " and data : " + input.Data.ToString());
+            Console.WriteLine("ProcessInput for " + input.Method );
             dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
             Object result = worker.NodeWork(worker.CastInputData(input.Data));
             return result;

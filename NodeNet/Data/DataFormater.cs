@@ -66,9 +66,7 @@ namespace NodeNet.Data
                 using (MemoryStream ms = new MemoryStream())
                 {
                     bf.Serialize(ms, obj);
-                    Console.WriteLine("Serialized Array Length : " + ms.Length);
                     byte[] compressed = Compress(ms.ToArray());
-                    Console.WriteLine("Serialized and Compressed Array Length : " + compressed.Length);
                     return compressed;
                 }
             }

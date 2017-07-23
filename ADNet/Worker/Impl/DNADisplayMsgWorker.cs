@@ -32,7 +32,7 @@ namespace ADNet.Worker.Impl
         public String NodeWork(String input)
         {
             Console.WriteLine("Node process display and return message");
-            return input;
+            return input + "Node work";
         }
 
         public void OrchWork(DataInput input)
