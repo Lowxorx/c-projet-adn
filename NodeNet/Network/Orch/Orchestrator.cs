@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Linq;
-using NodeNet.Worker.Impl;
+using NodeNet.Tasks.Impl;
 using System.ComponentModel;
 
 namespace NodeNet.Network.Orch
@@ -34,8 +34,8 @@ namespace NodeNet.Network.Orch
             UnidentifiedNodes = new List<Node>();
             Nodes = new List<Tuple<List<int>, Node>>();
             Clients = new List<Tuple<List<int>, Node>>();
-            WorkerFactory.AddWorker("IDENT", new IdentitifierWorker(IdentNode));
-            WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker(ProcessCPUStateOrder));
+            WorkerFactory.AddWorker("IDENT", new IdentificationTask(IdentNode));
+            WorkerFactory.AddWorker("GET_CPU", new CPUStateTask(ProcessCPUStateOrder));
         }
 
         public async void Listen()

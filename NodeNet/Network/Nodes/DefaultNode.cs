@@ -5,8 +5,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using NodeNet.Data;
-using NodeNet.Worker;
-using NodeNet.Worker.Impl;
+using NodeNet.Tasks;
+using NodeNet.Tasks.Impl;
 using NodeNet.Network.Orch;
 
 namespace NodeNet.Network.Nodes
@@ -15,11 +15,11 @@ namespace NodeNet.Network.Nodes
     {
         public DefaultNode(String name, String adress, int port) : base(name,adress,port)
         {
-            WorkerFactory = GenericWorkerFactory.GetInstance();
+            WorkerFactory = GenericTaskExecFactory.GetInstance();
             try
             {
-                WorkerFactory.AddWorker("IDENT", new IdentitifierWorker(null));
-                WorkerFactory.AddWorker("GET_CPU", new CPUStateWorker(null));
+                WorkerFactory.AddWorker("IDENT", new IdentificationTask(null));
+                WorkerFactory.AddWorker("GET_CPU", new CPUStateTask(null));
             }
             catch (Exception e)
             {

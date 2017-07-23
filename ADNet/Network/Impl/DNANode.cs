@@ -1,4 +1,4 @@
-﻿using ADNet.Worker.Impl;
+﻿using ADNet.Tasks.Impl;
 using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using System;

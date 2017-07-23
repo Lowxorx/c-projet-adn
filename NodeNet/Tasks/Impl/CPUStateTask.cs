@@ -5,16 +5,16 @@ using System.Management;
 using System.Linq;
 using NodeNet.Data;
 
-namespace NodeNet.Worker.Impl
+namespace NodeNet.Tasks.Impl
 {
-    public class CPUStateWorker : IWorker<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>>
+    public class CPUStateTask : ITaskExecutor<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>>
     {
         public IMapper<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IReducer<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private Action<DataInput> processFunction;
 
-        public CPUStateWorker(Action<DataInput> func)
+        public CPUStateTask(Action<DataInput> func)
         {
             processFunction = func;
         }

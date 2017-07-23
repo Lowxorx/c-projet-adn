@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NodeNet.Data;
 using System.Net.Sockets;
 using NodeNet.GUI.ViewModel;
-using NodeNet.Worker.Impl;
+using NodeNet.Tasks.Impl;
 using System.ComponentModel;
 
 namespace NodeNet.Network
@@ -18,8 +18,8 @@ namespace NodeNet.Network
         public const String IDENT_METHOD = "IDENT";
 
         public DefaultClient(String name, String adress, int port) : base(name,adress,port) {
-            WorkerFactory.AddWorker(GET_CPU_METHOD, new CPUStateWorker(RefreshCpuState));
-            WorkerFactory.AddWorker(IDENT_METHOD, new IdentitifierWorker(ProcessIdent));
+            WorkerFactory.AddWorker(GET_CPU_METHOD, new CPUStateTask(RefreshCpuState));
+            WorkerFactory.AddWorker(IDENT_METHOD, new IdentificationTask(ProcessIdent));
         }
 
         public DefaultClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}

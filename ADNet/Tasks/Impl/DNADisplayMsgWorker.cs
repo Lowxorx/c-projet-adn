@@ -1,14 +1,14 @@
 ﻿using System;
 using NodeNet.Network;
 using NodeNet.Map_Reduce;
-using NodeNet.Worker;
-using NodeNet.Worker.Impl;
+using NodeNet.Tasks;
+using NodeNet.Tasks.Impl;
 using NodeNet.Data;
 using System.Collections.Generic;
 
-namespace ADNet.Worker.Impl
+namespace ADNet.Tasks.Impl
 {
-    public class DNADisplayMsgWorker : IWorker<String, String>
+    public class DNADisplayMsgWorker : ITaskExecutor<String, String>
     {
         public IMapper<String, String> Mapper { get ; set; }
         public IReducer<String, String> Reducer { get ; set; }

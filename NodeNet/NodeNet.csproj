@@ -88,10 +88,10 @@
     <Compile Include="Network\DefaultClient.cs" />
     <Compile Include="Network\Nodes\DefaultNode.cs" />
     <Compile Include="Misc\StateTools.cs" />
-    <Compile Include="Worker\Impl\CPUStateWorker.cs" />
-    <Compile Include="Worker\GenericWorkerFactory.cs" />
-    <Compile Include="Worker\Impl\IdentitifierWorker.cs" />
-    <Compile Include="Worker\IWorkerFactory.cs" />
+    <Compile Include="Tasks\Impl\CPUStateTask.cs" />
+    <Compile Include="Tasks\GenericTaskExecFactory.cs" />
+    <Compile Include="Tasks\Impl\IdentificationTask.cs" />
+    <Compile Include="Tasks\ITaskExecFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\View\MonitoringUC.xaml.cs">
@@ -100,7 +100,7 @@
     <Compile Include="GUI\ViewModel\VMMonitoringUC.cs" />
     <Compile Include="Network\Nodes\INode.cs" />
     <Compile Include="Network\Orch\IOrchestrator.cs" />
-    <Compile Include="Worker\IWorker.cs" />
+    <Compile Include="Tasks\ITaskExecutor.cs" />
     <Compile Include="Network\Orch\Orchestrator.cs" />
     <Compile Include="Network\Nodes\Node.cs" />
     <Compile Include="Network\State\State.cs" />

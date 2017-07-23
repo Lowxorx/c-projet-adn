@@ -1,4 +1,4 @@
-﻿using NodeNet.Worker;
+﻿using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;

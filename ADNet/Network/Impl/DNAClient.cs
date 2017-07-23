@@ -1,12 +1,12 @@
 ﻿
 using ADNet.GUI.ViewModel;
-using ADNet.Worker.Impl;
+using ADNet.Tasks.Impl;
 using NodeNet.Network;
 using NodeNet.Network.Nodes;
 using System;
 using System.Net.Sockets;
 using NodeNet.Data;
-using NodeNet.Worker.Impl;
+using NodeNet.Tasks.Impl;
 
 namespace c_projet_adn.Network.Impl
 {

@@ -1,33 +1,33 @@
 ﻿using System;
 using NodeNet.Data;
 
-namespace NodeNet.Worker
+namespace NodeNet.Tasks
 {
-    public class GenericWorkerFactory 
+    public class GenericTaskExecFactory 
     {
-        private static GenericWorkerFactory instance;
+        private static GenericTaskExecFactory instance;
         private static GenericDictionary workers;
 
-        private GenericWorkerFactory(){}
+        private GenericTaskExecFactory(){}
 
-        public static GenericWorkerFactory GetInstance()
+        public static GenericTaskExecFactory GetInstance()
         {
             if(instance == null)
             {
-                instance = new GenericWorkerFactory();
+                instance = new GenericTaskExecFactory();
                 workers = new GenericDictionary();
             }
             return instance;
         }
 
-        public void AddWorker<R,T>(String methodName, IWorker<R,T> worker)
+        public void AddWorker<R,T>(String methodName, ITaskExecutor<R,T> worker)
         { 
             workers.Add(methodName, worker);
         }
         // TODO check if method name exists
         public dynamic GetWorker<R, T>(String methodName)
         {
-            return workers.GetValue<IWorker<R, T>>(methodName);
+            return workers.GetValue<ITaskExecutor<R, T>>(methodName);
         }
     }
 }

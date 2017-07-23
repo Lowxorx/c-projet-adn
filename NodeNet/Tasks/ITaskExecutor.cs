@@ -2,9 +2,9 @@
 using System;
 using NodeNet.Map_Reduce;
 
-namespace NodeNet.Worker
+namespace NodeNet.Tasks
 {
-    public interface IWorker<R,T>
+    public interface ITaskExecutor<R,T>
     {
         IMapper<R, T> Mapper { get; set; }
         IReducer<R, T> Reducer { get; set; }

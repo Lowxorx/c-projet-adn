@@ -1,6 +1,6 @@
 ﻿using NodeNet.Data;
 using NodeNet.Network.Orch;
-using NodeNet.Worker;
+using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,7 +35,7 @@ namespace NodeNet.Network.Nodes
         private double ramValue { get; set; }
         public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
 
-        public GenericWorkerFactory WorkerFactory { get; set; }
+        public GenericTaskExecFactory WorkerFactory { get; set; }
 
         protected List<byte[]> bytearrayList { get; set; }
 
@@ -45,7 +45,7 @@ namespace NodeNet.Network.Nodes
 
         public Node(String name, String adress, int port)
         {
-            WorkerFactory = GenericWorkerFactory.GetInstance();
+            WorkerFactory = GenericTaskExecFactory.GetInstance();
             Name = name;
             Address = adress;
             Port = port;

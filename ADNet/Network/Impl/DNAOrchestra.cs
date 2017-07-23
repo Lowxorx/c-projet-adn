@@ -1,4 +1,4 @@
-﻿using ADNet.Worker.Impl;
+﻿using ADNet.Tasks.Impl;
 using NodeNet.Data;
 using NodeNet.Map_Reduce.Impl;
 using NodeNet.Network.Nodes;
@@ -39,10 +39,11 @@ namespace ADNet.Network.Impl
                 // MAP
                 String message = (String)input.Data;
                 List<String> letters = displayWorker.Mapper.map(message);
-                String concat = " Concat :";
+                String concat = "";
                 foreach (String letter in letters) {
                     concat += letter;
                 }
+                concat += " ";
 
                 DataInput res = new DataInput()
                 {
