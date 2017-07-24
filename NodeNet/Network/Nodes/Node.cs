@@ -30,6 +30,22 @@ namespace NodeNet.Network.Nodes
         public PerformanceCounter PerfCpu { get; set; }
         public PerformanceCounter PerfRam { get; set; }
 
+        private int lastTaskID;
+
+        protected int LastTaskID
+        {
+            get { return lastTaskID += 1; }
+            set { new InvalidOperationException(); }
+        }
+
+        private int lastSubTaskID;
+
+        protected int LastSubTaskID
+        {
+            get { return lastSubTaskID += 1; }
+            set { new InvalidOperationException(); }
+        }
+
         private float cpuValue { get; set; }
         public float CpuValue { get { return (float)(Math.Truncate(cpuValue * 100.0) / 100.0); } set { cpuValue = value; } }
         private double ramValue { get; set; }
