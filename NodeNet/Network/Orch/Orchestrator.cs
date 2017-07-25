@@ -16,13 +16,15 @@ namespace NodeNet.Network.Orch
         /* Bientôt useless */
         private List<Node> UnidentifiedNodes;
         /* Correspondance entre les subTasks et les task */
-        private List<Tuple<int, List<Tuple<int,State>>>> Tasks;
+        private List<Tuple<int, List<Tuple<int, State>>>> Tasks;
         /* Stockage des résultats réduits par Task */
         private List<Tuple<int, Object>> Results;
         /* Liste des noeuds connectés */
         private List<Tuple<List<int>, Node>> Nodes;
         /* Liste des clients connectés */
         private List<Tuple<List<int>, Node>> Clients;
+        // Task monitoring nodes
+        Tuple<int, State> MonitorTask;
 
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
@@ -46,11 +48,10 @@ namespace NodeNet.Network.Orch
                 DefaultNode connectedNode = new DefaultNode("Node ", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
                 /* Multi Client */
                 UnidentifiedNodes.Add(connectedNode);
-                ViewModelLocator.VMLMonitorUcStatic.NodeList.Add(connectedNode);
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 GetIdentityOfNode(connectedNode);
                 Receive(connectedNode);
-                /* Multi Client */  
+                /* Multi Client */
             }
         }
 
@@ -126,12 +127,12 @@ namespace NodeNet.Network.Orch
                     {
                         input = DataFormater.Deserialize<DataInput>(buffer);
                     }
-                    
-                   
-                    ProcessInput(input,node);
+
+
+                    ProcessInput(input, node);
                     receiveDone.Set();
                 }
-                 Receive(node);
+                Receive(node);
             }
             catch (SocketException e)
             {
@@ -143,10 +144,11 @@ namespace NodeNet.Network.Orch
         {
             if (input.Method == "GET_CPU")
             {
-                    dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                    worker.OrchWork(input);
+                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                worker.OrchWork(input);
             }
-            else if (input.Method == "IDENT"){
+            else if (input.Method == "IDENT")
+            {
                 input.Data = node;
                 IdentNode(input);
             }
@@ -165,26 +167,64 @@ namespace NodeNet.Network.Orch
             Console.WriteLine("Process Ident On Orch");
             Node sender = (Node)data.Data;
             // Si Item1 == True alors c'est un client, sinon c'est un simple Node
-            foreach ( Node node in UnidentifiedNodes)
+            foreach (Node node in UnidentifiedNodes)
             {
-                if (sender.NodeGUID == node.NodeGUID)
+                if (data.ClientGUID != null)
+                {
+                    node.NodeGUID = data.ClientGUID;
+                    Console.WriteLine("Add Client to list : " + node);
+                    Clients.Add(new Tuple<List<int>, Node>(new List<int>(), sender));
+                    SendNodesToClient(node);
+                }
+                else if (data.NodeGUID != null)
                 {
                     node.NodeGUID = data.NodeGUID;
-                    if (data.ClientGUID != null)
+                    if (MonitorTask != null)
                     {
-                        Console.WriteLine("Add Client to list : " + node);
-                        Clients.Add(new Tuple<List<int>,Node>(new List<int>(), sender));
+                        StartMonitoringForNode(data, node);
                     }
-                    else if (data.NodeGUID != null)
-                    {
-                        Console.WriteLine("Add Node to list : " + node);
-                        Nodes.Add(new Tuple<List< int >,Node > (new List<int>(), sender));
-                    }
-                    // TODO Check si je peux remove l'item de la liste quand je le parcours
-                    //UnidentifiedNodes.Remove(sender);
-                    break;
+                    Console.WriteLine("Add Node to list : " + node);
+                    Nodes.Add(new Tuple<List<int>, Node>(new List<int>(), sender));
                 }
-            }  
+                // TODO Check si je peux remove l'item de la liste quand je le parcours
+                //UnidentifiedNodes.Remove(sender);
+                break;
+            }
+        }
+
+        public void SendNodesToClient(Node n)
+        {
+            List<List<String>> monitoringValues = new List<List<string>>();
+
+            foreach (Tuple<List<int>, Node> tuple in Nodes)
+            {
+                monitoringValues.Add(GetMonitoringInfos(tuple.Item2));
+            }
+            if (monitoringValues.Count > 0)
+            {
+                DataInput di = new DataInput()
+                {
+                    ClientGUID = n.NodeGUID,
+                    NodeGUID = NodeGUID,
+                    Method = "IDENT",
+                    Data = monitoringValues
+                };
+                SendData(n, di);
+            }
+        }
+
+        public void StartMonitoringForNode(DataInput d, Node n)
+        {
+            DataInput input = new DataInput()
+            {
+                Method = "GET_CPU",
+                Data = null,
+                ClientGUID = d.ClientGUID,
+                NodeGUID = NodeGUID,
+                MsgType = MessageType.CALL,
+                TaskId = MonitorTask.Item1
+            };
+            SendData(n, input);
         }
 
         protected Tuple<Boolean, Node> GetNodeFromGUID(String guid)
@@ -206,6 +246,18 @@ namespace NodeNet.Network.Orch
             throw new Exception();
         }
 
+        protected Tuple<List<int>, Node> GetClientTaskFromGuid(String guid)
+        {
+            foreach (Tuple<List<int>, Node> tuple in Clients)
+            {
+                if (tuple.Item2.NodeGUID.Equals(guid))
+                {
+                    return tuple;
+                }
+            }
+            throw new Exception();
+        }
+
         protected Node GetClientFromGUID(String guid)
         {
             foreach (Tuple<List<int>, Node> tuple in Clients)
@@ -220,7 +272,25 @@ namespace NodeNet.Network.Orch
 
         private void ProcessCPUStateOrder(DataInput input)
         {
-            SendDataToAllNodes(input);
+            if (input.MsgType == MessageType.CALL && MonitorTask == null)
+            {
+                int newTaskID = LastTaskID;
+                MonitorTask = new Tuple<int, State>(newTaskID, State.WORK);
+                GetClientTaskFromGuid(input.ClientGUID).Item1.Add(MonitorTask.Item1);
+                input.NodeGUID = NodeGUID;
+                input.TaskId = newTaskID;
+                SendDataToAllNodes(input);
+            }
+            else if (input.MsgType == MessageType.RESPONSE && MonitorTask != null)
+            {
+                foreach (Tuple<List<int>, Node> tuple in Clients)
+                {
+                    if (tuple.Item1.Contains(MonitorTask.Item1))
+                    {
+                        SendData(GetClientFromGUID(input.ClientGUID), input);
+                    }
+                }
+            }
         }
 
         protected void ProcessMapReduce(DataInput input)
@@ -239,9 +309,9 @@ namespace NodeNet.Network.Orch
                 // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
                 // pour y concaténeer le resultat du travail du noeud
                 Tuple<int, Object> result = null;
-                foreach (Tuple<int,Object> tuple in Results)
+                foreach (Tuple<int, Object> tuple in Results)
                 {
-                    if(tuple.Item1 == input.TaskId)
+                    if (tuple.Item1 == input.TaskId)
                     {
                         result = tuple;
                     }
@@ -263,9 +333,9 @@ namespace NodeNet.Network.Orch
                 }
                 else
                 {
-                    result = new Tuple<int,Object>(input.TaskId,reduceRes);
+                    result = new Tuple<int, Object>(input.TaskId, reduceRes);
                 }
-                
+
             }
         }
         // Checker si toutes les nodes correspondant à cette task sont en etat FINISH
@@ -281,7 +351,7 @@ namespace NodeNet.Network.Orch
             Tuple<int, List<Tuple<int, State>>> newTask = new Tuple<int, List<Tuple<int, State>>>(newTaskID, new List<Tuple<int, State>>());
             Tuple<int, Object> emptyResult = new Tuple<int, Object>(newTaskID, null);
             Results.Add(emptyResult);
-            for (int i = 0; i < data.Count; i++ )
+            for (int i = 0; i < data.Count; i++)
             {
                 Tuple<int, State> newSubTask = new Tuple<int, State>(LastSubTaskID, State.WORK);
                 newTask.Item2.Add(newSubTask);
@@ -303,7 +373,7 @@ namespace NodeNet.Network.Orch
 
         private void updateNodeAndClientTasks(string clientGUID, string nodeGUID, int newTaskID, int newSubTaskID)
         {
-            foreach(Tuple<List<int>,Node> tuple in Clients)
+            foreach (Tuple<List<int>, Node> tuple in Clients)
             {
                 if (tuple.Item2.NodeGUID.Equals(clientGUID))
                 {

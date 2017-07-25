@@ -24,13 +24,13 @@ namespace c_projet_adn.Network.Impl
 
         public DNAClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
 
-        public override object ProcessInput(DataInput input,Node node)
-        {
-            Console.WriteLine("In ProcessInput DNAClient");
-            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            worker.ClientWork(input);
-            return null;
-        }
+        //public override object ProcessInput(DataInput input,Node node)
+        //{
+        //    Console.WriteLine("In ProcessInput DNAClient");
+        //    dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+        //    worker.ClientWork(input);
+        //    return null;
+        //}
 
         public void SendMessage(String msg)
         {
@@ -52,12 +52,5 @@ namespace c_projet_adn.Network.Impl
             Console.WriteLine("Client Process Display Response From Orchestrator Msg : " + input.Data);
             ViewModelLocator.VMLCliStatic.SetMessage((String)input.Data);
         }
-
-        /* Multi Client */
-        public override void RefreshCpuState(DataInput input)
-        {
-            //ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo((String)input.Data);
-        }
-
     }
 }

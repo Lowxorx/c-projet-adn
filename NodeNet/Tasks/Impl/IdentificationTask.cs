@@ -41,5 +41,10 @@ namespace NodeNet.Tasks.Impl
         {
             ProcessAction(input);
         }
+
+        public Tuple<bool, string> CastOutputData(object data)
+        {
+            return (Tuple<bool, string>)data;
+        }
     }
 }

@@ -19,5 +19,7 @@ namespace NodeNet.Tasks
 
         T CastInputData(Object data);
 
+        R CastOutputData(Object data);
+
     }
 }

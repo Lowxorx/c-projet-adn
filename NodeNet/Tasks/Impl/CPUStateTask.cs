@@ -55,6 +55,9 @@ namespace NodeNet.Tasks.Impl
             return (Tuple<PerformanceCounter, ManagementObjectSearcher>) data;
         }
 
-       
+        public Tuple<float, double> CastOutputData(object data)
+        {
+            return (Tuple<float, double>)data;
+        }
     }
 }

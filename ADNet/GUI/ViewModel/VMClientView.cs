@@ -1,14 +1,8 @@
-﻿using ADNet.Network.Impl;
-using c_projet_adn.Network.Impl;
+﻿using c_projet_adn.Network.Impl;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using NodeNet.GUI.ViewModel;
-using NodeNet.Network.Nodes;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading;
 using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
@@ -57,9 +51,10 @@ namespace ADNet.GUI.ViewModel
 
         public void OnLoad()
         {
+            Console.WriteLine("Connect client onload");
             client = new DNAClient("Client","127.0.0.1",3001);
             client.Connect("127.0.0.1", 3000);
-            //StartMonitorNodes();
+            Console.WriteLine("Connect client onload end");
         }
 
         public void SendMessage()
@@ -71,39 +66,6 @@ namespace ADNet.GUI.ViewModel
         public void SetMessage(string s)
         {
             ClientResponse = s;
-        }
-
-        private void StartMonitorNodes()
-        {
-            BackgroundWorker bw = new BackgroundWorker()
-            {
-                WorkerSupportsCancellation = true
-            };
-            bw.DoWork += (o, a) =>
-            {
-                while (true)
-                {
-                    ObservableCollection<Node> list = new ObservableCollection<Node>();
-                    foreach (Node n in UcVmMonitoring.NodeList)
-                    {
-                        //n.RefreshNodesInfos();
-                        list.Add(n);
-                    }
-                    UcVmMonitoring.NodeList = null;
-                    UcVmMonitoring.NodeList = list;
-                    Thread.Sleep(3000);
-                }
-            };
-            bw.RunWorkerAsync();
-            // Méthode avec Thread
-            //Thread monitor = new Thread(() =>
-            //{
-
-            //})
-            //{
-            //    Name = "MonitoringThread"
-            //};
-            //monitor.Start();
         }
     }
 }

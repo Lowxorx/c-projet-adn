@@ -181,6 +181,18 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        public List<String> GetMonitoringInfos(Node n)
+        {
+            List<string> list = new List<string>
+            {
+                n.Name,
+                n.Address,
+                n.Port.ToString()
+            };
+
+            return list;
+        }
+
         public virtual void ReceiveCallback(IAsyncResult ar)
         {
             Console.WriteLine("Hey le node reçoit quelquechose !!!");
@@ -234,47 +246,11 @@ namespace NodeNet.Network.Nodes
             catch (SocketException e)
             {
                 Console.WriteLine(e.ToString());
-
             }
-
         }
 
-        public abstract Object ProcessInput(DataInput input,Node node);
+        public abstract Object ProcessInput(DataInput input,Node node);    
 
-        
-
-        public void StartMonitoring()
-        {
-            BackgroundWorker bw = new BackgroundWorker()
-            {
-                WorkerSupportsCancellation = true
-            };
-            bw.DoWork += (o, a) =>
-            {
-                ManagementObjectSearcher wmiObject = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
-                if (PerfCpu == null)
-                {
-                    PerfCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-                }
-                while (true)
-                {
-                    dynamic worker = WorkerFactory.GetWorker<Object, Object>("GET_CPU");
-
-                    object result = worker.NodeWork(new Tuple<PerformanceCounter, ManagementObjectSearcher>(PerfCpu, wmiObject));
-
-                    DataInput perfInfo = new DataInput()
-                    {
-                        MsgType = MessageType.RESPONSE,
-                        Method = "GET_CPU",
-                        Data = worker.CastInputData(result)
-                    };
-                    SendData(Orch, perfInfo);
-                    Console.WriteLine("Send node info to server");
-                    Thread.Sleep(3000);
-                }
-            };
-            bw.RunWorkerAsync();
-        }
         public override string ToString()
         {
             return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGUID; 
