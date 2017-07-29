@@ -97,6 +97,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tasks\Impl\DNAQuantStats.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\Impl\DNAOrchestra.cs" />
