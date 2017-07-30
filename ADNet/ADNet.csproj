@@ -90,6 +90,9 @@
     </Compile>
     <Compile Include="Map_Reduce\Impl\DisplayMapper.cs" />
     <Compile Include="Map_Reduce\Impl\DisplayReducer.cs" />
+    <Compile Include="Map_Reduce\Tools\KVPair.cs" />
+    <Compile Include="Map_Reduce\Impl\QuantStatsMapper.cs" />
+    <Compile Include="Map_Reduce\Impl\QuantStatsReducer.cs" />
     <Compile Include="Network\Impl\DNAClient.cs" />
     <Compile Include="Network\Impl\DNANode.cs" />
     <Compile Include="Tasks\Impl\DNADisplayMsgWorker.cs" />
