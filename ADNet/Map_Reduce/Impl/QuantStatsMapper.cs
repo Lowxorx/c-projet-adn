@@ -27,7 +27,14 @@ namespace c_projet_adn.Map_Reduce.Impl
 
         public List<string> map(string input)
         {
-            throw new NotImplementedException();
+            List<string> list = new List<string>();
+
+            foreach(char c in input.Split('\t')[3].ToCharArray())
+            {
+                list.Add(c.ToString());
+            }
+
+            return list;
         }
 
         private static void Map(int key, string value, QuantStatsMapper<string, int> context)
