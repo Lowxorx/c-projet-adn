@@ -8,6 +8,6 @@ namespace NodeNet.Map_Reduce
 {
     public interface IMapper<R,T>
     {
-        List<R> map(T input);
+        R map(T input);
     }
 }

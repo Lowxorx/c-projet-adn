@@ -146,7 +146,7 @@ namespace NodeNet.Network.Orch
         {
             if (input.Method == "GET_CPU")
             {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
                 worker.OrchWork(input);
             }
             else if (input.Method == "IDENT")
@@ -156,7 +156,7 @@ namespace NodeNet.Network.Orch
             }
             else
             {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
                 worker.OrchWork(input);
             }
 
@@ -325,7 +325,7 @@ namespace NodeNet.Network.Orch
 
         protected void ProcessMapReduce(DataInput input)
         {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
             Console.WriteLine("Process Display Function on Orch");
             if (input.MsgType == MessageType.CALL)
             {

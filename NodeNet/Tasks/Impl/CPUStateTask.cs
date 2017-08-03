@@ -7,7 +7,7 @@ using NodeNet.Data;
 
 namespace NodeNet.Tasks.Impl
 {
-    public class CPUStateTask : ITaskExecutor<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>>
+    public class CPUStateTask : ITaskExecutor<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>, Object>
     {
         public IMapper<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IReducer<Tuple<float, double>, Tuple<PerformanceCounter, ManagementObjectSearcher>> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -58,6 +58,11 @@ namespace NodeNet.Tasks.Impl
         public Tuple<float, double> CastOutputData(object data)
         {
             return (Tuple<float, double>)data;
+        }
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
         }
     }
 }

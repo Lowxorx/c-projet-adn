@@ -85,9 +85,11 @@
     <Compile Include="Map_Reduce\IReducer.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
     <Compile Include="Data\MessageType.cs" />
+    <Compile Include="Misc\KVPair.cs" />
     <Compile Include="Network\DefaultClient.cs" />
     <Compile Include="Network\Nodes\DefaultNode.cs" />
     <Compile Include="Misc\StateTools.cs" />
+    <Compile Include="Tasks\GenericTaskExecutor.cs" />
     <Compile Include="Tasks\Impl\CPUStateTask.cs" />
     <Compile Include="Tasks\GenericTaskExecFactory.cs" />
     <Compile Include="Tasks\Impl\IdentificationTask.cs" />

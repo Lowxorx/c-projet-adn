@@ -6,98 +6,85 @@ using c_projet_adn.Map_Reduce.Impl;
 using System.Linq;
 using System.ComponentModel;
 using System.Collections.Generic;
+using NodeNet.Misc;
+using ADNet.Map_Reduce.Impl;
 
 namespace c_projet_adn.Tasks.Impl
 {
-    public class DNAQuantStats : ITaskExecutor<String, String>
+    public class DNAQuantStats : GenericTaskExecutor<List<String>, String, List<Tuple<char, int>>>
     {
         #region Properties
-        public IMapper<string, string> Mapper { get; set; }
-        public IReducer<string, string> Reducer { get; set; }
+        public override IMapper<List<String>, String> Mapper { get; set; }
+        public override IReducer<List<Tuple<char, int>>, List<Tuple<char, int>>> Reducer { get; set; }
+
         public Action<DataInput> ProcessFunction;
-        public List<BackgroundWorker> Workers;
+        
         #endregion
 
         #region Ctor
-        public DNAQuantStats(Action<DataInput> function, IMapper<String, String> mapper, IReducer<String, String> reducer)
+        public DNAQuantStats(Action<DataInput> function, IMapper<List<String>, String> mapper, IReducer<List<Tuple<char, int>>, List<Tuple<char, int>>> reducer)
         {
-            Mapper = (QuantStatsMapper<String, String>)mapper;
-            Reducer = (QuantStatsReducer<String, String>)reducer;
+            Mapper = mapper;
+            Reducer = reducer;
             ProcessFunction = function;
         }
         #endregion
 
         #region Interface Implements
-        public void CancelWork()
+        public override void CancelWork()
         {
-            foreach (BackgroundWorker worker in Workers)
-            {
-                worker.CancelAsync();
-
-            }
+            
         }
 
-        public string CastInputData(object data)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void ClientWork(DataInput input)
+        public override void ClientWork(DataInput input)
         {
             ProcessFunction(input);
         }
 
-        public void OrchWork(DataInput input)
+        public override void OrchWork(DataInput input)
         {
             ProcessFunction(input);
         }
 
-        public string NodeWork(string input)
+        public override List<String> NodeWork(string input)
         {
-            List<string> list = Mapper.map(input);
+            List<String> list = Mapper.map(input);
             foreach (string s in list)
             {
-                Workers.Add(new BackgroundWorker());
+                BackgroundWorker bw = new BackgroundWorker();
                 //// Abonnage ////
-                Workers.Last().DoWork += new DoWorkEventHandler(backgroundworker_DoWork);
-                Workers.Last().ProgressChanged += new ProgressChangedEventHandler(backgroundworker_ProgressChanged);
-                Workers.Last().RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundworker_RunWorkerCompleted);
+                bw.DoWork += new DoWorkEventHandler(BackgroundWorker_DoWork);
+                bw.ProgressChanged += new ProgressChangedEventHandler(Backgroundworker_ProgressChanged);
+                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(Backgroundworker_RunWorkerCompleted);
 
                 //// Demarrage ////
-                Workers.Last().RunWorkerAsync(s);
+                bw.RunWorkerAsync(s);
 
                 //// A terminer ////
             }
+            return list;
         }
 
-        public void CheckWorkers()
+        public void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (Workers.Count == 0)
-            {
-                // Informer Reducer 
-            }
-        }
-        #endregion
-
-        #region EventHandlers
-        private void backgroundworker_DoWork(object sender, DoWorkEventArgs e)
-        {
+            base.Backgroundworker_DoWork(sender, e);
             //// Traitement métier ici ////
             string s = (string)e.Result;
             var pairs = s.Select((item, k) => new KVPair<int, string>() { Key = k, Value = s });
             //// A terminer ///////////////
-        }
-
-        private void backgroundworker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
 
         }
 
-        private void backgroundworker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void CheckWorkers()
         {
-            this.Workers.Remove(sender as BackgroundWorker);
-            CheckWorkers();
+        }
+
+        public override object Clone()
+        {
+            return new DNAQuantStats(ProcessFunction, new QuantStatsMapper(), new QuantStatsReducer());
         }
         #endregion
+
     }
 }

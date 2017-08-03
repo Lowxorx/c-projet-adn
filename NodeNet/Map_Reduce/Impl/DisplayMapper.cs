@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NodeNet.Map_Reduce.Impl
 {
-    public class DisplayMapper : IMapper<String, String>
+    public class DisplayMapper : IMapper<List<string>, String>
     {
         public List<string> map(string input)
         {

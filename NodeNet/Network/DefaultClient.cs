@@ -25,7 +25,7 @@ namespace NodeNet.Network
         public override object ProcessInput(DataInput input,Node node)
         {
             Console.WriteLine("ProcessInput in Client");
-            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
             worker.ClientWork(input);
             return null;
         }
@@ -33,7 +33,7 @@ namespace NodeNet.Network
         /* Multi Client */
         public void RefreshCpuState(DataInput input)
         {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
             Console.WriteLine("process cpu state");
             ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(input);
         }

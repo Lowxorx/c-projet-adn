@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NodeNet.Map_Reduce
 {
-    public interface IReducer<R,T>
+    public interface IReducer<V, F>
     {
-        R reduce(R concat,T input);
+        F reduce(V concat,V input);
     }
 }

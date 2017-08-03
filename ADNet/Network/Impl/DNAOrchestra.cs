@@ -16,8 +16,7 @@ namespace ADNet.Network.Impl
 
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            displayWorker = new DNADisplayMsgWorker(ProcessMapReduce, new DisplayMapper(), new DisplayReducer());
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, displayWorker);
+
         }
 
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace c_projet_adn.Map_Reduce.Impl
+namespace NodeNet.Misc
 {
     public class KVPair<K, V>
     {
@@ -13,4 +13,4 @@ namespace c_projet_adn.Map_Reduce.Impl
         public V Value { get; set; }
     }
 }
-}
+

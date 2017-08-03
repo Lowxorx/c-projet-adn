@@ -5,10 +5,12 @@ using NodeNet.Tasks;
 using NodeNet.Tasks.Impl;
 using NodeNet.Data;
 using System.Collections.Generic;
+using ADNet.Map_Reduce.Impl;
+using c_projet_adn.Map_Reduce.Impl;
 
 namespace ADNet.Tasks.Impl
 {
-    public class DNADisplayMsgWorker : ITaskExecutor<String, String>
+    public class DNADisplayMsgWorker : ITaskExecutor<String, String, String>
     {
         public IMapper<String, String> Mapper { get ; set; }
         public IReducer<String, String> Reducer { get ; set; }
@@ -53,6 +55,11 @@ namespace ADNet.Tasks.Impl
         public string CastOutputData(object data)
         {
             return (String)data;
+        }
+
+        object ICloneable.Clone()
+        {
+            return new DNADisplayMsgWorker(ProcessFunction, null, null);
         }
     }
 }

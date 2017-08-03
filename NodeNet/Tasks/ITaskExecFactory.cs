@@ -4,7 +4,7 @@ namespace NodeNet.Tasks
 {
     interface ITaskExecFactory
     {
-        void AddWorker<R, T>(String methodName, ITaskExecutor<R,T> worker);
-        ITaskExecutor<R,T> GetWorker<R, T>(String methodName);
+        void AddWorker<R, T, V>(String methodName, ITaskExecutor<R,T, V> worker);
+        ITaskExecutor<R,T,V> GetWorker<R, T, V>(String methodName);
     }
 }

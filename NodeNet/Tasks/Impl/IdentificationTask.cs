@@ -5,7 +5,7 @@ using NodeNet.Map_Reduce;
 
 namespace NodeNet.Tasks.Impl
 {
-    public class IdentificationTask : ITaskExecutor<Tuple<String, int>, String>
+    public class IdentificationTask : ITaskExecutor<Tuple<String, int>, String, Object>
     {
         public IMapper<Tuple<String, int>, String> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IReducer<Tuple<String, int>, String> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -45,6 +45,11 @@ namespace NodeNet.Tasks.Impl
         public Tuple<String, int> CastOutputData(object data)
         {
             return (Tuple<String, int>)data;
+        }
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
         }
     }
 }

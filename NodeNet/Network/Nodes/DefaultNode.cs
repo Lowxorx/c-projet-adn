@@ -46,7 +46,7 @@ namespace NodeNet.Network.Nodes
             else
             {
                 Console.WriteLine("ProcessInput for " + input.Method);
-                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+                dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
                 Object result = worker.NodeWork(worker.CastInputData(input.Data));
                 return result;
             }
@@ -84,7 +84,7 @@ namespace NodeNet.Network.Nodes
                 }
                 while (true)
                 {
-                    dynamic worker = WorkerFactory.GetWorker<Object, Object>("GET_CPU");
+                    dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>("GET_CPU");
 
                     object result = worker.NodeWork(new Tuple<PerformanceCounter, ManagementObjectSearcher>(PerfCpu, wmiObject));
 

@@ -20,14 +20,14 @@ namespace NodeNet.Tasks
             return instance;
         }
 
-        public void AddWorker<R,T>(String methodName, ITaskExecutor<R,T> worker)
+        public void AddWorker<R,T,V>(String methodName, ITaskExecutor<R,T,V> worker)
         { 
             workers.Add(methodName, worker);
         }
         // TODO check if method name exists
-        public dynamic GetWorker<R, T>(String methodName)
+        public dynamic GetWorker<R, T, V>(String methodName)
         {
-            return workers.GetValue<ITaskExecutor<R, T>>(methodName);
+            return workers.GetValue<ITaskExecutor<R,T,V>>(methodName);
         }
     }
 }
