@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
+using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using System;
 using System.Collections.ObjectModel;
@@ -14,12 +15,12 @@ namespace NodeNet.GUI.ViewModel
         public VMMonitoringUC()
         {
             MonitoringUcLoaded = new RelayCommand(OnLoad);
-            NodeList = new ObservableCollection<Node>();
+            NodeList = new ObservableCollection<DefaultNode>();
         }
         public ICommand MonitoringUcLoaded { get; set; }
 
-        private ObservableCollection<Node> nodeList;
-        public ObservableCollection<Node> NodeList
+        private ObservableCollection<DefaultNode> nodeList;
+        public ObservableCollection<DefaultNode> NodeList
         {
             get { return nodeList; }
             set
@@ -29,14 +30,22 @@ namespace NodeNet.GUI.ViewModel
             }
         }
 
-        public void RefreshNodesInfo(Tuple<float, double> values)
+        public void RefreshNodesInfo(DataInput d)
         {
-            ObservableCollection<Node> list = new ObservableCollection<Node>();
-            foreach (Node n in NodeList)
+            Console.WriteLine("refresh node info");
+            ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
+            foreach (DefaultNode n in NodeList)
             {
-                n.CpuValue = values.Item1;
-                n.RamValue = values.Item2;
-                list.Add(n);
+                if (n.NodeGUID != d.NodeGUID)
+                {
+                    list.Add(n);
+                }
+                else
+                {
+                    n.CpuValue = ((Tuple<float, double>)d.Data).Item1;
+                    n.RamValue = ((Tuple<float, double>)d.Data).Item2;
+                    list.Add(n);
+                }
             }
             NodeList = null;
             NodeList = list;

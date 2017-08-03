@@ -5,10 +5,10 @@ using NodeNet.Map_Reduce;
 
 namespace NodeNet.Tasks.Impl
 {
-    public class IdentificationTask : ITaskExecutor<Tuple<Boolean, String>, String>
+    public class IdentificationTask : ITaskExecutor<Tuple<String, int>, String>
     {
-        public IMapper<Tuple<bool, string>, String> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IReducer<Tuple<bool, string>, String> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IMapper<Tuple<String, int>, String> Mapper { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IReducer<Tuple<String, int>, String> Reducer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Action<DataInput> ProcessAction;
 
@@ -27,9 +27,9 @@ namespace NodeNet.Tasks.Impl
             return (String)data;
         }
 
-        public Tuple<bool, string> NodeWork(String input)
+        public Tuple<String, int> NodeWork(String input)
         {
-            return new Tuple<bool, string>(true, input);
+            return null;
         }
 
         public void OrchWork(DataInput input)
@@ -40,6 +40,11 @@ namespace NodeNet.Tasks.Impl
         public void ClientWork(DataInput input)
         {
             ProcessAction(input);
+        }
+
+        public Tuple<String, int> CastOutputData(object data)
+        {
+            return (Tuple<String, int>)data;
         }
     }
 }

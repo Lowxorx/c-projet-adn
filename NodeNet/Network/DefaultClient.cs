@@ -1,14 +1,12 @@
-﻿using NodeNet.Network.Nodes;
+﻿using NodeNet.Data;
+using NodeNet.GUI.ViewModel;
+using NodeNet.Network.Nodes;
+using NodeNet.Tasks.Impl;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NodeNet.Data;
 using System.Net.Sockets;
-using NodeNet.GUI.ViewModel;
-using NodeNet.Tasks.Impl;
-using System.ComponentModel;
+using System.Threading;
+using System.Windows;
 
 namespace NodeNet.Network
 {
@@ -32,14 +30,54 @@ namespace NodeNet.Network
             return null;
         }
 
-        public abstract void RefreshCpuState(DataInput data);
-
-        public void ProcessIdent(DataInput data)
+        /* Multi Client */
+        public void RefreshCpuState(DataInput input)
         {
-            data.Data =  new Tuple<bool, string>(true, NodeGUID);
-            data.ClientGUID = NodeGUID;
-            data.NodeGUID = NodeGUID;
-            SendData(Orch, data);
+            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
+            Console.WriteLine("process cpu state");
+            ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(input);
+        }
+
+        public void StartMonitorNodes()
+        {
+            Console.WriteLine("Start monitor node");
+            DataInput input = new DataInput()
+            {
+                Method = GET_CPU_METHOD,
+                Data = null,
+                ClientGUID = NodeGUID,
+                NodeGUID = NodeGUID,
+                MsgType = MessageType.CALL
+            };
+            SendData(Orch, input);
+        }
+
+        public void AddNodeToList(List<List<string>> monitoringValues)
+        {
+            foreach (List<string> nodeinfo in monitoringValues)
+            {
+                DefaultNode n = new DefaultNode(nodeinfo[0], nodeinfo[1], Convert.ToInt32(nodeinfo[2]));
+                Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.NodeList.Add(n)));      
+            }
+        }
+
+        public void ProcessIdent(DataInput input)
+        {
+            if (input.MsgType == MessageType.NODE_IDENT)
+            {
+                AddNodeToList((List<List<string>>)input.Data);
+            }
+            else if(input.MsgType == MessageType.IDENT)
+            {
+                Tuple<String, int> orchIDentifiers = (Tuple < String, int>) input.Data;
+                Name = Name + orchIDentifiers.Item1;
+                Port = orchIDentifiers.Item2;
+                genGUID();
+                input.ClientGUID = NodeGUID;
+                SendData(Orch, input);
+                Thread.Sleep(3000);
+                StartMonitorNodes();
+            }
         }
     }
 }

@@ -49,5 +49,10 @@ namespace ADNet.Tasks.Impl
         {
             ProcessFunction(input);
         }
+
+        public string CastOutputData(object data)
+        {
+            return (String)data;
+        }
     }
 }
