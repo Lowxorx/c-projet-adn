@@ -65,7 +65,7 @@ namespace NodeNet.Network.Nodes
             Name = name;
             Address = adress;
             Port = port;
-            NodeGUID = name + ":" + Address + ":" + Port;
+            genGUID();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -267,6 +267,11 @@ namespace NodeNet.Network.Nodes
         public override string ToString()
         {
             return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGUID; 
+        }
+
+        protected void genGUID()
+        {
+            NodeGUID =  Name +":" + Address + ":" + Port;
         }
     }
 }

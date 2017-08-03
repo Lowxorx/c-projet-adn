@@ -63,12 +63,16 @@ namespace NodeNet.Network
 
         public void ProcessIdent(DataInput input)
         {
-            if (input.Data != null)
+            if (input.MsgType == MessageType.NODE_IDENT)
             {
                 AddNodeToList((List<List<string>>)input.Data);
             }
-            else
-            {              
+            else if(input.MsgType == MessageType.IDENT)
+            {
+                Tuple<String, int> orchIDentifiers = (Tuple < String, int>) input.Data;
+                Name = Name + orchIDentifiers.Item1;
+                Port = orchIDentifiers.Item2;
+                genGUID();
                 input.ClientGUID = NodeGUID;
                 SendData(Orch, input);
                 Thread.Sleep(3000);

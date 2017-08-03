@@ -13,6 +13,8 @@ namespace NodeNet.Network.Orch
     {
         /* Bientôt useless */
         private List<Tuple<int, Node>> UnidentifiedNodes;
+        /* Nombre de noeuds connectés */
+        private int nbNodes = 0;
         /* Correspondance entre les subTasks et les task */
         private List<Tuple<int, List<Tuple<int, State>>>> Tasks;
         /* Stockage des résultats réduits par Task */
@@ -43,12 +45,11 @@ namespace NodeNet.Network.Orch
             while (true)
             {
                 Socket sock = await listener.AcceptSocketAsync();
-                DefaultNode connectedNode = new DefaultNode("Node ", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
-                /* Multi Client */
+                DefaultNode connectedNode = new DefaultNode("", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
+                nbNodes++;
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 GetIdentityOfNode(connectedNode);
                 Receive(connectedNode);
-                /* Multi Client */
             }
         }
 
@@ -57,11 +58,14 @@ namespace NodeNet.Network.Orch
             int tId = LastTaskID;
             Tuple<int, Node> taskNodeTuple = new Tuple<int, Node>(tId, connectedNode);
             UnidentifiedNodes.Add(taskNodeTuple);
+
             DataInput input = new DataInput()
             {
                 Method = "IDENT",
                 NodeGUID = NodeGUID,
-                TaskId = tId
+                TaskId = tId,
+                Data = new Tuple<String,int>(nbNodes.ToString(),connectedNode.Port),
+                MsgType = MessageType.IDENT
             };
             SendData(connectedNode, input);
         }
@@ -80,9 +84,6 @@ namespace NodeNet.Network.Orch
             {
                 try
                 {
-                    //Console.WriteLine("Send data : " + input + " to : " + tuple.Item2);
-                    //tuple.Item2.NodeSocket.BeginSend(data, 0, data.Length, 0,
-                    //    new AsyncCallback(SendCallback), tuple.Item2.NodeSocket);
                     SendData(tuple.Item2, input);
                 }
                 catch (SocketException ex)
@@ -211,7 +212,8 @@ namespace NodeNet.Network.Orch
                     ClientGUID = n.NodeGUID,
                     NodeGUID = NodeGUID,
                     Method = "IDENT",
-                    Data = monitoringValues
+                    Data = monitoringValues,
+                    MsgType = MessageType.NODE_IDENT
                 };
                 SendData(n, di);
             }
@@ -230,7 +232,8 @@ namespace NodeNet.Network.Orch
                     ClientGUID = tuple.Item2.NodeGUID,
                     NodeGUID = NodeGUID,
                     Method = "IDENT",
-                    Data = monitoringValues
+                    Data = monitoringValues,
+                    MsgType = MessageType.NODE_IDENT
                 };
                 SendData(tuple.Item2, di);
 

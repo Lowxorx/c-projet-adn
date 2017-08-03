@@ -9,6 +9,8 @@ namespace NodeNet.Data
     public enum MessageType
     {
         CALL,
-        RESPONSE
+        RESPONSE,
+        IDENT,
+        NODE_IDENT
     }
 }

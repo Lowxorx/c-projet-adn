@@ -54,6 +54,10 @@ namespace NodeNet.Network.Nodes
 
         private DataInput ProcessIndent(DataInput d, Node n)
         {
+            Tuple<String, int> orchIDentifiers = (Tuple<String, int>)d.Data;
+            Name = Name + orchIDentifiers.Item1;
+            Port = orchIDentifiers.Item2;
+            genGUID();
             DataInput resp = new DataInput()
             {
                 ClientGUID = null,
