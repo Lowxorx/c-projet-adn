@@ -68,12 +68,10 @@ namespace NodeNet.Network
                 AddNodeToList((List<List<string>>)input.Data);
             }
             else
-            {
-                input.Data = new Tuple<bool, string>(true, NodeGUID);
+            {              
                 input.ClientGUID = NodeGUID;
-                input.NodeGUID = NodeGUID;
                 SendData(Orch, input);
-                Thread.Sleep(10000);
+                Thread.Sleep(3000);
                 StartMonitorNodes();
             }
         }

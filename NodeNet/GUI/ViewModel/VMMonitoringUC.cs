@@ -42,8 +42,8 @@ namespace NodeNet.GUI.ViewModel
                 }
                 else
                 {
-                    n.CpuValue = ((Tuple<float, float>)d.Data).Item1;
-                    n.RamValue = ((Tuple<float, float>)d.Data).Item2;
+                    n.CpuValue = ((Tuple<float, double>)d.Data).Item1;
+                    n.RamValue = ((Tuple<float, double>)d.Data).Item2;
                     list.Add(n);
                 }
             }

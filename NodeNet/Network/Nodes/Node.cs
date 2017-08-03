@@ -65,7 +65,7 @@ namespace NodeNet.Network.Nodes
             Name = name;
             Address = adress;
             Port = port;
-            NodeGUID = name + " " + Address + " " + Port;
+            NodeGUID = name + ":" + Address + ":" + Port;
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -183,14 +183,21 @@ namespace NodeNet.Network.Nodes
 
         public List<String> GetMonitoringInfos(Node n)
         {
-            List<string> list = new List<string>
+            try
             {
-                n.Name,
-                n.Address,
-                n.Port.ToString()
-            };
-
-            return list;
+                string[] info = n.NodeGUID.Split(':');
+                List<string> list = new List<string>
+                {
+                    info[0],
+                    info[1],
+                    info[2]
+                };
+                return list;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return null;
+            }
         }
 
         public virtual void ReceiveCallback(IAsyncResult ar)
@@ -228,16 +235,22 @@ namespace NodeNet.Network.Nodes
                     Object result = ProcessInput(input,node);
                     if (result != null)
                     {
-                        DataInput res = new DataInput()
+                        if (result is DataInput)
                         {
-                            MsgType = MessageType.RESPONSE,
-                            Method = input.Method,
-                            Data = result,
-                            ClientGUID = input.ClientGUID,
-                            NodeGUID = this.NodeGUID
-                        };
-                        
-                        SendData(node, res);
+                            SendData(node, (DataInput)result);
+                        }
+                        else
+                        {
+                            DataInput res = new DataInput()
+                            {
+                                MsgType = MessageType.RESPONSE,
+                                Method = input.Method,
+                                Data = result,
+                                ClientGUID = input.ClientGUID,
+                                NodeGUID = NodeGUID
+                            };
+                            SendData(node, res);
+                        }
                         receiveDone.Set();
                     }
                 }

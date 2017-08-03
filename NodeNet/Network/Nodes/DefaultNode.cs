@@ -57,8 +57,10 @@ namespace NodeNet.Network.Nodes
             DataInput resp = new DataInput()
             {
                 ClientGUID = null,
+                TaskId = d.TaskId,
                 NodeGUID = NodeGUID,
-                MsgType = MessageType.RESPONSE
+                MsgType = MessageType.RESPONSE,
+                Method = d.Method
             };
             return resp;
         }
@@ -72,7 +74,6 @@ namespace NodeNet.Network.Nodes
             bw.DoWork += (o, a) =>
             {
                 ManagementObjectSearcher wmiObject = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
-                Console.WriteLine("bite");
                 if (PerfCpu == null)
                 {
                     PerfCpu = new PerformanceCounter("Processor", "% Processor Time", "_Total");
