@@ -18,7 +18,7 @@ namespace NodeNet.Data
 
         public dynamic GetValue<T>(string key) where T : class
         {
-            return dict[key];
+            return ((ICloneable)dict[key]).Clone();
         }
     }
 }

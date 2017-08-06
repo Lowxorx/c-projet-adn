@@ -1,11 +1,16 @@
 ﻿using NodeNet.Data;
 using NodeNet.Network.Nodes;
+using NodeNet.Network.States;
 using NodeNet.Tasks.Impl;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace NodeNet.Network.Orch
 {
@@ -16,23 +21,47 @@ namespace NodeNet.Network.Orch
         /* Nombre de noeuds connectés */
         private int nbNodes = 0;
         /* Correspondance entre les subTasks et les task */
-        private List<Tuple<int, List<Tuple<int, State>>>> Tasks;
+        private List<Tuple<int, List<Tuple<int, NodeState>>>> Tasks;
+              
+        // Task monitoring nodes */
+        Tuple<int, NodeState> MonitorTask;
+
         /* Stockage des résultats réduits par Task */
-        private List<Tuple<int, Object>> Results;
+        private List<Tuple<int, Object>> results;        
+        public List<Tuple<int, Object>> Results
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get { return results; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set { results = value; }
+        }
+
         /* Liste des noeuds connectés */
-        private List<Tuple<List<int>, Node>> Nodes;
+        private ObservableCollection<Tuple<List<int>, Node>> nodes;
+        public ObservableCollection<Tuple<List<int>, Node>> Nodes
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get { return nodes; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set { nodes = value; }
+        }
+
         /* Liste des clients connectés */
-        private List<Tuple<List<int>, Node>> Clients;
-        // Task monitoring nodes
-        Tuple<int, State> MonitorTask;
+        private List<Tuple<List<int>, Node>> clients;
+        public List<Tuple<List<int>, Node>> Clients
+        {
+            get { return clients; }
+            set { clients = value; }
+        }
+
 
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
             UnidentifiedNodes = new List<Tuple<int, Node>>();
-            Nodes = new List<Tuple<List<int>, Node>>();
+            Nodes = new ObservableCollection<Tuple<List<int>, Node>>();
             Clients = new List<Tuple<List<int>, Node>>();
-            Tasks = new List<Tuple<int, List<Tuple<int, State>>>>();
+            Tasks = new List<Tuple<int, List<Tuple<int, NodeState>>>>();
             WorkerFactory.AddWorker("IDENT", new IdentificationTask(IdentNode));
             WorkerFactory.AddWorker("GET_CPU", new CPUStateTask(ProcessCPUStateOrder));
         }
@@ -304,7 +333,7 @@ namespace NodeNet.Network.Orch
                 if (MonitorTask == null)
                 {
                     int newTaskID = LastTaskID;
-                    MonitorTask = new Tuple<int, State>(newTaskID, State.WORK);
+                    MonitorTask = new Tuple<int, NodeState>(newTaskID, NodeState.WORK);
                 }
                 GetClientTaskFromGuid(input.ClientGUID).Item1.Add(MonitorTask.Item1);
                 input.NodeGUID = NodeGUID;
@@ -330,8 +359,8 @@ namespace NodeNet.Network.Orch
             if (input.MsgType == MessageType.CALL)
             {
                 // MAP
-                List<Object> list = worker.Mapper.map(worker.CastDataInput(input.Data));
-                LazyNodeTranfert(list, input);
+                
+                LazyNodeTranfert(input);
             }
             else if (input.MsgType == MessageType.RESPONSE)
             {
@@ -375,15 +404,50 @@ namespace NodeNet.Network.Orch
             return true;
         }
 
-        private void LazyNodeTranfert(List<Object> data, DataInput input)
+        private void LazyNodeTranfert(DataInput input)
         {
             int newTaskID = LastTaskID;
-            Tuple<int, List<Tuple<int, State>>> newTask = new Tuple<int, List<Tuple<int, State>>>(newTaskID, new List<Tuple<int, State>>());
+            Tuple<int, List<Tuple<int, NodeState>>> newTask = new Tuple<int, List<Tuple<int, NodeState>>>(newTaskID, new List<Tuple<int, NodeState>>());
             Tuple<int, Object> emptyResult = new Tuple<int, Object>(newTaskID, null);
             Results.Add(emptyResult);
-            for (int i = 0; i < data.Count; i++)
+
+            System.Threading.ManualResetEvent _busy = new System.Threading.ManualResetEvent(false);
+            BackgroundWorker bw = new BackgroundWorker()
             {
-                Tuple<int, State> newSubTask = new Tuple<int, State>(LastSubTaskID, State.WORK);
+                WorkerSupportsCancellation = true
+            };
+            bw.DoWork += (o, a) =>
+            {
+                bool kontinue = true;
+                while (kontinue)
+                {
+                    for (int i = 0; i < Nodes.Count && kontinue; i++)
+                    {
+                        if (Nodes[i].Item2.State == NodeState.WAIT)
+                            kontinue = sendSubTaskToNode(newTask, Nodes[i].Item2, newTaskID, input);
+                    }
+                    if (kontinue)
+                        _busy.Reset();
+                }
+            };
+
+            Nodes.CollectionChanged += delegate (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            {
+                Tuple<List<int>, Node> obj = sender as Tuple<List<int>, Node>;
+                if (obj.Item2.State == NodeState.WAIT)
+                    _busy.Set();
+            };
+           
+            bw.RunWorkerAsync();
+        }
+        
+        private bool sendSubTaskToNode(Tuple<int, List<Tuple<int, NodeState>>> newTask, Node node, int newTaskID, DataInput input)
+        {
+            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
+            Object data = worker.Mapper.map(worker.CastDataInput(input.Data));
+            if (data != null)
+            {
+                Tuple<int, NodeState> newSubTask = new Tuple<int, NodeState>(LastSubTaskID, NodeState.WORK);
                 newTask.Item2.Add(newSubTask);
                 UpdateNodeAndClientTasks(input.ClientGUID, input.NodeGUID, newTaskID, LastSubTaskID);
                 DataInput res = new DataInput()
@@ -392,13 +456,14 @@ namespace NodeNet.Network.Orch
                     SubTaskId = LastSubTaskID,
                     MsgType = MessageType.CALL,
                     Method = input.Method,
-                    Data = data[i],
+                    Data = data,
                     ClientGUID = input.ClientGUID,
                     NodeGUID = this.NodeGUID,
                 };
-                Node node = Nodes[Nodes.Count % i].Item2;
                 SendData(node, res);
+                return true;
             }
+            return false;
         }
 
         private void UpdateNodeAndClientTasks(string clientGUID, string nodeGUID, int newTaskID, int newSubTaskID)

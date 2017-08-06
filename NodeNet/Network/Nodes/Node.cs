@@ -1,5 +1,6 @@
 ﻿using NodeNet.Data;
 using NodeNet.Network.Orch;
+using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace NodeNet.Network.Nodes
         public static int BUFFER_SIZE = 4096;
         public PerformanceCounter PerfCpu { get; set; }
         public PerformanceCounter PerfRam { get; set; }
+
+        public NodeState State { get; set; }
 
         private int lastTaskID;
 

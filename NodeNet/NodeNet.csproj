@@ -105,7 +105,7 @@
     <Compile Include="Tasks\ITaskExecutor.cs" />
     <Compile Include="Network\Orch\Orchestrator.cs" />
     <Compile Include="Network\Nodes\Node.cs" />
-    <Compile Include="Network\State\State.cs" />
+    <Compile Include="Network\States\NodeState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="Map_Reduce\Impl\DisplayMapper.cs" />
     <Compile Include="Map_Reduce\Impl\DisplayReducer.cs" />
+    <Compile Include="Map_Reduce\Impl\OrchQuantStatsMapper.cs" />
     <Compile Include="Map_Reduce\Impl\QuantStatsMapper.cs" />
     <Compile Include="Map_Reduce\Impl\QuantStatsReducer.cs" />
     <Compile Include="Network\Impl\DNAClient.cs" />
