@@ -93,6 +93,7 @@
     <Compile Include="Tasks\Impl\CPUStateTask.cs" />
     <Compile Include="Tasks\GenericTaskExecFactory.cs" />
     <Compile Include="Tasks\Impl\IdentificationTask.cs" />
+    <Compile Include="Tasks\Impl\TaskStatus.cs" />
     <Compile Include="Tasks\ITaskExecFactory.cs" />
   </ItemGroup>
   <ItemGroup>

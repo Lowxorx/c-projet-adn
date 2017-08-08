@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using NodeNet.Misc;
 using ADNet.Map_Reduce.Impl;
+using NodeNet.Network.Nodes;
 
 namespace c_projet_adn.Tasks.Impl
 {
@@ -22,7 +23,7 @@ namespace c_projet_adn.Tasks.Impl
         #endregion
 
         #region Ctor
-        public DNAQuantStats(Action<DataInput> function, IMapper<List<String>, String> mapper, IReducer<List<Tuple<char, int>>, List<Tuple<char, int>>> reducer)
+        public DNAQuantStats(Node node, Action<DataInput> function, IMapper<List<String>, String> mapper, IReducer<List<Tuple<char, int>>, List<Tuple<char, int>>> reducer):base(node)
         {
             Mapper = mapper;
             Reducer = reducer;
@@ -82,7 +83,7 @@ namespace c_projet_adn.Tasks.Impl
 
         public override object Clone()
         {
-            return new DNAQuantStats(ProcessFunction, new QuantStatsMapper(), new QuantStatsReducer());
+            return new DNAQuantStats(base.executor, ProcessFunction, new QuantStatsMapper(), new QuantStatsReducer());
         }
         #endregion
 

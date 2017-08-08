@@ -33,6 +33,14 @@ namespace NodeNet.Network.Nodes
 
         public NodeState State { get; set; }
 
+        private List<Tuple<int, List<int>>> tasks;
+        public List<Tuple<int, List<int>>> Tasks
+        {
+            get { return tasks; }
+            set { tasks = value; }
+        }
+
+
         private int lastTaskID;
 
         protected int LastTaskID
