@@ -4,17 +4,8 @@ using NodeNet.Map_Reduce;
 
 namespace NodeNet.Tasks
 {
-    public interface ITaskExecutor<R,T,V> : ICloneable
+    public interface ITaskExecutor : ICloneable
     {
-
-        R NodeWork(T input);
-
-        void OrchWork(DataInput data);
-
-        void ClientWork(DataInput data);
-
-        void CancelWork();
-
-
+        Object DoWork(DataInput data);
     }
 }

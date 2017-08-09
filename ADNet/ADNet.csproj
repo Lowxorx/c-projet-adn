@@ -88,19 +88,14 @@
     <Compile Include="GUI\View\NodeView.xaml.cs">
       <DependentUpon>NodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Map_Reduce\Impl\DisplayMapper.cs" />
-    <Compile Include="Map_Reduce\Impl\DisplayReducer.cs" />
-    <Compile Include="Map_Reduce\Impl\OrchQuantStatsMapper.cs" />
     <Compile Include="Map_Reduce\Impl\QuantStatsMapper.cs" />
     <Compile Include="Map_Reduce\Impl\QuantStatsReducer.cs" />
     <Compile Include="Network\Impl\DNAClient.cs" />
     <Compile Include="Network\Impl\DNANode.cs" />
-    <Compile Include="Tasks\Impl\DNADisplayMsgWorker.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tasks\Impl\DNAQuantStats.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\Impl\DNAOrchestra.cs" />

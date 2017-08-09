@@ -78,10 +78,7 @@
     </Compile>
     <Compile Include="Data\DataFormater.cs" />
     <Compile Include="Data\DataInput.cs" />
-    <Compile Include="Data\GenericDictionnary.cs" />
     <Compile Include="Map_Reduce\IMapper.cs" />
-    <Compile Include="Map_Reduce\Impl\DisplayMapper.cs" />
-    <Compile Include="Map_Reduce\Impl\DisplayReducer.cs" />
     <Compile Include="Map_Reduce\IReducer.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
     <Compile Include="Data\MessageType.cs" />
@@ -89,11 +86,9 @@
     <Compile Include="Network\DefaultClient.cs" />
     <Compile Include="Network\Nodes\DefaultNode.cs" />
     <Compile Include="Misc\StateTools.cs" />
-    <Compile Include="Tasks\GenericTaskExecutor.cs" />
-    <Compile Include="Tasks\Impl\CPUStateTask.cs" />
-    <Compile Include="Tasks\GenericTaskExecFactory.cs" />
-    <Compile Include="Tasks\Impl\IdentificationTask.cs" />
-    <Compile Include="Tasks\Impl\TaskStatus.cs" />
+    <Compile Include="Tasks\NodeNetTask.cs" />
+    <Compile Include="Tasks\TaskExecutor.cs" />
+    <Compile Include="Tasks\TaskExecFactory.cs" />
     <Compile Include="Tasks\ITaskExecFactory.cs" />
   </ItemGroup>
   <ItemGroup>

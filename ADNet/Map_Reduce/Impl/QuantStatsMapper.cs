@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace c_projet_adn.Map_Reduce.Impl
 {
-    public class QuantStatsMapper : IMapper<List<String>, String>
+    public class QuantStatsMapper : IMapper
     {
         #region Properties
 
@@ -15,11 +15,11 @@ namespace c_projet_adn.Map_Reduce.Impl
 
         #region Methods
 
-        public List<string> map(string input)
+        public Object map(Object input)
         {
             List<string> list = new List<string>();
 
-            foreach(char c in input.Split('\t')[3].ToCharArray())
+            foreach(char c in ((string)input).Split('\t')[3].ToCharArray())
             {
                 list.Add(c.ToString());
             }

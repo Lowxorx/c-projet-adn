@@ -6,29 +6,30 @@ using System.Linq;
 
 namespace c_projet_adn.Map_Reduce.Impl
 {
-    public class QuantStatsReducer : IReducer<List<Tuple<char, int>>, List<Tuple<char, int>>>
+    public class QuantStatsReducer : IReducer
     {
 
         #region Methods
 
-        public List<Tuple<char, int>> reduce(List<Tuple<char, int>> concat, List<Tuple<char, int>> input)
+        public Object reduce(object concat, object input)
         {
-            foreach(Tuple<char, int> inputpl in input)
+            List<Tuple<char, int>> result = (List<Tuple<char, int>>)concat;
+            foreach (Tuple<char, int> inputpl in (List < Tuple<char, int> > )input)
             {
                 bool present = false;
-                for(int i = 0; i < concat.Count;i++)
+                for(int i = 0; i < result.Count;i++)
                 {
-                    if(concat[i].Item1 == inputpl.Item1)
+                    if(result[i].Item1 == inputpl.Item1)
                     {
                         present = true;
-                        concat[i] = new Tuple<char, int>(concat[i].Item1, concat[i].Item2+inputpl.Item2);
+                        result[i] = new Tuple<char, int>(result[i].Item1, result[i].Item2+inputpl.Item2);
                     }
                  }
                 if (!present)
-                    concat.Add(inputpl);                
+                    result.Add(inputpl);                
             }
 
-            return concat;
+            return result;
         }
         #endregion
 

@@ -62,7 +62,7 @@ namespace NodeNet.Network.Nodes
         private double ramValue { get; set; }
         public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
 
-        public GenericTaskExecFactory WorkerFactory { get; set; }
+        public TaskExecFactory WorkerFactory { get; set; }
 
         protected List<byte[]> bytearrayList { get; set; }
 
@@ -72,11 +72,12 @@ namespace NodeNet.Network.Nodes
 
         public Node(String name, String adress, int port)
         {
-            WorkerFactory = GenericTaskExecFactory.GetInstance();
+            WorkerFactory = TaskExecFactory.GetInstance();
             Name = name;
             Address = adress;
             Port = port;
             genGUID();
+            Tasks = new List<Tuple<int, List<int>>>();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -85,6 +86,7 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             NodeSocket = sock;
+            Tasks = new List<Tuple<int, List<int>>>();
         }
 
         public void Stop()

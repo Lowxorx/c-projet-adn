@@ -1,7 +1,7 @@
 ﻿using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.States;
-using NodeNet.Tasks.Impl;
+using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -60,8 +60,8 @@ namespace NodeNet.Network.Orch
             UnidentifiedNodes = new List<Tuple<int, Node>>();
             Nodes = new ObservableCollection<Node>();
             Clients = new List<Node>();
-            WorkerFactory.AddWorker("IDENT", new IdentificationTask(IdentNode));
-            WorkerFactory.AddWorker("GET_CPU", new CPUStateTask(ProcessCPUStateOrder));
+            WorkerFactory.AddWorker("IDENT", new TaskExecutor(this,IdentNode,null,null));
+            WorkerFactory.AddWorker("GET_CPU", new TaskExecutor(this,ProcessCPUStateOrder,null,null));
         }
 
         public async void Listen()
@@ -171,27 +171,20 @@ namespace NodeNet.Network.Orch
 
         public override object ProcessInput(DataInput input, Node node)
         {
-            if (input.Method == "GET_CPU")
+            if (!input.Method.Equals("IDENT") && !input.Method.Equals("GET_CPU"))
             {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
-                worker.OrchWork(input);
-            }
-            else if (input.Method == "IDENT")
-            {
-                input.Data = node;
-                IdentNode(input);
+                ProcessMapReduce(input);
             }
             else
             {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
-                worker.OrchWork(input);
+                TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+                return executor.DoWork(input);
             }
-
             return null;
         }
 
         /* Multi Client */
-        public void IdentNode(DataInput data)
+        public Object IdentNode(DataInput data)
         {
             Console.WriteLine("Process Ident On Orch");
             foreach (Tuple<int, Node> node in UnidentifiedNodes)
@@ -203,7 +196,9 @@ namespace NodeNet.Network.Orch
                         node.Item2.NodeGUID = data.ClientGUID;
                         Console.WriteLine("Add Client to list : " + node);
                         Clients.Add(node.Item2);
+                        // TODO activer le monitoring pour ce client
                         SendNodesToClient(node.Item2);
+                        startMonitoringForClient(node.Item2);
                     }
                     else if (data.NodeGUID != null)
                     {
@@ -218,6 +213,20 @@ namespace NodeNet.Network.Orch
                     }
                 }
             }
+            return null;
+        }
+
+        private void startMonitoringForClient(Node client)
+        {
+            DataInput input = new DataInput()
+            {
+                Method = "GET_CPU",
+                Data = null,
+                ClientGUID = client.NodeGUID,
+                NodeGUID = NodeGUID,
+                MsgType = MessageType.CALL
+            };
+            ProcessCPUStateOrder(input);
         }
 
         public void SendNodesToClient(Node n)
@@ -312,7 +321,7 @@ namespace NodeNet.Network.Orch
             throw new Exception("GetClientFromGuid");
         }
 
-        private void ProcessCPUStateOrder(DataInput input)
+        private Object ProcessCPUStateOrder(DataInput input)
         {
             if (input.MsgType == MessageType.CALL)
             {
@@ -321,7 +330,7 @@ namespace NodeNet.Network.Orch
                     int newTaskID = LastTaskID;
                     MonitorTask = new Tuple<int, NodeState>(newTaskID, NodeState.WORK);
                 }
-                GetClientFromGUID(input.NodeGUID).Tasks.Add(new Tuple<int, List<int>>(MonitorTask.Item1, new List<int>()));
+                GetClientFromGUID(input.ClientGUID).Tasks.Add(new Tuple<int, List<int>>(MonitorTask.Item1, new List<int>()));
                 input.NodeGUID = NodeGUID;
                 input.TaskId = MonitorTask.Item1;
                 SendDataToAllNodes(input);
@@ -339,11 +348,12 @@ namespace NodeNet.Network.Orch
                     }
                 }
             }
+            return null;
         }
 
-        protected void ProcessMapReduce(DataInput input)
+        protected Object ProcessMapReduce(DataInput input)
         {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             Console.WriteLine("Process Display Function on Orch");
             if (input.MsgType == MessageType.CALL)
             {
@@ -355,7 +365,7 @@ namespace NodeNet.Network.Orch
             {
                 // Reduce
                 // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
-                // pour y concaténeer le resultat du travail du noeud
+                // pour y concaténer le resultat du travail du noeud
                 Tuple<int, Object> result = null;
                 foreach (Tuple<int, Object> tuple in Results)
                 {
@@ -364,7 +374,7 @@ namespace NodeNet.Network.Orch
                         result = tuple;
                     }
                 }
-                Object reduceRes = worker.Reducer.reduce(worker.CastDataInput(result.Item2), worker.CastDataInput(input.Data));
+                Object reduceRes = executor.Reducer.reduce(result.Item2, input.Data);
                 if (TaskIsCompleted(input.TaskId))
                 {
                     // TODO check si tous les nodes ont finis
@@ -377,14 +387,15 @@ namespace NodeNet.Network.Orch
                         NodeGUID = this.NodeGUID,
                         MsgType = MessageType.RESPONSE,
                     };
-                    SendData(GetClientFromGUID(input.ClientGUID), response);
+                    return response;
+                    //SendData(GetClientFromGUID(input.ClientGUID), response);
                 }
                 else
                 {
                     result = new Tuple<int, Object>(input.TaskId, reduceRes);
-                }
-
+                }     
             }
+            return null;
         }
         // Checker si toutes les nodes correspondant à cette task sont en etat FINISH
         private bool TaskIsCompleted(int taskId)
@@ -432,8 +443,8 @@ namespace NodeNet.Network.Orch
         
         private bool sendSubTaskToNode(Tuple<int, List<Tuple<int, NodeState>>> newTask, Node node, int newTaskID, DataInput input)
         {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
-            Object data = worker.Mapper.map(worker.CastDataInput(input.Data));
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            Object data = executor.Mapper.map(input.Data);
             if (data != null)
             {
                 Tuple<int, NodeState> newSubTask = new Tuple<int, NodeState>(LastSubTaskID, NodeState.WORK);

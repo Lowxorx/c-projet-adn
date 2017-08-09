@@ -1,11 +1,10 @@
 ﻿using NodeNet.Data;
 using NodeNet.GUI.ViewModel;
 using NodeNet.Network.Nodes;
-using NodeNet.Tasks.Impl;
+using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Threading;
 using System.Windows;
 
 namespace NodeNet.Network
@@ -16,8 +15,8 @@ namespace NodeNet.Network
         public const String IDENT_METHOD = "IDENT";
 
         public DefaultClient(String name, String adress, int port) : base(name,adress,port) {
-            WorkerFactory.AddWorker(GET_CPU_METHOD, new CPUStateTask(RefreshCpuState));
-            WorkerFactory.AddWorker(IDENT_METHOD, new IdentificationTask(ProcessIdent));
+            WorkerFactory.AddWorker(GET_CPU_METHOD, new TaskExecutor(this,RefreshCpuState,null,null));
+            WorkerFactory.AddWorker(IDENT_METHOD, new TaskExecutor(this,ProcessIdent,null,null));
         }
 
         public DefaultClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
@@ -25,17 +24,15 @@ namespace NodeNet.Network
         public override object ProcessInput(DataInput input,Node node)
         {
             Console.WriteLine("ProcessInput in Client");
-            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
-            worker.ClientWork(input);
-            return null;
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            return executor.DoWork(input);
         }
 
         /* Multi Client */
-        public void RefreshCpuState(DataInput input)
+        public Object RefreshCpuState(DataInput input)
         {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object, Object>(input.Method);
-            Console.WriteLine("process cpu state");
             ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(input);
+            return null;
         }
 
         public void StartMonitorNodes()
@@ -61,7 +58,7 @@ namespace NodeNet.Network
             }
         }
 
-        public void ProcessIdent(DataInput input)
+        public Object ProcessIdent(DataInput input)
         {
             if (input.MsgType == MessageType.NODE_IDENT)
             {
@@ -74,10 +71,10 @@ namespace NodeNet.Network
                 Port = orchIDentifiers.Item2;
                 genGUID();
                 input.ClientGUID = NodeGUID;
-                SendData(Orch, input);
-                Thread.Sleep(3000);
-                StartMonitorNodes();
+                //StartMonitorNodes();
+                return input;
             }
+            return null;
         }
     }
 }

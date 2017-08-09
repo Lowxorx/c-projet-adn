@@ -1,12 +1,11 @@
 ﻿
 using ADNet.GUI.ViewModel;
-using ADNet.Tasks.Impl;
 using NodeNet.Network;
 using NodeNet.Network.Nodes;
 using System;
 using System.Net.Sockets;
 using NodeNet.Data;
-using NodeNet.Tasks.Impl;
+using NodeNet.Tasks;
 
 namespace c_projet_adn.Network.Impl
 {
@@ -18,7 +17,7 @@ namespace c_projet_adn.Network.Impl
 
         public DNAClient(String name, String adress, int port) : base(name,adress,port)
         {
-            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new DNADisplayMsgWorker(ProcessDisplayMessageFunction,null,null));
+            WorkerFactory.AddWorker(DISPLAY_MESSAGE_METHOD, new TaskExecutor(this,ProcessDisplayMessageFunction,null,null));
             //WorkerFactory.AddWorker(IDENT_METHOD, new IdentitifierWorker(ProcessIdent));
         }
 
@@ -47,10 +46,11 @@ namespace c_projet_adn.Network.Impl
             SendData(Orch, input);
         }
 
-        public void ProcessDisplayMessageFunction(DataInput input)
+        public Object ProcessDisplayMessageFunction(DataInput input)
         {
             Console.WriteLine("Client Process Display Response From Orchestrator Msg : " + input.Data);
             ViewModelLocator.VMLCliStatic.SetMessage((String)input.Data);
+            return null;
         }
     }
 }

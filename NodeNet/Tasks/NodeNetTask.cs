@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NodeNet.Map_Reduce
+namespace NodeNet.Tasks
 {
-    public interface IMapper
+    public enum NodeNetTask
     {
-        Object map(Object input);
+        IDENT,
+        CPU_STATE,
+        TASK_STATUS
     }
 }
