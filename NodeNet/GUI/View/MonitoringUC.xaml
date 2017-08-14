@@ -6,8 +6,8 @@
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Margin="0"
-    d:DesignHeight="510"
-    d:DesignWidth="550"
+    d:DesignHeight="500"
+    d:DesignWidth="600"
     mc:Ignorable="d">
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
@@ -24,7 +24,7 @@
             FontWeight="Bold" />
         <ListView
             x:Name="NodeList"
-            Width="450"
+            Width="600"
             Height="360"
             Margin="0,76,0,0"
             HorizontalAlignment="Center"
@@ -53,6 +53,14 @@
                         Width="90"
                         DisplayMemberBinding="{Binding RamValue, StringFormat='{}{0} %'}"
                         Header="RAM" />
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding State}"
+                        Header="State" />
+                    <GridViewColumn
+                        Width="50"
+                        DisplayMemberBinding="{Binding ProcessingTask}"
+                        Header="Task" />
                 </GridView>
             </ListView.View>
         </ListView>

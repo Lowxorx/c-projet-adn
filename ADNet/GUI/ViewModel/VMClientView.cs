@@ -46,7 +46,7 @@ namespace ADNet.GUI.ViewModel
         {
             WindowLoaded = new RelayCommand(OnLoad);
             UcVmMonitoring = NodeNet.GUI.ViewModel.ViewModelLocator.VMLMonitorUcStatic;
-            ICommandBtnSend = new RelayCommand(SendMessage);
+            ICommandBtnSend = new RelayCommand(DNAQuantStat);
         }
 
         public void OnLoad()
@@ -57,13 +57,13 @@ namespace ADNet.GUI.ViewModel
             Console.WriteLine("Connect client onload end");
         }
 
-        public void SendMessage()
+        public void DNAQuantStat()
         {
-            Console.WriteLine("Sending message " + txtMsg + " to all clients");
-            client.SendMessage(txtMsg);
+            Console.WriteLine("Call Mosule 1 ");
+            client.DNAQuantStat("AAAA\tCCCC\tTTTT\tGGGG\nAAAA\tCCCC\tTTTT\tGGGG\nAAAA\tCCCC\tTTTT\tGGGG");
         }
 
-        public void SetMessage(string s)
+        public void DisplayResult(string s)
         {
             ClientResponse = s;
         }

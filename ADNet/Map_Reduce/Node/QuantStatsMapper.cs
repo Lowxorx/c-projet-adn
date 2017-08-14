@@ -2,16 +2,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace c_projet_adn.Map_Reduce.Impl
+namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsMapper : IMapper
     {
-        #region Properties
-
-        #endregion
-
-        #region Ctor
-        #endregion
 
         #region Methods
 
@@ -19,9 +13,9 @@ namespace c_projet_adn.Map_Reduce.Impl
         {
             List<string> list = new List<string>();
 
-            foreach(char c in ((string)input).Split('\t')[3].ToCharArray())
+            foreach(String s in ((string)input).Split('\t'))
             {
-                list.Add(c.ToString());
+                list.Add(s);
             }
             return list;
         }

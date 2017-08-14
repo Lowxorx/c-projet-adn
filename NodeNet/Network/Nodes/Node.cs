@@ -4,12 +4,11 @@ using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace NodeNet.Network.Nodes
@@ -33,13 +32,25 @@ namespace NodeNet.Network.Nodes
 
         public NodeState State { get; set; }
 
-        private List<Tuple<int, List<int>>> tasks;
-        public List<Tuple<int, List<int>>> Tasks
+        private List<Tuple<int, NodeState>> tasks;
+
+        public List<Tuple<int,NodeState>> Tasks
         {
+            [MethodImpl(MethodImplOptions.Synchronized)]
             get { return tasks; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
             set { tasks = value; }
         }
 
+        /* Stockage des résultats réduits par Task */
+        private List<Tuple<int, Object>> results;
+        public List<Tuple<int, Object>> Results
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get { return results; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set { results = value; }
+        }
 
         private int lastTaskID;
 
@@ -70,6 +81,10 @@ namespace NodeNet.Network.Nodes
         protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
         protected static ManualResetEvent connectDone = new ManualResetEvent(false);
 
+        protected const String GET_CPU_METHOD = "GET_CPU";
+        protected const String IDENT_METHOD = "IDENT";
+        protected const String TASK_STATUS_METHOD = "TASK_STATE";
+
         public Node(String name, String adress, int port)
         {
             WorkerFactory = TaskExecFactory.GetInstance();
@@ -77,7 +92,9 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             genGUID();
-            Tasks = new List<Tuple<int, List<int>>>();
+            Tasks = new List<Tuple<int, NodeState>>();
+            State = NodeState.WAIT;
+            Results = new List<Tuple<int, object>>();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -86,7 +103,8 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             NodeSocket = sock;
-            Tasks = new List<Tuple<int, List<int>>>();
+            Tasks = new List<Tuple<int, NodeState>>();
+            State = NodeState.WAIT;
         }
 
         public void Stop()
@@ -145,7 +163,10 @@ namespace NodeNet.Network.Nodes
 
             try
             {
-                Console.WriteLine("Send data : " + obj + " to : " + node);
+                if (obj.Method != GET_CPU_METHOD)
+                {
+                    Console.WriteLine("Send data : " + obj + " to : " + node);
+                }
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
                     new AsyncCallback(SendCallback),node);
             }
@@ -168,8 +189,6 @@ namespace NodeNet.Network.Nodes
 
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to Node : {1}", bytesSent,node);
-
                 // Signal that all bytes have been sent.
                 sendDone.Set();
             }
@@ -215,7 +234,6 @@ namespace NodeNet.Network.Nodes
 
         public virtual void ReceiveCallback(IAsyncResult ar)
         {
-            Console.WriteLine("Hey le node reçoit quelquechose !!!");
             Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
             byte[] buffer = state.Item2;
             Node node = state.Item1;
@@ -224,7 +242,6 @@ namespace NodeNet.Network.Nodes
             {
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
                 bytearrayList = new List<byte[]>();
                 if (bytesRead == 4096)
                 {
@@ -245,27 +262,27 @@ namespace NodeNet.Network.Nodes
                     {
                         input = DataFormater.Deserialize<DataInput>(buffer);
                     }
-                    Object result = ProcessInput(input,node);
-                    if (result != null)
-                    {
-                        if (result is DataInput)
-                        {
-                            SendData(node, (DataInput)result);
-                        }
-                        else
-                        {
-                            DataInput res = new DataInput()
-                            {
-                                MsgType = MessageType.RESPONSE,
-                                Method = input.Method,
-                                Data = result,
-                                ClientGUID = input.ClientGUID,
-                                NodeGUID = NodeGUID
-                            };
-                            SendData(node, res);
-                        }
-                        receiveDone.Set();
-                    }
+                    ProcessInput(input,node);
+                    //if (result != null)
+                    //{
+                    //    if (result is DataInput)
+                    //    {
+                    //        SendData(node, (DataInput)result);
+                    //    }
+                    //    else
+                    //    {
+                    //        DataInput res = new DataInput()
+                    //        {
+                    //            MsgType = MessageType.RESPONSE,
+                    //            Method = input.Method,
+                    //            Data = result,
+                    //            ClientGUID = input.ClientGUID,
+                    //            NodeGUID = NodeGUID
+                    //        };
+                    //        SendData(node, res);
+                    //    }
+                    //    receiveDone.Set();
+                    //}
                 }
                 Receive(node);
             }
@@ -275,7 +292,7 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public abstract Object ProcessInput(DataInput input,Node node);    
+        public abstract void ProcessInput(DataInput input,Node node);    
 
         public override string ToString()
         {

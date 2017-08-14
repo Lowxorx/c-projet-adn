@@ -4,54 +4,59 @@ using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using ADNet.Map_Reduce.Node;
 
 namespace ADNet.Network.Impl
 {
     public class DNANode : DefaultNode
     {
-        public const String DISPLAY_MESSAGE_METHOD = "DISPLAY_MSG";
+        private const String DNA_QUANT_METHOD = "DNA_QUANT";
         public DNANode(String name, String address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker("QUANT", new TaskExecutor(this,dnaQuant, null, null));
+            WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this,dnaQuant, new QuantStatsMapper(), new QuantStatsReducer()));
             Name = name;
             Address = address;
             Port = port;
         }
-
-
-        private Object dnaQuant(DataInput data)
+        private Object dnaQuant(DataInput input)
         {
-            TaskExecutor executor = WorkerFactory.GetWorker(data.Method);
-            List<String> list = (List<String>)executor.Mapper.map(data.Data);
-            executor.Backgroundworker_DoWork(data,this);
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            List<String> list = (List<String>)executor.Mapper.map(input.Data);
             foreach (string s in list)
             {
-                BackgroundWorker bw = new BackgroundWorker();
-                //// Abonnage ////
-                bw.DoWork += new DoWorkEventHandler(Backgroundworker_DoWork);
-                bw.ProgressChanged += new ProgressChangedEventHandler(executor.Backgroundworker_ProgressChanged);
-                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(executor.Backgroundworker_RunWorkerCompleted);
-
-                //// Demarrage ////
-                bw.RunWorkerAsync(s);
-
-                //// A terminer ////
+                LaunchBGForWork(DnaQuantProcess, PrepareData(input, s));
             }
             return null;
         }
-
-        protected void Backgroundworker_DoWork(object sender, DoWorkEventArgs e)
+        public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
-            
-            //this.NbWorkers++;
-
-            //DataInput input = new DataInput()
-            //{
-            //    Method = "TASK_STATE",
-            //    NodeGUID = executor.NodeGUID,
-
-
-            //};
+            Tuple<DataInput, int> dataAndMeta = (Tuple <DataInput, int > )e.Argument;
+            // On averti l'orchestrateur que l'on commence a process
+            WorkerStart(dataAndMeta);
+            String dnaSequence = (String)dataAndMeta.Item1.Data;
+            // Traitement
+            List<Tuple<char, int>> result = new List<Tuple<char, int>>();
+            foreach(char c in dnaSequence)
+            {
+                if(c == 'A' || c == 'a' || c == 'C' || c == 'c' || c == 'g' || c == 'G' || c == 'T' || c == 't')
+                {
+                    bool present = false;
+                    for(int i = 0; i < result.Count; i++)
+                    {
+                        if(result[i].Item1 == c)
+                        {
+                            result[i] = new Tuple<char,int>(c, result[i].Item2 + 1);
+                            present = true;
+                        }
+                    }
+                    if (!present)
+                    {
+                        result.Add(new Tuple<char, int>(c, 1));
+                    }
+                }
+            }
+            dataAndMeta.Item1.Data = result;
+            e.Result = dataAndMeta;
         }
     }
 }

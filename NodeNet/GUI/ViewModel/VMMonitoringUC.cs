@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using NodeNet.Data;
 using NodeNet.Network.Nodes;
+using NodeNet.Network.States;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -54,6 +55,35 @@ namespace NodeNet.GUI.ViewModel
         public void OnLoad()
         {
             Console.WriteLine("monitor loaded");
+        }
+
+        public void RefreshNodesState(DataInput input)
+        {
+            ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
+            foreach (DefaultNode node in NodeList)
+            {
+                if (node.NodeGUID != input.NodeGUID)
+                {
+                    list.Add(node);
+                }
+                else
+                {
+                    node.State = ((Tuple<NodeState,Object>)input.Data).Item1;
+                    list.Add(node);
+                }
+            }
+            NodeList = null;
+            NodeList = list;
+        }
+
+        internal void RefreshTaskState(DataInput input)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void CancelTask(DataInput input)
+        {
+            throw new NotImplementedException();
         }
     }
 

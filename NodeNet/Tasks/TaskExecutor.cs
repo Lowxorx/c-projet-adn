@@ -33,44 +33,7 @@ namespace NodeNet.Tasks
 
         public object Clone()
         {
-            return null;
+            return new TaskExecutor(executor,ProcessAction,Mapper,Reducer);
         }
-
-        #region EventHandlers
-        protected void Backgroundworker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            this.NbWorkers++;
-            DataInput input = new DataInput()
-            {
-                Method = "TASK_STATE",
-                NodeGUID = executor.NodeGUID,
-
-                
-            };
-        }
-
-        public void Backgroundworker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-
-        }
-
-        public void Backgroundworker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-
-        }
-
-        public void Backgroundworker_DoWork(DataInput data, Node sender)
-        {
-           
-
-            //DataInput input = new DataInput()
-            //{
-            //    Method = "TASK_STATE",
-            //    NodeGUID = executor.NodeGUID,
-
-
-            //};
-        }
-        #endregion
     }
 }

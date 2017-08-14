@@ -2,6 +2,7 @@
 {
     public enum NodeState
     {
+        JOB_START,
         WORK,
         WAIT,
         FINISH,

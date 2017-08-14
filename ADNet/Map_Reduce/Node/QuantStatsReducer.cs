@@ -1,10 +1,8 @@
 ﻿using NodeNet.Map_Reduce;
-using NodeNet.Misc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace c_projet_adn.Map_Reduce.Impl
+namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsReducer : IReducer
     {
@@ -13,6 +11,11 @@ namespace c_projet_adn.Map_Reduce.Impl
 
         public Object reduce(object concat, object input)
         {
+            if(concat == null || ((List<Tuple<char, int>>)concat).Count == 0)
+            {
+                Console.WriteLine("Input : " + input);
+                return input;
+            }
             List<Tuple<char, int>> result = (List<Tuple<char, int>>)concat;
             foreach (Tuple<char, int> inputpl in (List < Tuple<char, int> > )input)
             {
@@ -28,7 +31,7 @@ namespace c_projet_adn.Map_Reduce.Impl
                 if (!present)
                     result.Add(inputpl);                
             }
-
+            Console.WriteLine("Result" + result);
             return result;
         }
         #endregion
