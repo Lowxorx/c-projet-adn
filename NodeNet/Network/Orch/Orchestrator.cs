@@ -130,51 +130,11 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        public override void ReceiveCallback(IAsyncResult ar)
-        {
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
-            try
-            {
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                bytearrayList = new List<byte[]>();
-                if (bytesRead == 4096)
-                {
-                    byte[] data = buffer;
-                    bytearrayList.Add(data);
-                }
-                else
-                {
-                    DataInput input;
-                    if (bytearrayList.Count > 0)
-                    {
-                        byte[] data = bytearrayList
-                                     .SelectMany(a => a)
-                                     .ToArray();
-                        input = DataFormater.Deserialize<DataInput>(data);
-                    }
-                    else
-                    {
-                        input = DataFormater.Deserialize<DataInput>(buffer);
-                    }
-
-
-                    ProcessInput(input, node);
-                    receiveDone.Set();
-                }
-                Receive(node);
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
+      
 
         public override void ProcessInput(DataInput input, Node node)
         {
+            Console.WriteLine("Process input for : " + input.Method);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             Object res = executor.DoWork(input);
             if(res != null) {
@@ -288,7 +248,7 @@ namespace NodeNet.Network.Orch
         {
             
             // On fait transiter l'info au client
-            SendData(GetClientFromGUID(input.ClientGUID), input);
+            //SendData(GetClientFromGUID(input.ClientGUID), input);
             // Et on ne renvoit rien au Node
             return null;
         }
@@ -315,6 +275,9 @@ namespace NodeNet.Network.Orch
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void reduce(DataInput input, TaskExecutor executor)
         {
+            updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
+            updateNodeStatus(NodeState.WAIT, input.NodeGUID);
+            Console.WriteLine("Reduce");
             // Reduce
             // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
             // pour y concaténer le resultat du travail du noeud
@@ -326,11 +289,10 @@ namespace NodeNet.Network.Orch
                     result = tuple;
                 }
             }
-            Console.WriteLine("Result : " + result.Item1 + " " + result.Item2);
             Object reduceRes = executor.Reducer.reduce(result.Item2, input.Data);
-            Console.WriteLine("Reuce res : " + ((List<Tuple<char, int>>)reduceRes).Count);
-            if (TaskIsCompleted(input.TaskId, input.NodeTaskId))
+            if (TaskIsCompleted(input.TaskId))
             {
+                Console.WriteLine("TaskIsCompleted ! ");
                 // TODO check si tous les nodes ont finis
                 DataInput response = new DataInput()
                 {
@@ -345,17 +307,15 @@ namespace NodeNet.Network.Orch
             }
             else
             {
-                Console.WriteLine("Task non completed");
                 for (int i = 0; i < Results.Count; i++)
                 {
                     if (Results[i].Item1 == input.TaskId)
                     {
                         Results[i] = new Tuple<int, Object>(input.TaskId, reduceRes);
-                        Console.WriteLine("Update : " + Results[i].Item2);
                     }
                 }
             }
-            updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH);
+            
         }
 
       
@@ -366,12 +326,11 @@ namespace NodeNet.Network.Orch
             createClientTask(input.ClientGUID, newTaskId);
             Tuple<int, Object> emptyResult = new Tuple<int, Object>(newTaskId, null);
             Results.Add(emptyResult);
-
-            // Démarrage du thread en écoute sur la liste des nodes pour le mapping en lazzy loading
-            ManualResetEvent _busy = new ManualResetEvent(false);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             // On récupère le résultat du map
             IMapper mapper = executor.Mapper;
+            // Démarrage du thread en écoute sur la liste des nodes pour le mapping en lazzy loading
+            ManualResetEvent _busy = new ManualResetEvent(false);
             BackgroundWorker bw = new BackgroundWorker()
             {
                 WorkerSupportsCancellation = true
@@ -379,6 +338,7 @@ namespace NodeNet.Network.Orch
             bw.DoWork += (o, a) =>
             {
                 bool endMap = false;
+               
                 while (!endMap)
                 {
                     bool allNodeWork = true;
@@ -390,17 +350,17 @@ namespace NodeNet.Network.Orch
                         if (Nodes[i].State == NodeState.WAIT)
                         {
                             Object data = mapper.map(input.Data);
-                            if(data != null)
-                            {
-                                sendSubTaskToNode(Nodes[i], newTaskId, input, data);
-                            }
-                            else
+                           
+                            sendSubTaskToNode(Nodes[i], newTaskId, input, data);
+                            Nodes[i].State = NodeState.WORK;
+                            if (mapper.mapIsEnd())
                             {
                                 // endMap vaudra true si on a déjà tout mapper
                                 endMap = true;
                                 // Si on a tout mapper on l'indique dans le tableau de distribution des NodeTask
                                 setTaskIsMapped(newTaskId);
                             }
+
                             allNodeWork = false;
                         }      
                     }
@@ -444,7 +404,8 @@ namespace NodeNet.Network.Orch
         }
 
         private void sendSubTaskToNode(Node node, int newTaskID, DataInput input, Object data)
-        {        
+        {
+            Console.WriteLine("SendMApToNode");
             int newNodeTaskID = LastSubTaskID;
             createNodeTasks(node, newTaskID, newNodeTaskID);
             DataInput res = new DataInput()
@@ -459,6 +420,7 @@ namespace NodeNet.Network.Orch
             };
             SendData(node, res);
         }
+
         private void createClientTask(string clientGUID, int newTaskID)
         {
             // Ajout de la task au client 
@@ -482,16 +444,31 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private void updateNodeTaskStatus(int nodeTaskId, NodeState status)
+        private void updateNodeTaskStatus(int nodeTaskId, NodeState status, string nodeGUID)
         {
             foreach(Node node in Nodes)
             {
-                for(int i = 0; i < node.Tasks.Count; i++)
+                if (node.NodeGUID.Equals(nodeGUID))
                 {
-                    if(node.Tasks[i].Item1 == nodeTaskId)
+                    for (int i = 0; i < node.Tasks.Count; i++)
                     {
-                        node.Tasks[i] = new Tuple<int, NodeState>(nodeTaskId, status);
+                        if (node.Tasks[i].Item1 == nodeTaskId)
+                        {
+                            node.Tasks[i] = new Tuple<int, NodeState>(nodeTaskId, status);
+                        }
                     }
+                }
+            }
+        }
+
+        private void updateNodeStatus(NodeState status, string nodeGUID)
+        {
+            Console.WriteLine("Set status of node : " + nodeGUID + " to : " + status);
+            foreach (Node node in Nodes)
+            {
+                if (node.NodeGUID.Equals(nodeGUID))
+                {
+                    node.State = status;
                 }
             }
         }
@@ -602,7 +579,7 @@ namespace NodeNet.Network.Orch
         }
 
         // Checker si toutes les nodes correspondant à cette task sont en etat FINISH
-        private bool TaskIsCompleted(int taskId,int idCurrentTask)
+        private bool TaskIsCompleted(int taskId)
         {
             bool completed = true;
             foreach (Tuple<int, List<int>,bool> task in TaskDistrib)
@@ -618,7 +595,7 @@ namespace NodeNet.Network.Orch
                         foreach (int subTask in task.Item2)
                         {
                             // Ici on vérifie qsue toutes les subtask soient en été FINISH à part celle que l'on vient de recevoir
-                            if (getSubTaskState(subTask) != NodeState.FINISH && subTask != idCurrentTask)
+                            if (getSubTaskState(subTask) != NodeState.FINISH)
                             {
                                 completed = false;
                             }

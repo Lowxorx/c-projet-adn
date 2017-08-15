@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace NodeNet.Map_Reduce
 {
-    public interface IMapper
+    public interface IMapper : ICloneable
     {
         Object map(Object input);
+
+        bool mapIsEnd();
+
+        IMapper reset();
+
+        new object Clone();
     }
 }

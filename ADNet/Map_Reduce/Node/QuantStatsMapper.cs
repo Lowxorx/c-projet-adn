@@ -6,9 +6,6 @@ namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsMapper : IMapper
     {
-
-        #region Methods
-
         public Object map(Object input)
         {
             List<string> list = new List<string>();
@@ -20,7 +17,19 @@ namespace ADNet.Map_Reduce.Node
             return list;
         }
 
+        public bool mapIsEnd()
+        {
+            throw new NotImplementedException();
+        }
 
-        #endregion
+        IMapper IMapper.reset()
+        {
+            return this;
+        }
+
+        public object Clone()
+        {
+            return new QuantStatsMapper();
+        }
     }   
 }

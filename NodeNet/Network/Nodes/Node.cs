@@ -13,6 +13,17 @@ using System.Threading;
 
 namespace NodeNet.Network.Nodes
 {
+    public class StateObject
+    {
+        // Client socket.
+        public Node node = null;
+        // Size of receive buffer.
+        public const int BufferSize = 4096;
+        // Receive buffer.
+        public byte[] buffer = new byte[BufferSize];
+        // Received data
+        public List<byte[]> data = new List<byte[]>();
+    }
     public abstract class Node : INode
     {
         public String NodeGUID;
@@ -163,10 +174,7 @@ namespace NodeNet.Network.Nodes
 
             try
             {
-                if (obj.Method != GET_CPU_METHOD)
-                {
-                    Console.WriteLine("Send data : " + obj + " to : " + node);
-                }
+                Console.WriteLine("Send data : " + obj + " to : " + node);
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
                     new AsyncCallback(SendCallback),node);
             }
@@ -203,9 +211,10 @@ namespace NodeNet.Network.Nodes
             try
             {
                 // Begin receiving the data from the remote device.
-                byte[] buffer = new byte[BUFFER_SIZE];
-                node.NodeSocket.BeginReceive(buffer, 0, BUFFER_SIZE, 0,
-                    new AsyncCallback(ReceiveCallback), Tuple.Create(node, buffer));
+                StateObject obj = new StateObject();
+                obj.node = node;
+                node.NodeSocket.BeginReceive(obj.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReceiveCallback), obj);
             }
             catch (Exception e)
             {
@@ -232,61 +241,35 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public virtual void ReceiveCallback(IAsyncResult ar)
+        public void ReceiveCallback(IAsyncResult ar)
         {
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
             try
             {
+                // Retrieve the state object and the client socket 
+                // from the asynchronous state object.
+                StateObject stateObj = (StateObject)ar.AsyncState;
+                Node node = stateObj.node;
+
                 // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                bytearrayList = new List<byte[]>();
-                if (bytesRead == 4096)
+                int bytesRead = node.NodeSocket.EndReceive(ar);
+
+                stateObj.data.Add(stateObj.buffer);
+                try
                 {
-                    byte[] data = buffer;
-                    bytearrayList.Add(data);
-                }
-                else
-                {
-                    DataInput input;
-                    if (bytearrayList.Count > 0)
-                    {
-                        byte[] data = bytearrayList
+                    byte[] data = stateObj.data
                                      .SelectMany(a => a)
                                      .ToArray();
-                        input = DataFormater.Deserialize<DataInput>(data);
-                    }
-                    else
-                    {
-                        input = DataFormater.Deserialize<DataInput>(buffer);
-                    }
-                    ProcessInput(input,node);
-                    //if (result != null)
-                    //{
-                    //    if (result is DataInput)
-                    //    {
-                    //        SendData(node, (DataInput)result);
-                    //    }
-                    //    else
-                    //    {
-                    //        DataInput res = new DataInput()
-                    //        {
-                    //            MsgType = MessageType.RESPONSE,
-                    //            Method = input.Method,
-                    //            Data = result,
-                    //            ClientGUID = input.ClientGUID,
-                    //            NodeGUID = NodeGUID
-                    //        };
-                    //        SendData(node, res);
-                    //    }
-                    //    receiveDone.Set();
-                    //}
+                    DataInput input = DataFormater.Deserialize<DataInput>(data);
+                    Receive(node);
+                    ProcessInput(input, node);
                 }
-                Receive(node);
+                catch(Exception e)
+                {
+                    node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReceiveCallback), stateObj);
+                }
             }
-            catch (SocketException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }

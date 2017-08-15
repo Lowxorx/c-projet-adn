@@ -33,7 +33,14 @@ namespace NodeNet.Tasks
 
         public object Clone()
         {
-            return new TaskExecutor(executor,ProcessAction,Mapper,Reducer);
+            IMapper newMapper = null;
+            IReducer newReducer = null;
+            if (Mapper != null && Reducer != null)
+            {
+                newMapper = (IMapper)Mapper.Clone();
+                newReducer = (IReducer)Reducer.Clone();
+            }
+            return new TaskExecutor(executor,ProcessAction, newMapper, newReducer);
         }
     }
 }

@@ -67,6 +67,7 @@ namespace NodeNet.Data
                 {
                     bf.Serialize(ms, obj);
                     byte[] compressed = Compress(ms.ToArray());
+                    // TOTO Concatener au tableau une sequence
                     return compressed;
                 }
             }
@@ -83,20 +84,12 @@ namespace NodeNet.Data
         public static T Deserialize<T>(byte[] data)
         {
             object obj = null;
-            try
+            byte[] uncompressed = Decompress(data);
+            BinaryFormatter bf = new BinaryFormatter();
+            using (MemoryStream ms = new MemoryStream(uncompressed))
             {
-                byte[] uncompressed = Decompress(data);
-                BinaryFormatter bf = new BinaryFormatter();
-                using (MemoryStream ms = new MemoryStream(uncompressed))
-                {
-                    obj = bf.Deserialize(ms);
-                }
+                obj = bf.Deserialize(ms);
             }
-            catch (SerializationException ex)
-            {
-                Console.WriteLine("Deserialize Error : " + ex);
-            }
-
             return (T)obj;
         }
     }

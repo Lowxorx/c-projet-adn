@@ -28,7 +28,7 @@ namespace NodeNet.Tasks
         // TODO check if method name exists
         public TaskExecutor GetWorker(String methodName)
         {
-            return workers[methodName];
+            return (TaskExecutor)workers[methodName].Clone() ;
         }
     }
 }

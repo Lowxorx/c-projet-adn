@@ -7,7 +7,8 @@ namespace ADNet.Map_Reduce.Orch
     public class OrchQuantStatMapper : IMapper
     {
         public int nbrlines { get; set; }
-        public int currentline { get; set; }
+        private int currentline { get; set; }
+        private bool thisThisTheEnd;
 
         public OrchQuantStatMapper(int nbLineByNode)
         {
@@ -20,19 +21,32 @@ namespace ADNet.Map_Reduce.Orch
             int startLine = currentline;
             String[] lines = ((String)input).Split('\n');
             String output = "";
-            if(currentline >= lines.Length)
+            for(int i = currentline; i < lines.Length && i < startLine + nbrlines; i++)
             {
-                return null;
+                output += lines[i];
+                currentline++;
             }
-            else
+            if (currentline >= lines.Length)
             {
-                for(int i = currentline; i < lines.Length && i < startLine + nbrlines; i++)
-                {
-                    output += lines[i];
-                    currentline++;
-                }
-                return output;
+                thisThisTheEnd = true;
             }
+            return output;
+        }
+
+        public IMapper reset()
+        {
+            currentline = 0;
+            return this;
+        }
+
+        public bool mapIsEnd()
+        {
+            return thisThisTheEnd;
+        }
+
+        public object Clone()
+        {
+            return new OrchQuantStatMapper(nbrlines);
         }
     }
 }

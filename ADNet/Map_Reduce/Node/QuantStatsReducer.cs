@@ -6,14 +6,12 @@ namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsReducer : IReducer
     {
-
         #region Methods
 
         public Object reduce(object concat, object input)
         {
-            if(concat == null || ((List<Tuple<char, int>>)concat).Count == 0)
+            if (concat == null || ((List<Tuple<char, int>>)concat).Count == 0)
             {
-                Console.WriteLine("Input : " + input);
                 return input;
             }
             List<Tuple<char, int>> result = (List<Tuple<char, int>>)concat;
@@ -31,10 +29,13 @@ namespace ADNet.Map_Reduce.Node
                 if (!present)
                     result.Add(inputpl);                
             }
-            Console.WriteLine("Result" + result);
+
             return result;
         }
         #endregion
-
+        public object Clone()
+        {
+            return new QuantStatsReducer();
+        }
     }
 }

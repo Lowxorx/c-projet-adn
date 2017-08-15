@@ -3,6 +3,8 @@ using NodeNet.Map_Reduce;
 using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -23,12 +25,11 @@ namespace NodeNet.Network.Nodes
             get { return processingTask; }
             set { processingTask = value; }
         }
-        private List<Tuple<int,int, NodeState>> workerTaskStatus;
-        public List<Tuple<int,int, NodeState>> WorkerTaskStatus
+        // int -> id de la worker task, int -> id de la task, NodeStatus -> Status de la WorkerTask
+        private ConcurrentDictionary<int,Tuple<int, NodeState>> workerTaskStatus;
+        public ConcurrentDictionary<int, Tuple<int, NodeState>> WorkerTaskStatus
         {
-            [MethodImpl(MethodImplOptions.Synchronized)]
             get { return workerTaskStatus; }
-            [MethodImpl(MethodImplOptions.Synchronized)]
             set { workerTaskStatus = value; }
         }
         bool monitoringEnable = true;
@@ -37,7 +38,7 @@ namespace NodeNet.Network.Nodes
 
         public DefaultNode(String name, String adress, int port) : base(name, adress, port)
         {
-            WorkerTaskStatus = new List<Tuple<int, int, NodeState>>();
+            WorkerTaskStatus = new ConcurrentDictionary<int, Tuple<int, NodeState>>();
             WorkerFactory = TaskExecFactory.GetInstance();
             try
             {
@@ -136,7 +137,6 @@ namespace NodeNet.Network.Nodes
                         Data = new Tuple<float, double>(cpuCount, ramCount)
                     };
                     SendData(Orch, perfInfo);
-                    Console.WriteLine("Send node info to server");
                     Thread.Sleep(3000);
                 }
             };
@@ -147,23 +147,32 @@ namespace NodeNet.Network.Nodes
         protected void LaunchBGForWork(Action<object, DoWorkEventArgs> ProcessFunction,DataInput taskData)
         {
             BackgroundWorker bw = new BackgroundWorker();
+
             //// Abonnage ////
             bw.DoWork += new DoWorkEventHandler(ProcessFunction);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerEndProcess);
             int workerTaskID = createWorkerTask(taskData.NodeTaskId);
             Tuple< DataInput,int> dataAndMeta = new Tuple<DataInput ,int>(taskData, workerTaskID);
+            //WorkerStart(dataAndMeta);
             bw.RunWorkerAsync(dataAndMeta);
         }
 
         protected void WorkerStart(Tuple<DataInput, int> metaData)
         {
-            updateWorkerTaskStatus(metaData.Item2, NodeState.WORK);
+            updateWorkerTaskStatus(metaData.Item2,metaData.Item1.NodeTaskId, NodeState.WORK);
             if (isFirstToStart(metaData.Item1.TaskId))
             {
-                DataInput resp = metaData.Item1;
-                resp.MsgType = MessageType.CALL;
-                resp.Method = "TASK_STATUS";
-                resp.Data = new Tuple<NodeState, double>(NodeState.WORK, 0);
+                Console.WriteLine("First to start");
+                DataInput resp = new DataInput()
+                {
+                    ClientGUID = metaData.Item1.ClientGUID,
+                    NodeGUID = NodeGUID,
+                    MsgType = MessageType.CALL,
+                    Method = TASK_STATUS_METHOD,
+                    TaskId = metaData.Item1.TaskId,
+                    NodeTaskId = metaData.Item1.NodeTaskId,
+                    Data = new Tuple<NodeState, double>(NodeState.WORK, 0)
+                };
                 SendData(Orch, resp);
             }
             else
@@ -178,26 +187,23 @@ namespace NodeNet.Network.Nodes
             // Manage if e.Error != null
             Tuple<DataInput, int> data = (Tuple<DataInput, int>)e.Result;
             DataInput resp = data.Item1;
-            updateWorkerTaskStatus(data.Item2, NodeState.FINISH);
+            updateWorkerTaskStatus(data.Item2,data.Item1.NodeTaskId, NodeState.FINISH);
             IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
             Object result = reducer.reduce(getResultFromTaskId(resp.NodeTaskId), resp.Data);
-            if (TaskIsCompleted(resp.NodeTaskId,data.Item2))
+            updateResult(result, data.Item1.NodeTaskId);
+            if (TaskIsCompleted(resp.NodeTaskId))
             {
+                Console.WriteLine("Task is completed");
                 resp.Data = result;
                 SendData(Orch, resp);
             }
             else
             {
-                updateResult(result, data.Item1.NodeTaskId);
+                
             }
         }
 
-      
-
         #endregion
-
-
-
 
         #region Utilitary Methods
         /* 
@@ -208,31 +214,30 @@ namespace NodeNet.Network.Nodes
         private int createWorkerTask(int taskID)
         {
             bool absent = true;
-            int lastsubID = LastSubTaskID;
+            int lastWorkerTaskID = LastSubTaskID;
             for (int i = 0; i < Tasks.Count; i++)
             {
                 if (Tasks[i].Item1 == taskID)
                 {
                     // Ajout d'une workerTask dans WorkerTaskStatus avec le statut WORK
-                    WorkerTaskStatus.Add(new Tuple<int, int, NodeState>(taskID, lastsubID, NodeState.WORK));
-                    absent = false;
+                    absent = !WorkerTaskStatus.TryAdd(lastWorkerTaskID,new Tuple<int,  NodeState>(taskID, NodeState.WORK));
                 }
             }
             if (absent)
             {
                 throw new Exception("Aucune Task trouvé dans la liste Tasks du Node pour cet ID : " + taskID);
             }
-            return lastsubID;
+            return lastWorkerTaskID;
         }
 
-        private void updateWorkerTaskStatus(int workerTaskID, NodeState status)
+        private void updateWorkerTaskStatus(int workerTaskID,int nodeTaskId, NodeState status)
         {
-            for (int i = 0; i < WorkerTaskStatus.Count; i++)
+            Console.WriteLine("Update Worker status : " + status);
+            Tuple<int, NodeState> workerTask;
+            Tuple<int, NodeState> updatedWorkerTask = new Tuple<int, NodeState>(nodeTaskId,status);
+            if (WorkerTaskStatus.TryGetValue(workerTaskID, out workerTask))
             {
-                if (WorkerTaskStatus[i].Item2 == workerTaskID)
-                {
-                    WorkerTaskStatus[i] = new Tuple<int, int, NodeState>(WorkerTaskStatus[i].Item1, WorkerTaskStatus[i].Item2, status);
-                }
+                WorkerTaskStatus.TryUpdate(workerTaskID, updatedWorkerTask, workerTask);
             }
         }
 
@@ -255,23 +260,23 @@ namespace NodeNet.Network.Nodes
         {
             int nbWorking = 0;
 
-            foreach (Tuple<int, int, NodeState> workerTask in WorkerTaskStatus)
+            foreach (var item in WorkerTaskStatus)
             {
-                if (workerTask.Item1 == taskID)
+                if (item.Value.Item1 == taskID)
                 {
-                    nbWorking = workerTask.Item3 == NodeState.WORK ? nbWorking + 1 : nbWorking;
+                    nbWorking = item.Value.Item2 == NodeState.WORK ? nbWorking + 1 : nbWorking;
                 }
             }
 
             return nbWorking == 1;
         }
 
-        private bool TaskIsCompleted(int taskId,int currentTaskId)
+        private bool TaskIsCompleted(int taskId)
         {
             bool completed = true;
-            foreach(Tuple<int,int,NodeState> workerTask in WorkerTaskStatus)
+            foreach(var item in WorkerTaskStatus)
             {
-                if(workerTask.Item1 == taskId && workerTask.Item3 != NodeState.FINISH && workerTask.Item2 != currentTaskId)
+                if(item.Value.Item1 == taskId && item.Value.Item2 != NodeState.FINISH)
                 {
                     completed = false;
                 }
