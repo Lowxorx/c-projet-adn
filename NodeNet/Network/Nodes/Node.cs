@@ -83,6 +83,23 @@ namespace NodeNet.Network.Nodes
         public float CpuValue { get { return (float)(Math.Truncate(cpuValue * 100.0) / 100.0); } set { cpuValue = value; } }
         private double ramValue { get; set; }
         public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
+        private int workingTask;
+
+        public int WorkingTask
+        {
+            get { return workingTask; }
+            set { workingTask = value; }
+        }
+
+        private double progression;
+
+        public double Progression
+        {
+            get { return progression; }
+            set { progression = value; }
+        }
+
+
 
         public TaskExecFactory WorkerFactory { get; set; }
 
@@ -137,9 +154,7 @@ namespace NodeNet.Network.Nodes
             try
             {
                 ServerSocket.BeginConnect(remoteEP, new AsyncCallback(ConnectCallback), ServerSocket);
-
                 connectDone.WaitOne();
-
             }
             catch (Exception e)
             {
@@ -174,7 +189,10 @@ namespace NodeNet.Network.Nodes
 
             try
             {
-                Console.WriteLine("Send data : " + obj + " to : " + node);
+                if (obj.Method != GET_CPU_METHOD)
+                {
+                    Console.WriteLine("Send data : " + obj + " to : " + node);
+                }
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
                     new AsyncCallback(SendCallback),node);
             }

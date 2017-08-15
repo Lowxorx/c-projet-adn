@@ -3,7 +3,6 @@ using NodeNet.Map_Reduce;
 using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +10,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace NodeNet.Network.Nodes
@@ -144,7 +142,7 @@ namespace NodeNet.Network.Nodes
             return null;
         }
 
-        protected void LaunchBGForWork(Action<object, DoWorkEventArgs> ProcessFunction,DataInput taskData)
+        protected void LaunchBGForWork(Action<object, DoWorkEventArgs> ProcessFunction,DataInput taskData,int totalNbWorker)
         {
             BackgroundWorker bw = new BackgroundWorker();
 
@@ -152,45 +150,32 @@ namespace NodeNet.Network.Nodes
             bw.DoWork += new DoWorkEventHandler(ProcessFunction);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerEndProcess);
             int workerTaskID = createWorkerTask(taskData.NodeTaskId);
-            Tuple< DataInput,int> dataAndMeta = new Tuple<DataInput ,int>(taskData, workerTaskID);
-            //WorkerStart(dataAndMeta);
+            Tuple<int,DataInput,int> dataAndMeta = new Tuple<int,DataInput,int>(workerTaskID,taskData, totalNbWorker);
             bw.RunWorkerAsync(dataAndMeta);
         }
 
-        protected void WorkerStart(Tuple<DataInput, int> metaData)
+        private double getWorkersProgression(int nodeTaskID, int totalNbWorker)
         {
-            updateWorkerTaskStatus(metaData.Item2,metaData.Item1.NodeTaskId, NodeState.WORK);
-            if (isFirstToStart(metaData.Item1.TaskId))
+            int nbWorkerEnd = 0;
+            foreach (var item in WorkerTaskStatus)
             {
-                Console.WriteLine("First to start");
-                DataInput resp = new DataInput()
+                if (item.Value.Item1 == nodeTaskID && item.Value.Item2 == NodeState.FINISH)
                 {
-                    ClientGUID = metaData.Item1.ClientGUID,
-                    NodeGUID = NodeGUID,
-                    MsgType = MessageType.CALL,
-                    Method = TASK_STATUS_METHOD,
-                    TaskId = metaData.Item1.TaskId,
-                    NodeTaskId = metaData.Item1.NodeTaskId,
-                    Data = new Tuple<NodeState, double>(NodeState.WORK, 0)
-                };
-                SendData(Orch, resp);
+                    nbWorkerEnd++;
+                }
             }
-            else
-            {
-
-            }
-            // TODO sinon le taux d'avancement du noeud
+            return nbWorkerEnd * 100 / totalNbWorker;
         }
 
         protected void WorkerEndProcess(object sender, RunWorkerCompletedEventArgs e)
         {
             // Manage if e.Error != null
-            Tuple<DataInput, int> data = (Tuple<DataInput, int>)e.Result;
-            DataInput resp = data.Item1;
-            updateWorkerTaskStatus(data.Item2,data.Item1.NodeTaskId, NodeState.FINISH);
+            Tuple<int,DataInput,int> data = (Tuple<int,DataInput, int>)e.Result;
+            DataInput resp = data.Item2;
+            updateWorkerTaskStatus(data.Item1,data.Item2.NodeTaskId, NodeState.FINISH);
             IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
             Object result = reducer.reduce(getResultFromTaskId(resp.NodeTaskId), resp.Data);
-            updateResult(result, data.Item1.NodeTaskId);
+            updateResult(result, data.Item2.NodeTaskId);
             if (TaskIsCompleted(resp.NodeTaskId))
             {
                 Console.WriteLine("Task is completed");
@@ -199,7 +184,20 @@ namespace NodeNet.Network.Nodes
             }
             else
             {
-                
+                double progression = 0;
+                progression = getWorkersProgression(data.Item2.NodeTaskId, data.Item3);
+                Console.WriteLine("SendProgession to Orch : " + progression);
+                DataInput status = new DataInput()
+                {
+                    ClientGUID = data.Item2.ClientGUID,
+                    NodeGUID = NodeGUID,
+                    MsgType = MessageType.CALL,
+                    Method = TASK_STATUS_METHOD,
+                    TaskId = data.Item2.TaskId,
+                    NodeTaskId = data.Item2.NodeTaskId,
+                    Data = new Tuple<NodeState, double>(NodeState.WORK, progression)
+                };
+                SendData(Orch, status);
             }
         }
 

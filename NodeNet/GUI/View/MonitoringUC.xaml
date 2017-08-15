@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Margin="0"
     d:DesignHeight="500"
-    d:DesignWidth="600"
+    d:DesignWidth="650"
     mc:Ignorable="d">
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
@@ -24,7 +24,7 @@
             FontWeight="Bold" />
         <ListView
             x:Name="NodeList"
-            Width="600"
+            Width="650"
             Height="360"
             Margin="0,76,0,0"
             HorizontalAlignment="Center"
@@ -59,8 +59,12 @@
                         Header="State" />
                     <GridViewColumn
                         Width="50"
-                        DisplayMemberBinding="{Binding ProcessingTask}"
+                        DisplayMemberBinding="{Binding WorkingTask}"
                         Header="Task" />
+                    <GridViewColumn
+                        Width="50"
+                        DisplayMemberBinding="{Binding Progression, StringFormat='{}{0} %'}"
+                        Header="%" />
                 </GridView>
             </ListView.View>
         </ListView>

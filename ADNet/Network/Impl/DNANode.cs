@@ -24,16 +24,15 @@ namespace ADNet.Network.Impl
             List<String> list = (List<String>)executor.Mapper.map(input.Data);
             foreach (string s in list)
             {
-                LaunchBGForWork(DnaQuantProcess, PrepareData(input, s));
+                LaunchBGForWork(DnaQuantProcess, PrepareData(input, s),list.Count);
             }
             return null;
         }
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
-            Tuple<DataInput, int> dataAndMeta = (Tuple <DataInput, int > )e.Argument;
+            Tuple<int,DataInput, int> dataAndMeta = (Tuple <int,DataInput, int > )e.Argument;
             // On averti l'orchestrateur que l'on commence a process
-            WorkerStart(dataAndMeta);
-            String dnaSequence = (String)dataAndMeta.Item1.Data;
+            String dnaSequence = (String)dataAndMeta.Item2.Data;
             // Traitement
             List<Tuple<char, int>> result = new List<Tuple<char, int>>();
             foreach(char c in dnaSequence)
@@ -55,7 +54,7 @@ namespace ADNet.Network.Impl
                     }
                 }
             }
-            dataAndMeta.Item1.Data = result;
+            dataAndMeta.Item2.Data = result;
             e.Result = dataAndMeta;
         }
     }

@@ -246,9 +246,9 @@ namespace NodeNet.Network.Orch
 
         private object RefreshTaskState(DataInput input)
         {
-            
+            Console.WriteLine("Process RefreshTaskState : " + ((Tuple<NodeState,double>)input.Data).Item2);
             // On fait transiter l'info au client
-            //SendData(GetClientFromGUID(input.ClientGUID), input);
+            SendData(GetClientFromGUID(input.ClientGUID), input);
             // Et on ne renvoit rien au Node
             return null;
         }

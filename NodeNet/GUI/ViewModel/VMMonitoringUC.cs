@@ -68,7 +68,7 @@ namespace NodeNet.GUI.ViewModel
                 }
                 else
                 {
-                    node.State = ((Tuple<NodeState,Object>)input.Data).Item1;
+                    node.State = ((Tuple<NodeState, Double>)input.Data).Item1;
                     list.Add(node);
                 }
             }
@@ -78,7 +78,23 @@ namespace NodeNet.GUI.ViewModel
 
         internal void RefreshTaskState(DataInput input)
         {
-            throw new NotImplementedException();
+            ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
+            foreach (DefaultNode node in NodeList)
+            {
+                if (node.NodeGUID != input.NodeGUID)
+                {
+                    list.Add(node);
+                }
+                else
+                {
+                    node.State = ((Tuple<NodeState, double>)input.Data).Item1;
+                    node.Progression = ((Tuple<NodeState, Double>)input.Data).Item2;
+                    node.WorkingTask = input.TaskId;
+                    list.Add(node);
+                }
+            }
+            NodeList = null;
+            NodeList = list;
         }
 
         internal void CancelTask(DataInput input)
