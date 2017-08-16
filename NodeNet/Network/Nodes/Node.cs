@@ -43,9 +43,9 @@ namespace NodeNet.Network.Nodes
 
         public NodeState State { get; set; }
 
-        private List<Tuple<int, NodeState>> tasks;
+        private List<Task> tasks;
 
-        public List<Tuple<int,NodeState>> Tasks
+        public List<Task> Tasks
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
             get { return tasks; }
@@ -120,7 +120,7 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             genGUID();
-            Tasks = new List<Tuple<int, NodeState>>();
+            Tasks = new List<Task>();
             State = NodeState.WAIT;
             Results = new List<Tuple<int, object>>();
         }
@@ -131,7 +131,7 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             NodeSocket = sock;
-            Tasks = new List<Tuple<int, NodeState>>();
+            Tasks = new List<Task>();
             State = NodeState.WAIT;
         }
 

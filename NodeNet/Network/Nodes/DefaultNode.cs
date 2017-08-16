@@ -58,7 +58,7 @@ namespace NodeNet.Network.Nodes
             if (!input.Method.Equals(IDENT_METHOD) && !input.Method.Equals(GET_CPU_METHOD))
             {
                 // Creation d'une nouvelle task
-                Tasks.Add(new Tuple<int, NodeState>(input.NodeTaskId, NodeState.WAIT));
+                Tasks.Add(new Task(input.NodeTaskId, NodeState.WAIT));
                 Results.Add(new Tuple<int, object>(input.NodeTaskId, null));
             }
             Object res = executor.DoWork(input);
@@ -215,7 +215,7 @@ namespace NodeNet.Network.Nodes
             int lastWorkerTaskID = LastSubTaskID;
             for (int i = 0; i < Tasks.Count; i++)
             {
-                if (Tasks[i].Item1 == taskID)
+                if (Tasks[i].Id == taskID)
                 {
                     // Ajout d'une workerTask dans WorkerTaskStatus avec le statut WORK
                     absent = !WorkerTaskStatus.TryAdd(lastWorkerTaskID,new Tuple<int,  NodeState>(taskID, NodeState.WORK));

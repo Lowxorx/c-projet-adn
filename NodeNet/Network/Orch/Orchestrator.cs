@@ -223,7 +223,7 @@ namespace NodeNet.Network.Orch
                     int newTaskID = LastTaskID;
                     MonitorTask = new Tuple<int, NodeState>(newTaskID, NodeState.WORK);
                 }
-                GetClientFromGUID(input.ClientGUID).Tasks.Add(new Tuple<int,NodeState>(MonitorTask.Item1,NodeState.WORK));
+                GetClientFromGUID(input.ClientGUID).Tasks.Add(new Task(MonitorTask.Item1,NodeState.WORK));
                 input.NodeGUID = NodeGUID;
                 input.TaskId = MonitorTask.Item1;
                 SendDataToAllNodes(input);
@@ -232,9 +232,9 @@ namespace NodeNet.Network.Orch
             {
                 foreach ( Node client in Clients)
                 {
-                    foreach(Tuple<int,NodeState> task in client.Tasks)
+                    foreach(Task task in client.Tasks)
                     {
-                        if(task.Item1 == MonitorTask.Item1)
+                        if(task.Id == MonitorTask.Item1)
                         {
                             SendData(client, input);
                         }
@@ -425,7 +425,7 @@ namespace NodeNet.Network.Orch
         {
             // Ajout de la task au client 
             Node client = GetClientFromGUID(clientGUID);
-            client.Tasks.Add(new Tuple<int, NodeState>(newTaskID, NodeState.WAIT));
+            client.Tasks.Add(new Task(newTaskID, NodeState.WAIT));
             // Ajout d'une ligne dans la table de ditribution des nodeTask
             TaskDistrib.Add(new Tuple<int, List<int>, bool>(newTaskID, new List<int>(),false));
         }
@@ -433,7 +433,7 @@ namespace NodeNet.Network.Orch
         private void createNodeTasks( Node node, int newTaskID, int newSubTaskID)
         {
             // On ajoute la subtask au node 
-            node.Tasks.Add(new Tuple<int, NodeState>(newSubTaskID, NodeState.WAIT));
+            node.Tasks.Add(new Task(newSubTaskID, NodeState.WAIT));
             // Ajout de la node task à la ligne de la task dans le tableau de distribution des nodetask
             for(int i = 0; i < TaskDistrib.Count; i++)
             {
@@ -452,9 +452,9 @@ namespace NodeNet.Network.Orch
                 {
                     for (int i = 0; i < node.Tasks.Count; i++)
                     {
-                        if (node.Tasks[i].Item1 == nodeTaskId)
+                        if (node.Tasks[i].Id == nodeTaskId)
                         {
-                            node.Tasks[i] = new Tuple<int, NodeState>(nodeTaskId, status);
+                            node.Tasks[i].State = status;
                         }
                     }
                 }
@@ -552,9 +552,9 @@ namespace NodeNet.Network.Orch
         {
             foreach (Node node in Nodes)
             {
-                foreach (Tuple<int, NodeState> task in node.Tasks)
+                foreach (Task task in node.Tasks)
                 {
-                    if (task.Item1 == id)
+                    if (task.Id == id)
                     {
                         return node;
                     }
@@ -567,11 +567,11 @@ namespace NodeNet.Network.Orch
         {
             foreach(Node node in Nodes)
             {
-                foreach(Tuple<int,NodeState> task in node.Tasks)
+                foreach(Task task in node.Tasks)
                 {
-                    if(task.Item1 == subtask)
+                    if(task.Id == subtask)
                     {
-                        return task.Item2;
+                        return task.State;
                     }
                 }
             }
@@ -594,7 +594,7 @@ namespace NodeNet.Network.Orch
                         // On itère sur toute la liste des subtask de cette task
                         foreach (int subTask in task.Item2)
                         {
-                            // Ici on vérifie qsue toutes les subtask soient en été FINISH à part celle que l'on vient de recevoir
+                            // Ici on vérifie qsue toutes les subtask soient en état FINISH à part celle que l'on vient de recevoir
                             if (getSubTaskState(subTask) != NodeState.FINISH)
                             {
                                 completed = false;
