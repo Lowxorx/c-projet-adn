@@ -60,7 +60,18 @@ namespace ADNet.GUI.ViewModel
         public void DNAQuantStat()
         {
             Console.WriteLine("Call Module 1 ");
-            client.DNAQuantStat("AAAA\tCCCC\tTTTT\tGGGG\nAAA\tCCC\tTTT\tGGG\nAA\tCC\tTT\tGG");
+            client.DNAQuantStat("AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG");
         }
 
         public void DisplayResult(string s)

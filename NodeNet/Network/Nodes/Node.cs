@@ -280,9 +280,11 @@ namespace NodeNet.Network.Nodes
                     DataInput input = DataFormater.Deserialize<DataInput>(data);
                     Receive(node);
                     ProcessInput(input, node);
+
                 }
                 catch(Exception e)
                 {
+                    Console.WriteLine(e);
                     node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReceiveCallback), stateObj);
                 }

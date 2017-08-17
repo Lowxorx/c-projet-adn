@@ -23,7 +23,10 @@ namespace NodeNet.Network
 
         public override void ProcessInput(DataInput input,Node node)
         {
-            Console.WriteLine("ProcessInput in client method : " + input.Method) ;
+            if (input.Method != GET_CPU_METHOD)
+            {
+                Console.WriteLine("Process input for : " + input.Method + " at : " + DateTime.Now.ToLongTimeString());
+            }
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             Object res = executor.DoWork(input);
             if (res != null)
