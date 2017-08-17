@@ -54,8 +54,8 @@ namespace NodeNet.Network.Nodes
         }
 
         /* Stockage des résultats réduits par Task */
-        private List<Tuple<int, Object>> results;
-        public List<Tuple<int, Object>> Results
+        private List<Tuple<int, List<Object>>> results;
+        public List<Tuple<int, List<Object>>> Results
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
             get { return results; }
@@ -122,7 +122,7 @@ namespace NodeNet.Network.Nodes
             genGUID();
             Tasks = new List<Task>();
             State = NodeState.WAIT;
-            Results = new List<Tuple<int, object>>();
+            Results = new List<Tuple<int, List<Object>>>();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -304,5 +304,28 @@ namespace NodeNet.Network.Nodes
         {
             NodeGUID =  Name +":" + Address + ":" + Port;
         }
+
+        protected void UpdateResult(Object result, int nodeTaskId)
+        {
+            for (int i = 0; i < Results.Count; i++)
+            {
+                if (Results[i].Item1 == nodeTaskId)
+                {
+                    Results[i].Item2.Add(result);
+                }
+            }
+        }
+        protected List<Object> GetResultFromTaskId(int taskId)
+        {
+            foreach (Tuple<int, List<Object>> result in Results)
+            {
+                if (result.Item1 == taskId)
+                {
+                    return result.Item2;
+                }
+            }
+            throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
+        }
+
     }
 }

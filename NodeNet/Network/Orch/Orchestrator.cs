@@ -244,7 +244,7 @@ namespace NodeNet.Network.Orch
 
         private object RefreshTaskState(DataInput input)
         {
-            Console.WriteLine("Process RefreshTaskState : " + ((Tuple<NodeState,double>)input.Data).Item2);
+           // Console.WriteLine("Process RefreshTaskState : " + ((Tuple<NodeState,double>)input.Data).Item2);
             // On fait transiter l'info au client
             SendData(GetClientFromGUID(input.ClientGUID), input);
             // Et on ne renvoit rien au Node
@@ -264,14 +264,13 @@ namespace NodeNet.Network.Orch
             }
             else if (input.MsgType == MessageType.RESPONSE)
             {   
-
-                reduce(input,executor);
+                PrepareReduce(input,executor);
             }
             return null;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void reduce(DataInput input, TaskExecutor executor)
+        private void PrepareReduce(DataInput input, TaskExecutor executor)
         {
             updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
             updateNodeStatus(NodeState.WAIT, input.NodeGUID);
@@ -279,18 +278,12 @@ namespace NodeNet.Network.Orch
             // Reduce
             // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
             // pour y concaténer le resultat du travail du noeud
-            Tuple<int, Object> result = null;
-            foreach (Tuple<int, Object> tuple in Results)
-            {
-                if (tuple.Item1 == input.TaskId)
-                {
-                    result = tuple;
-                }
-            }
-            Object reduceRes = executor.Reducer.reduce(result.Item2, input.Data);
+            List<Object> result = GetResultFromTaskId(input.TaskId);
+
             if (TaskIsCompleted(input.TaskId))
             {
                 Console.WriteLine("TaskIsCompleted ! ");
+                Object reduceRes = executor.Reducer.reduce(result);
                 // TODO check si tous les nodes ont finis
                 DataInput response = new DataInput()
                 {
@@ -298,20 +291,14 @@ namespace NodeNet.Network.Orch
                     Method = input.Method,
                     Data = reduceRes,
                     ClientGUID = input.ClientGUID,
-                    NodeGUID = this.NodeGUID,
+                    NodeGUID = NodeGUID,
                     MsgType = MessageType.RESPONSE,
                 };
                 SendData(GetClientFromGUID(input.ClientGUID), response);
             }
             else
             {
-                for (int i = 0; i < Results.Count; i++)
-                {
-                    if (Results[i].Item1 == input.TaskId)
-                    {
-                        Results[i] = new Tuple<int, Object>(input.TaskId, reduceRes);
-                    }
-                }
+                UpdateResult(input.Data, input.NodeTaskId);
             }
             
         }
@@ -320,7 +307,7 @@ namespace NodeNet.Network.Orch
         {
             int newTaskId = LastTaskID;
             createClientTask(input, newTaskId);
-            Tuple<int, Object> emptyResult = new Tuple<int, Object>(newTaskId, null);
+            Tuple<int, List<Object>> emptyResult = new Tuple<int, List<Object>>(newTaskId, new List<object>());
             Results.Add(emptyResult);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             // On récupère le résultat du map

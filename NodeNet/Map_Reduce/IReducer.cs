@@ -8,7 +8,7 @@ namespace NodeNet.Map_Reduce
 {
     public interface IReducer : ICloneable
     {
-        Object reduce(Object concat,Object input);
+        Object reduce(List<Object> input);
         new object Clone();
     }
 }

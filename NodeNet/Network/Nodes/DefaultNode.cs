@@ -59,7 +59,7 @@ namespace NodeNet.Network.Nodes
             {
                 // Creation d'une nouvelle task
                 Tasks.Add(new Task(input.NodeTaskId, NodeState.WAIT));
-                Results.Add(new Tuple<int, object>(input.NodeTaskId, null));
+                Results.Add(new Tuple<int, List<Object>>(input.NodeTaskId, new List<object>()));
             }
             Object res = executor.DoWork(input);
             if (res != null) { 
@@ -173,17 +173,17 @@ namespace NodeNet.Network.Nodes
             Tuple<int,DataInput,int> data = (Tuple<int,DataInput, int>)e.Result;
             DataInput resp = data.Item2;
             updateWorkerTaskStatus(data.Item1,data.Item2.NodeTaskId, NodeState.FINISH);
-            IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
-            Object result = reducer.reduce(getResultFromTaskId(resp.NodeTaskId), resp.Data);
-            updateResult(result, data.Item2.NodeTaskId);
             if (TaskIsCompleted(resp.NodeTaskId))
             {
                 Console.WriteLine("Task is completed");
+                IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
+                Object result = reducer.reduce(GetResultFromTaskId(resp.NodeTaskId));
                 resp.Data = result;
                 SendData(Orch, resp);
             }
             else
             {
+                UpdateResult(resp.Data, data.Item2.NodeTaskId);
                 double progression = 0;
                 progression = getWorkersProgression(data.Item2.NodeTaskId, data.Item3);
                 Console.WriteLine("SendProgession to Orch : " + progression);
@@ -280,29 +280,6 @@ namespace NodeNet.Network.Nodes
                 }
             }
             return completed;
-        }
-
-        private object getResultFromTaskId(int taskId)
-        {
-            foreach(Tuple<int,Object> result in Results)
-            {
-                if(result.Item1 == taskId)
-                {
-                    return result.Item2;
-                }
-            }
-            throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
-        }
-
-        private void updateResult(object result, int nodeTaskId)
-        {
-            for (int i = 0 ; i < Results.Count; i ++)
-            {
-                if (Results[i].Item1 == nodeTaskId)
-                {
-                    Results[i] = new Tuple<int, object>(nodeTaskId, result);
-                }
-            }
         }
         #endregion
     }

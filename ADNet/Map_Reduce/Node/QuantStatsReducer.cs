@@ -8,28 +8,34 @@ namespace ADNet.Map_Reduce.Node
     {
         #region Methods
 
-        public Object reduce(object concat, object input)
+        public Object reduce(List<object> input)
         {
-            if (concat == null || ((List<Tuple<char, int>>)concat).Count == 0)
+            if (input == null)
             {
                 return input;
             }
-            List<Tuple<char, int>> result = (List<Tuple<char, int>>)concat;
-            foreach (Tuple<char, int> inputpl in (List < Tuple<char, int> > )input)
-            {
-                bool present = false;
-                for(int i = 0; i < result.Count;i++)
-                {
-                    if(result[i].Item1 == inputpl.Item1)
-                    {
-                        present = true;
-                        result[i] = new Tuple<char, int>(result[i].Item1, result[i].Item2+inputpl.Item2);
-                    }
-                 }
-                if (!present)
-                    result.Add(inputpl);                
-            }
 
+            List<Tuple<char, int>> result = new List<Tuple<char, int>>();
+
+            foreach (List<Tuple<char, int>> inputpl in input)
+            {
+                foreach (Tuple<char,int> t in inputpl)
+                {
+                    bool present = false;
+                    for (int i = 0; i < result.Count; i++)
+                    {
+                        if (result[i].Item1 == t.Item1)
+                        {
+                            present = true;
+                            result[i] = new Tuple<char, int>(result[i].Item1, result[i].Item2 + t.Item2);
+                        }
+                    }
+                    if (!present)
+                    {
+                        result.Add(t);
+                    }
+                }
+            }
             return result;
         }
         #endregion
