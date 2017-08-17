@@ -22,11 +22,55 @@
             Content="Monitoring"
             FontSize="16"
             FontWeight="Bold" />
+        <Label
+            Margin="-5,45,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Liste des tâches" />
+        <ListView
+            x:Name="TasksList"
+            Width="400"
+            Height="140"
+            Margin="120,76,120,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            ItemsSource="{Binding TaskList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding TaskName}"
+                        Header="Nom" />
+                    <GridViewColumn
+                        Width="50"
+                        DisplayMemberBinding="{Binding Id}"
+                        Header="ID" />
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding State}"
+                        Header="Etat" />
+                    <GridViewColumn
+                        Width="70"
+                        DisplayMemberBinding="{Binding Progression, StringFormat='{}{0} %'}"
+                        Header="%" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label
+            Margin="-5,250,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Liste des noeuds connectés" />
         <ListView
             x:Name="NodeList"
             Width="650"
-            Height="360"
-            Margin="0,76,0,0"
+            Height="150"
+            Margin="0,280,0,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Center"
@@ -68,12 +112,6 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label
-            Margin="-5,45,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Content="Liste des noeuds connectés" />
+
     </Grid>
 </UserControl>

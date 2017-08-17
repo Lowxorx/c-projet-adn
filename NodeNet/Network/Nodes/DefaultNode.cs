@@ -195,7 +195,7 @@ namespace NodeNet.Network.Nodes
                     Method = TASK_STATUS_METHOD,
                     TaskId = data.Item2.TaskId,
                     NodeTaskId = data.Item2.NodeTaskId,
-                    Data = new Tuple<NodeState, double>(NodeState.WORK, progression)
+                    Data = new Tuple<NodeState, Object>(NodeState.WORK, progression)
                 };
                 SendData(Orch, status);
             }

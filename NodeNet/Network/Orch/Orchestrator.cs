@@ -22,7 +22,6 @@ namespace NodeNet.Network.Orch
         /* Nombre de noeuds connectés */
         private int nbNodes = 0;
        
-              
         // Task monitoring nodes */
         Tuple<int, NodeState> MonitorTask;
 
@@ -131,7 +130,6 @@ namespace NodeNet.Network.Orch
         }
 
       
-
         public override void ProcessInput(DataInput input, Node node)
         {
             Console.WriteLine("Process input for : " + input.Method);
@@ -153,7 +151,7 @@ namespace NodeNet.Network.Orch
 
         #endregion
 
-        #region Task method
+        #region TaskExecutor method
 
         public Object IdentNode(DataInput data)
         {
@@ -176,7 +174,7 @@ namespace NodeNet.Network.Orch
                         node.Item2.NodeGUID = data.NodeGUID;
                         if (MonitorTask != null)
                         {
-                            StartMonitoringForNode(data, node.Item2);
+                            startMonitoringForNode(data, node.Item2);
                         }
                         Console.WriteLine("Add Node to list : " + node);
                         Nodes.Add(node.Item2);
@@ -200,7 +198,7 @@ namespace NodeNet.Network.Orch
             ProcessCPUStateOrder(input);
         }
 
-        public void StartMonitoringForNode(DataInput d, Node n)
+        private void startMonitoringForNode(DataInput d, Node n)
         {
             DataInput input = new DataInput()
             {
@@ -318,12 +316,10 @@ namespace NodeNet.Network.Orch
             
         }
 
-      
-
         private void LazyNodeTranfert(DataInput input)
         {
             int newTaskId = LastTaskID;
-            createClientTask(input.ClientGUID, newTaskId);
+            createClientTask(input, newTaskId);
             Tuple<int, Object> emptyResult = new Tuple<int, Object>(newTaskId, null);
             Results.Add(emptyResult);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
@@ -392,6 +388,10 @@ namespace NodeNet.Network.Orch
             bw.RunWorkerAsync();
         }
 
+        #endregion
+
+        #region Task Management
+
         private void setTaskIsMapped(int newTaskId)
         {
             for(int i = 0; i < TaskDistrib.Count;i++)
@@ -421,13 +421,24 @@ namespace NodeNet.Network.Orch
             SendData(node, res);
         }
 
-        private void createClientTask(string clientGUID, int newTaskID)
+        private void createClientTask(DataInput input, int newTaskID)
         {
             // Ajout de la task au client 
-            Node client = GetClientFromGUID(clientGUID);
+            Node client = GetClientFromGUID(input.ClientGUID);
             client.Tasks.Add(new Task(newTaskID, NodeState.WAIT));
             // Ajout d'une ligne dans la table de ditribution des nodeTask
             TaskDistrib.Add(new Tuple<int, List<int>, bool>(newTaskID, new List<int>(),false));
+            // On envoit une réponse au client pour lui transmettre l'ID de la Task
+            DataInput resp = new DataInput()
+            {
+                ClientGUID = input.ClientGUID,
+                NodeGUID = NodeGUID,
+                Method = TASK_STATUS_METHOD,
+                TaskId = newTaskID,
+                MsgType = MessageType.RESPONSE,
+                Data = new Tuple<NodeState, Object>(NodeState.JOB_START, input.Method)
+            };
+            SendData(client, resp);
         }
 
         private void createNodeTasks( Node node, int newTaskID, int newSubTaskID)
@@ -472,7 +483,6 @@ namespace NodeNet.Network.Orch
                 }
             }
         }
-
 
         #endregion
 

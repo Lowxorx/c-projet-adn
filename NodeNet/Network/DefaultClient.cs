@@ -23,7 +23,7 @@ namespace NodeNet.Network
 
         public override void ProcessInput(DataInput input,Node node)
         {
-            Console.WriteLine("ProcessInput in Client");
+            Console.WriteLine("ProcessInput in client method : " + input.Method) ;
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             Object res = executor.DoWork(input);
             if (res != null)
@@ -91,11 +91,14 @@ namespace NodeNet.Network
 
         private object RefreshTaskState(DataInput input)
         {
-            Tuple<NodeState, double> tuple = (Tuple < NodeState, double> )input.Data;
+            Tuple<NodeState, Object> tuple = (Tuple < NodeState, Object> )input.Data;
+            Console.WriteLine("Refresh state task : state : " + tuple.Item1 + " object : " + tuple.Item2);
             switch (tuple.Item1)
             {
                 case NodeState.JOB_START:
-                    ViewModelLocator.VMLMonitorUcStatic.RefreshNodesState(input);
+                    Console.WriteLine("AddTaskToList");
+                    Task newTask = new Task(input.TaskId, NodeState.JOB_START, (String)tuple.Item2);
+                    Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(newTask)));
                     break;
                 case NodeState.WORK:
                     ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(input);

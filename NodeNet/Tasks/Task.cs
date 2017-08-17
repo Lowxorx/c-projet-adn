@@ -1,9 +1,6 @@
 ﻿using NodeNet.Network.States;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace NodeNet.Tasks
 {
@@ -32,10 +29,25 @@ namespace NodeNet.Tasks
             set { progression = value; }
         }
 
+        private String taskName;
+
+        public String TaskName
+        {
+            get { return taskName; }
+            set { taskName = value; }
+        }
+
+
         public Task(int id,NodeState state)
         {
             this.id = id;
             this.state = state;
+        }
+        public Task(int id, NodeState state,String taskName)
+        {
+            this.id = id;
+            this.state = state;
+            this.taskName = taskName;
         }
     }
 }
