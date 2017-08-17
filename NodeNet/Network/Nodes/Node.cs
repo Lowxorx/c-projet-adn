@@ -305,13 +305,15 @@ namespace NodeNet.Network.Nodes
             NodeGUID =  Name +":" + Address + ":" + Port;
         }
 
-        protected void UpdateResult(Object result, int nodeTaskId)
+        protected void UpdateResult(Object input, int taskId)
         {
-            for (int i = 0; i < Results.Count; i++)
+            for (int i = 0; i < results.Count; i++)
             {
-                if (Results[i].Item1 == nodeTaskId)
+                if (results[i].Item1 == taskId)
                 {
-                    Results[i].Item2.Add(result);
+                    List<Object> list = results[i].Item2;
+                    list.Add(input);
+                    results[i] = new Tuple<int, List<object>>(results[i].Item1, list);                  
                 }
             }
         }

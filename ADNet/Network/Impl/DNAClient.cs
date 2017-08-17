@@ -42,6 +42,7 @@ namespace c_projet_adn.Network.Impl
 
         public Object DNAQuantStatDisplay(DataInput input)
         {
+            Console.WriteLine("DNAQuantStatDisplay");
             String display = "";
             foreach(Tuple<char,int> result in (List<Tuple<char,int>>)input.Data)
             {

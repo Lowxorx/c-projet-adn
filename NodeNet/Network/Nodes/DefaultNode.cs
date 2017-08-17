@@ -173,6 +173,7 @@ namespace NodeNet.Network.Nodes
             Tuple<int,DataInput,int> data = (Tuple<int,DataInput, int>)e.Result;
             DataInput resp = data.Item2;
             updateWorkerTaskStatus(data.Item1,data.Item2.NodeTaskId, NodeState.FINISH);
+            UpdateResult(resp.Data, data.Item2.NodeTaskId);
             if (TaskIsCompleted(resp.NodeTaskId))
             {
                 Console.WriteLine("Task is completed");
@@ -183,7 +184,6 @@ namespace NodeNet.Network.Nodes
             }
             else
             {
-                UpdateResult(resp.Data, data.Item2.NodeTaskId);
                 double progression = 0;
                 progression = getWorkersProgression(data.Item2.NodeTaskId, data.Item3);
                 Console.WriteLine("SendProgession to Orch : " + progression);

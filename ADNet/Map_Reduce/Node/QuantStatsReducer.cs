@@ -10,12 +10,12 @@ namespace ADNet.Map_Reduce.Node
 
         public Object reduce(List<object> input)
         {
-            if (input == null)
-            {
-                return input;
-            }
-
             List<Tuple<char, int>> result = new List<Tuple<char, int>>();
+
+            if (input.Count <= 0)
+            {
+                return result;
+            }
 
             foreach (List<Tuple<char, int>> inputpl in input)
             {

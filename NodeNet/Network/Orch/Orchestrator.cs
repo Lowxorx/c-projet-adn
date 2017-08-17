@@ -269,20 +269,19 @@ namespace NodeNet.Network.Orch
             return null;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+       // [MethodImpl(MethodImplOptions.Synchronized)]
         private void PrepareReduce(DataInput input, TaskExecutor executor)
         {
             updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
+            UpdateResult(input.Data, input.TaskId);
             updateNodeStatus(NodeState.WAIT, input.NodeGUID);
-            Console.WriteLine("Reduce");
             // Reduce
             // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
             // pour y concaténer le resultat du travail du noeud
             List<Object> result = GetResultFromTaskId(input.TaskId);
-
             if (TaskIsCompleted(input.TaskId))
             {
-                Console.WriteLine("TaskIsCompleted ! ");
+                Console.WriteLine("Reduce");
                 Object reduceRes = executor.Reducer.reduce(result);
                 // TODO check si tous les nodes ont finis
                 DataInput response = new DataInput()
@@ -296,11 +295,6 @@ namespace NodeNet.Network.Orch
                 };
                 SendData(GetClientFromGUID(input.ClientGUID), response);
             }
-            else
-            {
-                UpdateResult(input.Data, input.NodeTaskId);
-            }
-            
         }
 
         private void LazyNodeTranfert(DataInput input)

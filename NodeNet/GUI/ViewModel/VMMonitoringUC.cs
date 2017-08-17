@@ -94,23 +94,23 @@ namespace NodeNet.GUI.ViewModel
         public void RefreshTaskState(DataInput input)
         {
             Console.WriteLine("Refresh Task state");
-            ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
-            foreach (DefaultNode node in NodeList)
-            {
-                if (node.NodeGUID != input.NodeGUID)
-                {
-                    list.Add(node);
-                }
-                else
-                {
-                    node.State = ((Tuple<NodeState, double>)input.Data).Item1;
-                    node.Progression = ((Tuple<NodeState, Double>)input.Data).Item2;
-                    node.WorkingTask = input.TaskId;
-                    list.Add(node);
-                }
-            }
-            NodeList = null;
-            NodeList = list;
+            //ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
+            //foreach (DefaultNode node in NodeList)
+            //{
+            //    if (node.NodeGUID != input.NodeGUID)
+            //    {
+            //        list.Add(node);
+            //    }
+            //    else
+            //    {
+            //        node.State = ((Tuple<NodeState, double>)input.Data).Item1;
+            //        node.Progression = ((Tuple<NodeState, Double>)input.Data).Item2;
+            //        node.WorkingTask = input.TaskId;
+            //        list.Add(node);
+            //    }
+            //}
+            //NodeList = null;
+            //NodeList = list;
         }
 
         public void CancelTask(DataInput input)

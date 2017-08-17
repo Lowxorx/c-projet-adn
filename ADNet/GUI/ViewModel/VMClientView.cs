@@ -59,7 +59,7 @@ namespace ADNet.GUI.ViewModel
 
         public void DNAQuantStat()
         {
-            Console.WriteLine("Call Mosule 1 ");
+            Console.WriteLine("Call Module 1 ");
             client.DNAQuantStat("AAAA\tCCCC\tTTTT\tGGGG\nAAA\tCCC\tTTT\tGGG\nAA\tCC\tTT\tGG");
         }
 
