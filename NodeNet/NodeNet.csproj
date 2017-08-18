@@ -139,6 +139,10 @@
     <Folder Include="GUI\Model\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GUI\View\ListViewUserControlStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GUI\View\Logbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
