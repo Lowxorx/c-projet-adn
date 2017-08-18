@@ -15,6 +15,7 @@ namespace ADNet.GUI.ViewModel
         public ICommand IcommandRdbCliClick { get; set; }
         public ICommand IcommandRdbNodeClick { get; set; }
         public ICommand IcommandRdbServClick { get; set; }
+        public ICommand ICommandBtnClose { get; private set; }
 
         private Boolean txtClientEnabled = false;
 
@@ -56,8 +57,14 @@ namespace ADNet.GUI.ViewModel
             IcommandBtnClick = new RelayCommand(AppuiBTN);
             IcommandRdbCliClick = new RelayCommand(ModeCliClick);
             IcommandRdbNodeClick = new RelayCommand(ModeNodeClick);
+            ICommandBtnClose = new RelayCommand(CloseWindow);
             IcommandRdbServClick = new RelayCommand(ModeServClick);
             TxtIpProp = "127.0.0.1";
+        }
+
+        private void CloseWindow()
+        {
+            CloseAction.Invoke();
         }
 
         private void AppuiBTN()
