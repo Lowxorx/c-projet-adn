@@ -6,10 +6,8 @@ using NodeNet.Tasks;
 using NodeNet.Utilities;
 using Swordfish.NET.Collections;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
@@ -275,7 +273,6 @@ namespace NodeNet.Network.Orch
             return null;
         }
 
-       // [MethodImpl(MethodImplOptions.Synchronized)]
         private void PrepareReduce(DataInput input, TaskExecutor executor)
         {
             updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
@@ -300,6 +297,7 @@ namespace NodeNet.Network.Orch
                     MsgType = MessageType.RESPONSE,
                 };
                 SendData(GetClientFromGUID(input.ClientGUID), response);
+                RemoveResultForTask(input.TaskId);
             }
         }
 
@@ -550,7 +548,6 @@ namespace NodeNet.Network.Orch
                 }
             }
 
-
             if (monitoringValues.Count > 0)
             {
                 DataInput di = new DataInput()
@@ -629,6 +626,35 @@ namespace NodeNet.Network.Orch
             }
             Console.WriteLine("In TaskIsComplete -> complete : " + completed + " Thread : " + Thread.CurrentThread.ManagedThreadId);
             return completed;
+        }
+
+        private void RemoveResultForTask(int taskId)
+        {
+            ConcurrentBag<Object> result;
+            if (!Results.TryRemove(taskId, out result))
+            {
+                throw new Exception("Aucune Result avec ce task id");
+            }
+        }
+
+        public override void RemoveDeadNode(Node node)
+        {
+            List<Task> tasks = GetAllTaskForNode(node);
+            // Récupération de toutes les tasks sur lequel le node bosse
+            // Passage de l'état des task en ERROR
+            // Arrêt du mapping avec setIsMApped true
+            // Suppression de toutes les lignes de Result liées au node
+            // Suppression du node
+            // Envoi du statut du Node au Client
+        }
+
+        private List<Task> GetAllTaskForNode(Node node)
+        {
+            List<Task> tasks = new List<Task>();
+            List<int> subTaskIDs = node.Tasks.Keys.ToList();
+
+                return null;
+
         }
         #endregion
     }
