@@ -5,9 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="949.667"
+    Height="234"
     Margin="0"
-    d:DesignHeight="500"
-    d:DesignWidth="650"
     mc:Ignorable="d">
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
@@ -16,28 +16,87 @@
     </intr:Interaction.Triggers>
     <Grid>
         <Label
+            Width="95"
+            Margin="605,7,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Content="Monitoring"
-            FontSize="16"
-            FontWeight="Bold" />
-        <Label
-            Margin="-5,45,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            HorizontalContentAlignment="Center"
+            HorizontalContentAlignment="Left"
             VerticalContentAlignment="Center"
             Content="Liste des tâches" />
         <ListView
             x:Name="TasksList"
-            Width="400"
-            Height="140"
-            Margin="120,76,120,0"
-            HorizontalAlignment="Center"
+            Width="335"
+            Height="184"
+            Margin="605,38,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Center"
+            BorderBrush="Transparent"
+            BorderThickness="1"
+            FontSize="14"
+            Foreground="#15619D"
             ItemsSource="{Binding TaskList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Style.Resources>
+                        <LinearGradientBrush x:Key="ListItemHoverFill" StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Offset="0" Color="#FFF1FBFF" />
+                            <GradientStop Offset="1" Color="DarkBlue" />
+                        </LinearGradientBrush>
+                    </Style.Resources>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                <Border
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="2"
+                                    SnapsToDevicePixels="True">
+                                    <Border
+                                        Name="InnerBorder"
+                                        BorderThickness="1"
+                                        CornerRadius="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition MaxHeight="11" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+
+                                            <Rectangle
+                                                Name="UpperHighlight"
+                                                Fill="#75FFFFFF"
+                                                Visibility="Collapsed" />
+                                            <GridViewRowPresenter
+                                                Grid.RowSpan="2"
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#15619D" />
+                                        <Setter Property="BorderBrush" Value="#15619D" />
+                                        <Setter Property="Foreground" Value="White" />
+
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#15619D" />
+                                        <Setter Property="BorderBrush" Value="#15619D" />
+                                        <Setter Property="Foreground" Value="White" />
+
+                                    </Trigger>
+
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn
@@ -60,21 +119,88 @@
             </ListView.View>
         </ListView>
         <Label
-            Margin="-5,250,0,0"
-            HorizontalAlignment="Center"
+            Width="181"
+            Margin="10,7,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            HorizontalContentAlignment="Center"
+            HorizontalContentAlignment="Left"
             VerticalContentAlignment="Center"
             Content="Liste des noeuds connectés" />
         <ListView
             x:Name="NodeList"
-            Width="650"
-            Height="150"
-            Margin="0,280,0,0"
-            HorizontalAlignment="Center"
+            Width="577"
+            Height="184"
+            Margin="10,38,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Center"
-            ItemsSource="{Binding NodeList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            BorderBrush="Transparent"
+            BorderThickness="1"
+            FontSize="14"
+            Foreground="#15619D"
+            ItemsSource="{Binding NodeList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            SelectionMode="Single">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Style.Resources>
+                        <LinearGradientBrush x:Key="ListItemHoverFill" StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Offset="0" Color="#FFF1FBFF" />
+                            <GradientStop Offset="1" Color="DarkBlue" />
+                        </LinearGradientBrush>
+                    </Style.Resources>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                <Border
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="2"
+                                    SnapsToDevicePixels="True">
+                                    <Border
+                                        Name="InnerBorder"
+                                        BorderThickness="1"
+                                        CornerRadius="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition MaxHeight="11" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+
+                                            <Rectangle
+                                                Name="UpperHighlight"
+                                                Fill="#75FFFFFF"
+                                                Visibility="Collapsed" />
+                                            <GridViewRowPresenter
+                                                Grid.RowSpan="2"
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#15619D" />
+                                        <Setter Property="BorderBrush" Value="#15619D" />
+                                        <Setter Property="Foreground" Value="White" />
+
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#15619D" />
+                                        <Setter Property="BorderBrush" Value="#15619D" />
+                                        <Setter Property="Foreground" Value="White" />
+
+                                    </Trigger>
+
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn
@@ -105,10 +231,6 @@
                         Width="50"
                         DisplayMemberBinding="{Binding WorkingTask}"
                         Header="Task" />
-                    <GridViewColumn
-                        Width="50"
-                        DisplayMemberBinding="{Binding Progression, StringFormat='{}{0} %'}"
-                        Header="%" />
                 </GridView>
             </ListView.View>
         </ListView>

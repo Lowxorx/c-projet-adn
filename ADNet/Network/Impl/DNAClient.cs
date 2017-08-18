@@ -24,7 +24,7 @@ namespace c_projet_adn.Network.Impl
         public Object ProcessDisplayMessageFunction(DataInput input)
         {
             Console.WriteLine("Client Process Display Response From Orchestrator Msg : " + input.Data);
-            ViewModelLocator.VMLCliStatic.DisplayResult((String)input.Data);
+            ViewModelLocator.VMLCliStatic.QuantDisplayResult((String)input.Data);
             return null;
         }
 
@@ -48,7 +48,7 @@ namespace c_projet_adn.Network.Impl
             {
                 display += result.Item1 + " : " + result.Item2.ToString() + " "; 
             }
-            ViewModelLocator.VMLCliStatic.DisplayResult(display);
+            ViewModelLocator.VMLCliStatic.QuantDisplayResult(display);
             return null;
         }
     }
