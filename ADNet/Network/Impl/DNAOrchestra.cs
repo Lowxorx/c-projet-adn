@@ -16,6 +16,5 @@ namespace ADNet.Network.Impl
             QuantStatsReducer quantStatReducer = new QuantStatsReducer();
             WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this, ProcessMapReduce, quantStatMapper, quantStatReducer));
         }
-
     }
 }

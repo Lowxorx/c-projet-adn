@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
     xmlns:vm="clr-namespace:ADNet.GUI.ViewModel"
     Title="Server Mode"
     Width="806"
@@ -80,16 +81,12 @@
             FontWeight="Bold"
             Foreground="White"
             Text="Logs" />
-        <TextBox
-            Width="796"
-            Height="319"
-            Margin="5,115,0,0"
+        <sharecontrols:Logbox
+            Grid.Column="0"
+            Width="801"
+            Margin="2,114,0,3"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            FontSize="16"
-            IsReadOnly="True"
-            Text="{Binding Path=LogBox}"
-            TextWrapping="Wrap" />
+            DataContext="{Binding VmLogBox}" />
         <Image
             x:Name="dna"
             Width="32"

@@ -101,7 +101,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Utilities\ServerLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\Impl\DNAOrchestra.cs" />
@@ -133,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\Model\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="GUI\View\ADNetLauncher.xaml">
