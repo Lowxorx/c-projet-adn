@@ -18,7 +18,6 @@ namespace ADNet.GUI.ViewModel
         public ICommand ICommandBtnClose { get; private set; }
 
         private Boolean txtClientEnabled = false;
-
         public Boolean TxtClientEnabledProp
         {
             get
@@ -27,13 +26,87 @@ namespace ADNet.GUI.ViewModel
             }
         }
 
-        private Boolean txtNodeEnabled = false;
-
-        public Boolean TxtNodeEnabledProp
+        private Boolean nodeChecked = false;
+        public Boolean NodeChecked
         {
             get
             {
-                return txtNodeEnabled;
+                return nodeChecked;
+            }
+            set
+            {
+                nodeChecked = value;
+                if (value)
+                {
+                    BtnEnabled = true;
+                    BtnContent = "Lancer le node";
+                }
+                RaisePropertyChanged("NodeChecked");
+            }
+        }
+
+        private Boolean clientChecked = false;
+        public Boolean ClientChecked
+        {
+            get
+            {
+                return clientChecked;
+            }
+            set
+            {
+                clientChecked = value;
+                if (value)
+                {
+                    BtnEnabled = true;
+                    BtnContent = "Lancer le client";
+                }
+                RaisePropertyChanged("ClientChecked");
+            }
+        }
+
+        private Boolean serverChecked = false;
+        public Boolean ServerChecked
+        {
+            get
+            {
+                return serverChecked;
+            }
+            set
+            {
+                serverChecked = value;
+                if (value)
+                {
+                    BtnEnabled = true;
+                    BtnContent = "Lancer le serveur";
+                }
+                RaisePropertyChanged("ServerChecked");
+            }
+        }
+        
+        private Boolean btnEnabled = false;
+        public Boolean BtnEnabled
+        {
+            get
+            {
+                return btnEnabled;
+            }
+            set
+            {
+                btnEnabled = value;
+                RaisePropertyChanged("BtnEnabled");
+            }
+        }
+        private String btnContent;
+        public String BtnContent
+        {
+            get
+            {
+                return btnContent;
+            }
+            set
+            {
+                btnContent = value;
+                RaisePropertyChanged("BtnContent");
             }
         }
 
@@ -60,6 +133,11 @@ namespace ADNet.GUI.ViewModel
             ICommandBtnClose = new RelayCommand(CloseWindow);
             IcommandRdbServClick = new RelayCommand(ModeServClick);
             TxtIpProp = "127.0.0.1";
+            BtnContent = "-----";
+            ServerChecked = false;
+            ClientChecked = false;
+            NodeChecked = false;
+            BtnEnabled = false;
         }
 
         private void CloseWindow()
@@ -69,14 +147,14 @@ namespace ADNet.GUI.ViewModel
 
         private void AppuiBTN()
         {
-            if (txtClientEnabled)
+            if (ClientChecked)
             {
                 Console.WriteLine("Launch Cli");
                 ClientView clientView = new ClientView();
                 clientView.Show();
                 CloseAction.Invoke();
             }
-            else if (txtNodeEnabled)
+            else if (NodeChecked)
             {
                 Console.WriteLine("Launch Node");
                 NodeView nodeView = new NodeView();
@@ -85,7 +163,7 @@ namespace ADNet.GUI.ViewModel
                 nodeView.Show();
                 CloseAction.Invoke();
             }
-            else
+            else if (ServerChecked)
             {
                 Console.WriteLine("Launch Orch");
                 OrchView orchView = new OrchView();
@@ -94,6 +172,10 @@ namespace ADNet.GUI.ViewModel
                 orchView.Show();
                 CloseAction.Invoke();
             }
+            else
+            {
+                Console.WriteLine("Aucun mode sélectionné");
+            }
         }
 
 
@@ -101,33 +183,25 @@ namespace ADNet.GUI.ViewModel
         public void OnLoad()
         {
             txtClientEnabled = false;
-            txtNodeEnabled = false;
             RaisePropertyChanged("TxtClientEnabledProp");
-            RaisePropertyChanged("TxtNodeEnabledProp");
         }
 
         public void ModeCliClick()
         {
             txtClientEnabled = true;
-            txtNodeEnabled = false;
             RaisePropertyChanged("TxtClientEnabledProp");
-            RaisePropertyChanged("TxtNodeEnabledProp");
         }
 
         public void ModeNodeClick()
         {
-            txtClientEnabled = false;
-            txtNodeEnabled = true;
+            txtClientEnabled = true;
             RaisePropertyChanged("TxtClientEnabledProp");
-            RaisePropertyChanged("TxtNodeEnabledProp");
         }
 
         public void ModeServClick()
         {
             txtClientEnabled = false;
-            txtNodeEnabled = false;
             RaisePropertyChanged("TxtClientEnabledProp");
-            RaisePropertyChanged("TxtNodeEnabledProp");
         }
 
         public Action CloseAction { get; set; }

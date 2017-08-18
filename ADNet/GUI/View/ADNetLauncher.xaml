@@ -86,14 +86,14 @@
             </Rectangle.Fill>
         </Rectangle>
         <Button
-            Width="122"
-            Margin="313,315,23,10"
+            Margin="238,315,23,10"
             Background="#FF00BCD4"
             BorderThickness="2"
             Command="{Binding IcommandBtnClick}"
-            Content="Ajouter"
+            Content="{Binding BtnContent}"
             FontSize="23"
-            Foreground="White" />
+            Foreground="White"
+            IsEnabled="{Binding BtnEnabled}" />
         <TextBlock
             Width="448"
             Height="31"
@@ -106,18 +106,19 @@
             Text="Mode" />
         <RadioButton
             Height="32"
-            Margin="10,215,298,0"
+            Margin="10,210,298,0"
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
             Command="{Binding IcommandRdbCliClick}"
             Content="Mode Client"
             FontSize="20"
             Foreground="Black"
-            GroupName="mode" />
+            GroupName="mode"
+            IsChecked="{Binding ClientChecked}" />
         <RadioButton
             Width="150"
             Height="32"
-            Margin="10,135,0,0"
+            Margin="10,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
@@ -125,11 +126,12 @@
             Content="Mode Serveur"
             FontSize="20"
             Foreground="Black"
-            GroupName="mode" />
+            GroupName="mode"
+            IsChecked="{Binding ServerChecked}" />
         <RadioButton
             Width="150"
             Height="32"
-            Margin="10,175,0,0"
+            Margin="10,170,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
@@ -137,9 +139,10 @@
             Content="Mode Node"
             FontSize="20"
             Foreground="Black"
-            GroupName="mode" />
+            GroupName="mode"
+            IsChecked="{Binding NodeChecked}" />
         <TextBox
-            Width="285"
+            Width="218"
             Height="52"
             Margin="10,315,0,0"
             HorizontalAlignment="Left"
@@ -147,6 +150,7 @@
             HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center"
             FontSize="24"
+            FontWeight="Medium"
             IsEnabled="{Binding TxtClientEnabledProp}"
             Text="{Binding TxtIpProp, UpdateSourceTrigger=PropertyChanged}"
             TextWrapping="Wrap" />
