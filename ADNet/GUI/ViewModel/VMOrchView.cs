@@ -6,13 +6,13 @@ using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
 {
-    class VMOrchView : ViewModelBase
+    public class VMOrchView : ViewModelBase
     {
         public ICommand WindowLoaded { get; set; }
-        public ICommand IcommandBtnClick { get; set; }
+        public ICommand ICommandBtnClose { get; set; }
         public VMOrchView()
         {
-            IcommandBtnClick = new RelayCommand(AppuiBTN);
+            ICommandBtnClose = new RelayCommand(CloseWindow);
             WindowLoaded = new RelayCommand(OnLoad);
         }
 
@@ -20,6 +20,18 @@ namespace ADNet.GUI.ViewModel
         {
             DNAOrchestra orch = new DNAOrchestra("Orchestrator", TxtIp, 3000);
             orch.Listen();
+            LogBox += DateTime.Now.ToLongTimeString() + " - Serveur démarré, en écoute...";
+        }
+
+        private string logBox;
+        public string LogBox
+        {
+            get { return logBox; }
+            set
+            {
+                logBox = value;
+                RaisePropertyChanged("LogBox");
+            }
         }
 
         private string txtIp;
@@ -34,10 +46,12 @@ namespace ADNet.GUI.ViewModel
             }
         }
 
-
-        private void AppuiBTN()
+        private void CloseWindow()
         {
-           // TODO STOP This Node
+            CloseAction.Invoke();
         }
+
+        public Action CloseAction { get; set; }
+
     }
 }

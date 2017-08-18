@@ -18,15 +18,16 @@
     WindowStyle="None"
     mc:Ignorable="d">
 
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
-    </WindowChrome.WindowChrome>
-
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
+    </WindowChrome.WindowChrome>
+
     <Grid>
         <Grid Height="35" VerticalAlignment="Top">
             <Rectangle
@@ -57,21 +58,20 @@
                 FontWeight="Bold"
                 ForceCursor="True"
                 Foreground="White" />
-            <Rectangle
-                Width="458"
-                Height="32"
-                Margin="0,263,0,-260"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top">
-                <Rectangle.Fill>
-                    <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
-                        <GradientStop Offset="1" Color="White" />
-                        <GradientStop Color="#FF00BCD4" />
-                    </LinearGradientBrush>
-                </Rectangle.Fill>
-            </Rectangle>
         </Grid>
-
+        <Rectangle
+            Width="458"
+            Height="32"
+            Margin="0,263,0,-260"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
         <Rectangle
             Width="458"
             Height="32"
