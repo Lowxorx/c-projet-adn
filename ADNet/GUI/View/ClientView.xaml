@@ -66,6 +66,41 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
+        <Image
+            x:Name="dna"
+            Width="32"
+            Height="32"
+            Margin="968,63,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
         <TextBlock
             Width="599"
             Height="31"
@@ -251,5 +286,75 @@
             Margin="4,0,6,7"
             VerticalAlignment="Bottom"
             DataContext="{Binding VmLogBox}" />
+        <Image
+            x:Name="dna2"
+            Width="32"
+            Height="32"
+            Margin="968,352,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna2"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
+        <Image
+            x:Name="dna3"
+            Width="32"
+            Height="32"
+            Margin="968,615,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna3"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 </Window>
