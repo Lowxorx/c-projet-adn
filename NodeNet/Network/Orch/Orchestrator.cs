@@ -6,12 +6,9 @@ using NodeNet.Tasks;
 using NodeNet.Utilities;
 using Swordfish.NET.Collections;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -75,14 +72,14 @@ namespace NodeNet.Network.Orch
         {
             TcpListener listener = new TcpListener(IPAddress.Parse(Address), Port);
             listener.Start();
-            Log.Write("Server is listening on port : " + Port);
+            Log.Write("Server is listening on port : " + Port, true);
             Console.WriteLine("Server is listening on port : " + Port);
             while (true)
             {
                 Socket sock = await listener.AcceptSocketAsync();
                 DefaultNode connectedNode = new DefaultNode("", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
                 nbNodes++;
-                Log.Write(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
+                Log.Write(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()), true);
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 GetIdentityOfNode(connectedNode);
                 Receive(connectedNode);

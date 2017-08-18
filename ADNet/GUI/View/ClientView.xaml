@@ -8,63 +8,353 @@
     xmlns:sharecontrols="clr-namespace:NodeNet.GUI.View;assembly=NodeNet"
     Title="ClientView"
     Width="1000"
-    Height="500"
+    Height="877.667"
     DataContext="{Binding VMLCli, Source={StaticResource Locator}}"
+    ResizeMode="NoResize"
+    WindowState="Normal"
+    WindowStyle="None"
     mc:Ignorable="d">
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
+    </WindowChrome.WindowChrome>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="630*" />
-            <ColumnDefinition Width="360*" />
-        </Grid.ColumnDefinitions>
+        <Grid Height="35" VerticalAlignment="Top">
+            <Rectangle
+                Height="46"
+                Margin="0,0,0,-11"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Fill="#FF00BCD4" />
+            <TextBlock
+                Width="246"
+                Margin="10,2,0,0"
+                HorizontalAlignment="Left"
+                FontSize="29"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="ADNet - Client" />
+            <Button
+                Width="45"
+                Height="45"
+                Margin="0,0,0,-11"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="#00DDDDDD"
+                BorderBrush="#00000000"
+                Command="{Binding ICommandBtnClose}"
+                Content="X"
+                FontSize="21"
+                FontWeight="Bold"
+                ForceCursor="True"
+                Foreground="White" />
+        </Grid>
+        <Rectangle
+            Width="1000"
+            Height="32"
+            Margin="0,63,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Image
+            x:Name="dna"
+            Width="32"
+            Height="32"
+            Margin="968,63,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
+        <TextBlock
+            Width="599"
+            Height="31"
+            Margin="10,66,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="18"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Monitoring" />
         <sharecontrols:MonitoringUC
             Grid.Column="0"
-            Width="630"
+            Width="1000"
+            Margin="0,105,0,0"
             HorizontalAlignment="Left"
+            VerticalAlignment="Top"
             DataContext="{Binding UcVmMonitoring}" />
-        <Label
-            Grid.Column="1"
-            VerticalAlignment="Top"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Content="Traitement ADN"
-            FontSize="16"
-            FontWeight="Bold" />
-        <Label
-            Grid.Column="1"
-            Margin="25,45,0,0"
+        <Rectangle
+            Width="1000"
+            Height="32"
+            Margin="0,352,0,0"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Envoit de message" />
-        <TextBox
-            Grid.Column="1"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock
             Width="300"
-            Height="50"
-            Margin="25,76,0,0"
+            Height="31"
+            Margin="10,355,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Text="{Binding TxtMsgProp, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap" />
+            FontSize="18"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Traitement ADN" />
         <Button
-            Grid.Column="1"
             Width="75"
-            Margin="25,150,0,0"
+            Margin="171,574,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Command="{Binding ICommandBtnSend}"
-            Content="Envoyer" />
+            Background="#FF00BCD4"
+            BorderThickness="2"
+            Command="{Binding QuantSendData}"
+            Content="Envoyer"
+            FontSize="14"
+            Foreground="White"
+            IsEnabled="{Binding QuantBtSendDataEnabled}" />
         <TextBox
-            Grid.Column="1"
-            Width="300"
-            Height="23"
-            Margin="25,180,0,0"
+            Width="463"
+            Height="117"
+            Margin="10,448,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Text="{Binding ClientResponse}"
+            Text="{Binding QuantResultBox}"
             TextWrapping="Wrap" />
+        <Rectangle
+            Width="473"
+            Height="21"
+            Margin="0,395,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock
+            Width="300"
+            Height="19"
+            Margin="10,397,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="14"
+            FontWeight="Bold"
+            Foreground="White"><Run Text="Module 1" /><Run Text=" : DNA_QUANT" /></TextBlock>
+        <Label
+            Margin="10,421,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Résultat du traitement" />
+        <Button
+            Width="156"
+            Margin="10,574,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="#FF00BCD4"
+            BorderThickness="2"
+            Command="{Binding QuantSelectFile}"
+            Content="Sélectionner un fichier"
+            FontSize="14"
+            Foreground="White" />
+        <Rectangle
+            Width="476"
+            Height="21"
+            Margin="524,395,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock
+            Width="300"
+            Height="19"
+            Margin="532,397,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="14"
+            FontWeight="Bold"
+            Foreground="White"><Run Text="Module " /><Run Text="2" /><Run Text=" : DNA_" /><Run Text="PROB" /></TextBlock>
+        <TextBox
+            Width="463"
+            Height="117"
+            Margin="524,448,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding ProbResultBox}"
+            TextWrapping="Wrap" />
+        <Label
+            Margin="524,421,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Résultat du traitement" />
+        <Button
+            Width="74"
+            Margin="685,574,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="#FF00BCD4"
+            BorderThickness="2"
+            Command="{Binding ProbSendData}"
+            Content="Envoyer"
+            FontSize="14"
+            Foreground="White"
+            IsEnabled="{Binding ProbBtSendDataEnabled}" />
+        <Button
+            Width="156"
+            Margin="524,574,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="#FF00BCD4"
+            BorderThickness="2"
+            Command="{Binding ProbSelectFile}"
+            Content="Sélectionner un fichier"
+            FontSize="14"
+            Foreground="White" />
+        <Rectangle
+            Width="1000"
+            Height="32"
+            Margin="0,615,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock
+            Width="300"
+            Height="31"
+            Margin="10,618,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="18"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Logs" />
+        <sharecontrols:Logbox
+            Grid.Column="0"
+            Height="218"
+            Margin="4,0,6,7"
+            VerticalAlignment="Bottom"
+            DataContext="{Binding VmLogBox}" />
+        <Image
+            x:Name="dna2"
+            Width="32"
+            Height="32"
+            Margin="968,352,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna2"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
+        <Image
+            x:Name="dna3"
+            Width="32"
+            Height="32"
+            Margin="968,615,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna3"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 </Window>
