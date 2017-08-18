@@ -1,6 +1,7 @@
 ﻿using ADNet.GUI.ViewModel;
 using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace ADNet.GUI.View
 {
@@ -14,7 +15,17 @@ namespace ADNet.GUI.View
             InitializeComponent();
             VMADNetLauncher vm = (VMADNetLauncher)DataContext;
             if ( vm.CloseAction == null)
+            {
                 vm.CloseAction = new Action(() => Close());
+            }
+            MouseDown += Window_MouseDown;
+        }
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                DragMove();
+            }
         }
     }
 }

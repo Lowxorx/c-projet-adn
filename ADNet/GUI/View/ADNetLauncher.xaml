@@ -5,88 +5,200 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="ADNetLauncher"
-    Width="300"
-    Height="360.187"
+    Title="ADNet Launcher"
+    Width="458"
+    Height="377.187"
     HorizontalAlignment="Center"
     VerticalAlignment="Center"
     HorizontalContentAlignment="Center"
     VerticalContentAlignment="Center"
     DataContext="{Binding VMLlauncher, Source={StaticResource Locator}}"
+    ResizeMode="NoResize"
+    WindowState="Normal"
+    WindowStyle="None"
     mc:Ignorable="d">
+
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding WindowLoaded}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
-    <Grid Margin="0,0,0,0">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid Height="35" VerticalAlignment="Top">
+            <Rectangle
+                Height="46"
+                Margin="0,0,0,-11"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Fill="#FF00BCD4" />
+            <TextBlock
+                Width="161"
+                Margin="10,2,0,0"
+                HorizontalAlignment="Left"
+                FontSize="29"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="ADNet" />
+            <Button
+                Width="45"
+                Height="45"
+                Margin="0,0,0,-11"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="#00DDDDDD"
+                BorderBrush="#00000000"
+                Command="{Binding ICommandBtnClose}"
+                Content="X"
+                FontSize="21"
+                FontWeight="Bold"
+                ForceCursor="True"
+                Foreground="White" />
+        </Grid>
+        <Rectangle
+            Width="458"
+            Height="32"
+            Margin="0,263,0,-260"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle
+            Width="458"
+            Height="32"
+            Margin="0,78,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                    <GradientStop Offset="1" Color="White" />
+                    <GradientStop Color="#FF00BCD4" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
         <Button
-            Width="82"
-            Margin="87,0,123,31"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
-            HorizontalContentAlignment="Center"
+            Margin="238,315,23,10"
+            Background="#FF00BCD4"
+            BorderThickness="2"
             Command="{Binding IcommandBtnClick}"
-            Content="Valider" />
-        <Label
-            VerticalAlignment="Top"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Content="ADNet"
-            FontSize="16"
-            FontWeight="Bold" />
-        <RadioButton
-            x:Name="RdbClient"
-            Margin="77,47,0,0"
+            Content="{Binding BtnContent}"
+            FontSize="23"
+            Foreground="White"
+            IsEnabled="{Binding BtnEnabled}" />
+        <TextBlock
+            Width="448"
+            Height="31"
+            Margin="10,81,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
+            FontSize="18"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Mode" />
+        <RadioButton
+            Height="32"
+            Margin="10,210,298,0"
+            VerticalAlignment="Top"
+            VerticalContentAlignment="Center"
             Command="{Binding IcommandRdbCliClick}"
             Content="Mode Client"
-            FontSize="14"
-            GroupName="mode" />
+            FontSize="20"
+            Foreground="Black"
+            GroupName="mode"
+            IsChecked="{Binding ClientChecked}" />
         <RadioButton
-            Height="30"
-            Margin="77,209,0,90"
+            Width="150"
+            Height="32"
+            Margin="10,130,0,0"
             HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
+            VerticalAlignment="Top"
             VerticalContentAlignment="Center"
             Command="{Binding IcommandRdbServClick}"
-            Content="Mode serveur"
-            FontSize="14"
-            GroupName="mode" />
+            Content="Mode Serveur"
+            FontSize="20"
+            Foreground="Black"
+            GroupName="mode"
+            IsChecked="{Binding ServerChecked}" />
+        <RadioButton
+            Width="150"
+            Height="32"
+            Margin="10,170,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            VerticalContentAlignment="Center"
+            Command="{Binding IcommandRdbNodeClick}"
+            Content="Mode Node"
+            FontSize="20"
+            Foreground="Black"
+            GroupName="mode"
+            IsChecked="{Binding NodeChecked}" />
         <TextBox
-            Width="140"
-            Height="20"
-            Margin="77,70,75,228"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
+            Width="218"
+            Height="52"
+            Margin="10,315,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
             HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center"
-            FontSize="14"
+            FontSize="24"
+            FontWeight="Medium"
             IsEnabled="{Binding TxtClientEnabledProp}"
             Text="{Binding TxtIpProp, UpdateSourceTrigger=PropertyChanged}"
             TextWrapping="Wrap" />
-        <RadioButton
-            Margin="77,111,0,0"
+
+        <TextBlock
+            Width="448"
+            Height="22"
+            Margin="10,266,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Command="{Binding IcommandRdbNodeClick}"
-            Content="Mode Node"
-            FontSize="14"
-            GroupName="mode" />
-        <TextBox
-            Width="140"
-            Height="24"
-            Margin="77,144,75,161"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            FontSize="14"
-            IsEnabled="{Binding TxtNodeEnabledProp}"
-            Text="{Binding TxtIpProp, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap" />
+            FontSize="18"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Connexion" />
+        <Image
+            x:Name="dna"
+            Width="144"
+            Height="144"
+            Margin="268,115,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Opacity="0.5"
+            RenderTransformOrigin=".5,.5"
+            Source="/Resources/dna.png">
+            <Image.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                From="0"
+                                To="360"
+                                Duration="00:00:05" />
+                            <!--<DoubleAnimation
+                                AutoReverse="True"
+                                Storyboard.TargetName="dna"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0.1"
+                                To="1"
+                                Duration="00:00:02" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Image.Triggers>
+            <Image.RenderTransform>
+                <RotateTransform Angle="0" />
+            </Image.RenderTransform>
+        </Image>
     </Grid>
-
 </Window>

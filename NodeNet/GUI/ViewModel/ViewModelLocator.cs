@@ -32,6 +32,21 @@ namespace NodeNet.GUI.ViewModel
             get { return VMLMonitorUcStatic; }
         }
 
+        private static VMLogBox vMLLogBoxUc;
+        public static VMLogBox VMLLogBoxUcStatic
+        {
+            get
+            {
+                if (vMLLogBoxUc == null)
+                    vMLLogBoxUc = new VMLogBox();
+                return vMLLogBoxUc;
+            }
+        }
+        public VMLogBox VMLLogBoxUc
+        {
+            get { return VMLLogBoxUcStatic; }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

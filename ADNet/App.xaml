@@ -9,5 +9,6 @@
     StartupUri="GUI/View/ADNetLauncher.xaml">
     <Application.Resources>
         <core:ViewModelLocator x:Key="Locator" />
+
     </Application.Resources>
 </Application>

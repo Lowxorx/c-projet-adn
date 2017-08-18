@@ -51,6 +51,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -81,6 +82,10 @@
     </Compile>
     <Compile Include="Data\DataFormater.cs" />
     <Compile Include="Data\DataInput.cs" />
+    <Compile Include="GUI\ViewModel\VMLogBox.cs" />
+    <Compile Include="GUI\View\Logbox.xaml.cs">
+      <DependentUpon>Logbox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Map_Reduce\IMapper.cs" />
     <Compile Include="Map_Reduce\IReducer.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />
@@ -91,6 +96,7 @@
     <Compile Include="Tasks\TaskExecutor.cs" />
     <Compile Include="Tasks\TaskExecFactory.cs" />
     <Compile Include="Tasks\ITaskExecFactory.cs" />
+    <Compile Include="Utilities\Logger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\View\MonitoringUC.xaml.cs">
@@ -133,6 +139,10 @@
     <Folder Include="GUI\Model\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GUI\View\Logbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GUI\View\MonitoringUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

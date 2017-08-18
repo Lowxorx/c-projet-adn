@@ -3,6 +3,7 @@ using NodeNet.Map_Reduce;
 using NodeNet.Network.Nodes;
 using NodeNet.Network.States;
 using NodeNet.Tasks;
+using NodeNet.Utilities;
 using Swordfish.NET.Collections;
 using System;
 using System.Collections;
@@ -52,6 +53,8 @@ namespace NodeNet.Network.Orch
             set { taskDistrib = value; }
         }
 
+        private Logger Log { get; set; }
+
         #endregion
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
@@ -63,6 +66,7 @@ namespace NodeNet.Network.Orch
             WorkerFactory.AddWorker(IDENT_METHOD, new TaskExecutor(this,IdentNode,null,null));
             WorkerFactory.AddWorker(GET_CPU_METHOD, new TaskExecutor(this,ProcessCPUStateOrder,null,null));
             WorkerFactory.AddWorker(TASK_STATUS_METHOD, new TaskExecutor(this, RefreshTaskState, null, null));
+            Log = new Logger();
         }
 
         #region Inherited methods
@@ -71,12 +75,14 @@ namespace NodeNet.Network.Orch
         {
             TcpListener listener = new TcpListener(IPAddress.Parse(Address), Port);
             listener.Start();
+            Log.Write("Server is listening on port : " + Port);
             Console.WriteLine("Server is listening on port : " + Port);
             while (true)
             {
                 Socket sock = await listener.AcceptSocketAsync();
                 DefaultNode connectedNode = new DefaultNode("", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
                 nbNodes++;
+                Log.Write(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 Console.WriteLine(String.Format("Client Connection accepted from {0}", sock.RemoteEndPoint.ToString()));
                 GetIdentityOfNode(connectedNode);
                 Receive(connectedNode);
