@@ -3,6 +3,7 @@ using NodeNet.Network.Orch;
 using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -43,23 +44,19 @@ namespace NodeNet.Network.Nodes
 
         public NodeState State { get; set; }
 
-        private List<Task> tasks;
+        private ConcurrentDictionary<int,Task> tasks;
 
-        public List<Task> Tasks
+        public ConcurrentDictionary<int,Task> Tasks
         {
-            [MethodImpl(MethodImplOptions.Synchronized)]
             get { return tasks; }
-            [MethodImpl(MethodImplOptions.Synchronized)]
             set { tasks = value; }
         }
 
         /* Stockage des résultats réduits par Task */
-        private List<Tuple<int, List<Object>>> results;
-        public List<Tuple<int, List<Object>>> Results
+        private ConcurrentDictionary<int, ConcurrentBag<Object>> results;
+        public ConcurrentDictionary<int, ConcurrentBag<Object>> Results
         {
-            [MethodImpl(MethodImplOptions.Synchronized)]
             get { return results; }
-            [MethodImpl(MethodImplOptions.Synchronized)]
             set { results = value; }
         }
 
@@ -120,9 +117,9 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             genGUID();
-            Tasks = new List<Task>();
+            Tasks = new ConcurrentDictionary<int, Task>();
             State = NodeState.WAIT;
-            Results = new List<Tuple<int, List<Object>>>();
+            Results = new ConcurrentDictionary<int, ConcurrentBag<object>>();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -131,7 +128,7 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             NodeSocket = sock;
-            Tasks = new List<Task>();
+            Tasks = new ConcurrentDictionary<int, Task>();
             State = NodeState.WAIT;
         }
 
@@ -194,7 +191,7 @@ namespace NodeNet.Network.Nodes
                     Console.WriteLine("Send data : " + obj + " to : " + node);
                 }
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
-                    new AsyncCallback(SendCallback),node);
+                    new AsyncCallback(SendCallback), node);
             }
             catch (SocketException ex)
             {
@@ -282,7 +279,7 @@ namespace NodeNet.Network.Nodes
                     ProcessInput(input, node);
 
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e);
                     node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
@@ -295,38 +292,37 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public abstract void ProcessInput(DataInput input,Node node);    
+        public abstract void ProcessInput(DataInput input, Node node);
 
         public override string ToString()
         {
-            return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGUID; 
+            return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGUID;
         }
 
         protected void genGUID()
         {
-            NodeGUID =  Name +":" + Address + ":" + Port;
+            NodeGUID = Name + ":" + Address + ":" + Port;
         }
 
         protected void UpdateResult(Object input, int taskId)
         {
-            for (int i = 0; i < results.Count; i++)
+            Console.WriteLine("Update result");
+            ConcurrentBag<Object> result;
+            if (Results.TryGetValue(taskId, out result))
             {
-                if (results[i].Item1 == taskId)
-                {
-                    List<Object> list = results[i].Item2;
-                    list.Add(input);
-                    results[i] = new Tuple<int, List<object>>(results[i].Item1, list);                  
-                }
+                result.Add(input);
+            }
+            else
+            {
+                throw new Exception("Aucune Task avec cet id ");
             }
         }
-        protected List<Object> GetResultFromTaskId(int taskId)
+        protected ConcurrentBag<Object> GetResultFromTaskId(int taskId)
         {
-            foreach (Tuple<int, List<Object>> result in Results)
+            ConcurrentBag<Object> result;
+            if (Results.TryGetValue(taskId, out result))
             {
-                if (result.Item1 == taskId)
-                {
-                    return result.Item2;
-                }
+                return result;
             }
             throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
         }

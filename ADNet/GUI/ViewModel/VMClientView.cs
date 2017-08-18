@@ -71,6 +71,42 @@ namespace ADNet.GUI.ViewModel
                 "AA\tCC\tTT\tGG\n" +
                 "AAAA\tCCCC\tTTTT\tGGGG\n" +
                 "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG"+
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
+                "AA\tCC\tTT\tGG\n" +
+                "AAAA\tCCCC\tTTTT\tGGGG\n" +
+                "AAA\tCCC\tTTT\tGGG\n" +
                 "AA\tCC\tTT\tGG");
         }
 

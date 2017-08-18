@@ -1,5 +1,6 @@
 ﻿using NodeNet.Map_Reduce;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace ADNet.Map_Reduce.Node
@@ -8,7 +9,7 @@ namespace ADNet.Map_Reduce.Node
     {
         #region Methods
 
-        public Object reduce(List<object> input)
+        public Object reduce(ConcurrentBag<object> input)
         {
             List<Tuple<char, int>> result = new List<Tuple<char, int>>();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace NodeNet.Map_Reduce
 {
     public interface IReducer : ICloneable
     {
-        Object reduce(List<Object> input);
+        Object reduce(ConcurrentBag<Object> input);
         new object Clone();
     }
 }
