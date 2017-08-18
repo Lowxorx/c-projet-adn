@@ -8,7 +8,7 @@ namespace NodeNet.Data
         public String ClientGUID;
         public String NodeGUID;
         public int TaskId;
-        public int SubTaskId;
+        public int NodeTaskId;
         public MessageType MsgType;
         public String Method { get; set; }
         public Object Data { get; set; }

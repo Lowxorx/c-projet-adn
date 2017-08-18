@@ -11,6 +11,6 @@ namespace NodeNet.Data
         CALL,
         RESPONSE,
         IDENT,
-        NODE_IDENT
+        NODE_IDENT,
     }
 }

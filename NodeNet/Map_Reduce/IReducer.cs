@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NodeNet.Map_Reduce
 {
-    public interface IReducer<R,T>
+    public interface IReducer : ICloneable
     {
-        R reduce(R concat,T input);
+        Object reduce(List<Object> input);
+        new object Clone();
     }
 }

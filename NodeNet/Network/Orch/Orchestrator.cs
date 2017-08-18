@@ -1,41 +1,71 @@
 ﻿using NodeNet.Data;
+using NodeNet.Map_Reduce;
 using NodeNet.Network.Nodes;
-using NodeNet.Tasks.Impl;
+using NodeNet.Network.States;
+using NodeNet.Tasks;
+using Swordfish.NET.Collections;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace NodeNet.Network.Orch
 {
     public abstract class Orchestrator : Node, IOrchestrator
     {
-        /* Bientôt useless */
+        #region Properties
         private List<Tuple<int, Node>> UnidentifiedNodes;
         /* Nombre de noeuds connectés */
         private int nbNodes = 0;
-        /* Correspondance entre les subTasks et les task */
-        private List<Tuple<int, List<Tuple<int, State>>>> Tasks;
-        /* Stockage des résultats réduits par Task */
-        private List<Tuple<int, Object>> Results;
-        /* Liste des noeuds connectés */
-        private List<Tuple<List<int>, Node>> Nodes;
-        /* Liste des clients connectés */
-        private List<Tuple<List<int>, Node>> Clients;
-        // Task monitoring nodes
-        Tuple<int, State> MonitorTask;
+       
+        // Task monitoring nodes */
+        Tuple<int, NodeState> MonitorTask;
 
+        /* Liste des noeuds connectés */
+        private ConcurrentObservableDictionary<String,Node> nodes;
+        public ConcurrentObservableDictionary<String,Node> Nodes
+        {
+            get { return nodes; }
+            set { nodes = value; }
+        }
+
+        /* Liste des clients connectés */
+        private ConcurrentDictionary<String, Node> clients;
+        public ConcurrentDictionary<String, Node> Clients
+        {
+            get { return clients; }
+            set { clients = value; }
+        }
+
+        /* Liste des noeuds connectés */
+        private ConcurrentDictionary<int,Tuple<List<int>,bool>> taskDistrib;
+        public ConcurrentDictionary<int, Tuple<List<int>, bool>> TaskDistrib
+        {
+            get { return taskDistrib; }
+            set { taskDistrib = value; }
+        }
+
+        #endregion
 
         public Orchestrator(string name, string address, int port) : base(name, address, port)
         {
             UnidentifiedNodes = new List<Tuple<int, Node>>();
-            Nodes = new List<Tuple<List<int>, Node>>();
-            Clients = new List<Tuple<List<int>, Node>>();
-            Tasks = new List<Tuple<int, List<Tuple<int, State>>>>();
-            WorkerFactory.AddWorker("IDENT", new IdentificationTask(IdentNode));
-            WorkerFactory.AddWorker("GET_CPU", new CPUStateTask(ProcessCPUStateOrder));
+            Nodes = new ConcurrentObservableDictionary<String, Node>();
+            Clients = new ConcurrentDictionary<String,Node>();
+            TaskDistrib = new ConcurrentDictionary<int, Tuple<List<int>, bool>>();
+            WorkerFactory.AddWorker(IDENT_METHOD, new TaskExecutor(this,IdentNode,null,null));
+            WorkerFactory.AddWorker(GET_CPU_METHOD, new TaskExecutor(this,ProcessCPUStateOrder,null,null));
+            WorkerFactory.AddWorker(TASK_STATUS_METHOD, new TaskExecutor(this, RefreshTaskState, null, null));
         }
+
+        #region Inherited methods
 
         public async void Listen()
         {
@@ -61,7 +91,7 @@ namespace NodeNet.Network.Orch
 
             DataInput input = new DataInput()
             {
-                Method = "IDENT",
+                Method = IDENT_METHOD,
                 NodeGUID = NodeGUID,
                 TaskId = tId,
                 Data = new Tuple<String,int>(nbNodes.ToString(),connectedNode.Port),
@@ -80,91 +110,52 @@ namespace NodeNet.Network.Orch
             byte[] data = DataFormater.Serialize(input);
             Console.WriteLine("Send Data to " + Nodes.Count + " Node in orch Nodes list");
             /* Multi Client */
-            foreach (Tuple<List<int>, Node> tuple in Nodes)
+            foreach (var node in Nodes)
             {
                 try
                 {
-                    SendData(tuple.Item2, input);
+                    SendData(node.Value, input);
                 }
                 catch (SocketException ex)
                 {
                     /// Client Down ///
-                    if (!tuple.Item2.NodeSocket.Connected)
+                    if (!node.Value.NodeSocket.Connected)
                     {
-                        Console.WriteLine("Client " + tuple.Item2.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
+                        Console.WriteLine("Client " + node.Value.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
                     }
                     Console.WriteLine(ex.ToString());
                 }
             }
         }
 
-        public override void ReceiveCallback(IAsyncResult ar)
+      
+        public override void ProcessInput(DataInput input, Node node)
         {
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
-            try
+            if (input.Method != GET_CPU_METHOD)
             {
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
-                bytearrayList = new List<byte[]>();
-                if (bytesRead == 4096)
-                {
-                    byte[] data = buffer;
-                    bytearrayList.Add(data);
-                }
-                else
-                {
-                    DataInput input;
-                    if (bytearrayList.Count > 0)
-                    {
-                        byte[] data = bytearrayList
-                                     .SelectMany(a => a)
-                                     .ToArray();
-                        input = DataFormater.Deserialize<DataInput>(data);
-                    }
-                    else
-                    {
-                        input = DataFormater.Deserialize<DataInput>(buffer);
-                    }
-
-
-                    ProcessInput(input, node);
-                    receiveDone.Set();
-                }
-                Receive(node);
+                Console.WriteLine("Process input for : " + input.Method + " at : " + DateTime.Now.ToLongTimeString()) ;
             }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.ToString());
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            Object res = executor.DoWork(input);
+            if(res != null) {
+                DataInput resp = new DataInput()
+                {
+                    ClientGUID = input.ClientGUID,
+                    NodeGUID = NodeGUID,
+                    TaskId =input.TaskId,
+                    Method = input.Method,
+                    Data = res,
+                    MsgType = MessageType.RESPONSE
+                };
+                SendData(node, resp);
             }
         }
 
-        public override object ProcessInput(DataInput input, Node node)
-        {
-            if (input.Method == "GET_CPU")
-            {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                worker.OrchWork(input);
-            }
-            else if (input.Method == "IDENT")
-            {
-                input.Data = node;
-                IdentNode(input);
-            }
-            else
-            {
-                dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-                worker.OrchWork(input);
-            }
+        #endregion
 
-            return null;
-        }
+        #region TaskExecutor method
 
-        /* Multi Client */
-        public void IdentNode(DataInput data)
+        public Object IdentNode(DataInput data)
         {
             Console.WriteLine("Process Ident On Orch");
             foreach (Tuple<int, Node> node in UnidentifiedNodes)
@@ -175,76 +166,45 @@ namespace NodeNet.Network.Orch
                     {
                         node.Item2.NodeGUID = data.ClientGUID;
                         Console.WriteLine("Add Client to list : " + node);
-                        Clients.Add(new Tuple<List<int>, Node>(new List<int>(), node.Item2));
+                        Clients.TryAdd(data.ClientGUID,node.Item2);
+                        // TODO activer le monitoring pour ce client
                         SendNodesToClient(node.Item2);
+                        startMonitoringForClient(node.Item2);
                     }
                     else if (data.NodeGUID != null)
                     {
                         node.Item2.NodeGUID = data.NodeGUID;
                         if (MonitorTask != null)
                         {
-                            StartMonitoringForNode(data, node.Item2);
+                            startMonitoringForNode(data, node.Item2);
                         }
                         Console.WriteLine("Add Node to list : " + node);
-                        Nodes.Add(new Tuple<List<int>, Node>(new List<int>(), node.Item2));
+                        Nodes.TryAdd(data.NodeGUID,node.Item2);
                         SendNodeToClients(node.Item2);
                     }
                 }
             }
+            return null;
         }
 
-        public void SendNodesToClient(Node n)
-        {
-            List<List<String>> monitoringValues = new List<List<String>>();
-
-            foreach (Tuple<List<int>, Node> tuple in Nodes)
-            {
-                List<string> l = GetMonitoringInfos(tuple.Item2);
-                if (l != null)
-                {
-                    monitoringValues.Add(l);
-                }
-            }
-            if (monitoringValues.Count > 0)
-            {
-                DataInput di = new DataInput()
-                {
-                    ClientGUID = n.NodeGUID,
-                    NodeGUID = NodeGUID,
-                    Method = "IDENT",
-                    Data = monitoringValues,
-                    MsgType = MessageType.NODE_IDENT
-                };
-                SendData(n, di);
-            }
-        }
-
-        private void SendNodeToClients(Node n)
-        {
-            List<List<String>> monitoringValues = new List<List<String>>
-            {
-                GetMonitoringInfos(n)
-            };
-            foreach (Tuple<List<int>, Node> tuple in Clients)
-            {
-                DataInput di = new DataInput()
-                {
-                    ClientGUID = tuple.Item2.NodeGUID,
-                    NodeGUID = NodeGUID,
-                    Method = "IDENT",
-                    Data = monitoringValues,
-                    MsgType = MessageType.NODE_IDENT
-                };
-                SendData(tuple.Item2, di);
-
-            }
-        }
-
-        public void StartMonitoringForNode(DataInput d, Node n)
+        private void startMonitoringForClient(Node client)
         {
             DataInput input = new DataInput()
             {
-                Method = "GET_CPU",
+                Method = GET_CPU_METHOD,
+                Data = null,
+                ClientGUID = client.NodeGUID,
+                NodeGUID = NodeGUID,
+                MsgType = MessageType.CALL
+            };
+            ProcessCPUStateOrder(input);
+        }
+
+        private void startMonitoringForNode(DataInput d, Node n)
+        {
+            DataInput input = new DataInput()
+            {
+                Method = GET_CPU_METHOD,
                 Data = null,
                 ClientGUID = d.ClientGUID,
                 NodeGUID = NodeGUID,
@@ -254,171 +214,413 @@ namespace NodeNet.Network.Orch
             SendData(n, input);
         }
 
-        protected Tuple<Boolean, Node> GetNodeFromGUID(String guid)
-        {
-            foreach (Tuple<List<int>, Node> tuple in Clients)
-            {
-                if (tuple.Item1.Equals(guid))
-                {
-                    return new Tuple<bool, Node>(true, tuple.Item2);
-                }
-            }
-            foreach (Tuple<List<int>, Node> tuple in Nodes)
-            {
-                if (tuple.Item1.Equals(guid))
-                {
-                    return new Tuple<bool, Node>(false, tuple.Item2);
-                }
-            }
-            throw new Exception();
-        }
-
-        protected Tuple<List<int>, Node> GetClientTaskFromGuid(String guid)
-        {
-            foreach (Tuple<List<int>, Node> tuple in Clients)
-            {
-                if (tuple.Item2.NodeGUID.Equals(guid))
-                {
-                    return tuple;
-                }
-            }
-            throw new Exception();
-        }
-
-        protected Node GetClientFromGUID(String guid)
-        {
-            foreach (Tuple<List<int>, Node> tuple in Clients)
-            {
-                if (tuple.Item2.NodeGUID.Equals(guid))
-                {
-                    return tuple.Item2;
-                }
-            }
-            throw new Exception("GetClientFromGuid");
-        }
-
-        private void ProcessCPUStateOrder(DataInput input)
+        private Object ProcessCPUStateOrder(DataInput input)
         {
             if (input.MsgType == MessageType.CALL)
             {
                 if (MonitorTask == null)
                 {
                     int newTaskID = LastTaskID;
-                    MonitorTask = new Tuple<int, State>(newTaskID, State.WORK);
+                    MonitorTask = new Tuple<int, NodeState>(newTaskID, NodeState.WORK);
                 }
-                GetClientTaskFromGuid(input.ClientGUID).Item1.Add(MonitorTask.Item1);
+                GetClientFromGUID(input.ClientGUID).Tasks.Add(new Task(MonitorTask.Item1,NodeState.WORK));
                 input.NodeGUID = NodeGUID;
                 input.TaskId = MonitorTask.Item1;
                 SendDataToAllNodes(input);
             }
             else if (input.MsgType == MessageType.RESPONSE && MonitorTask != null)
             {
-                foreach (Tuple<List<int>, Node> tuple in Clients)
+                foreach ( var client in Clients)
                 {
-                    if (tuple.Item1.Contains(MonitorTask.Item1))
+                    foreach(Task task in client.Value.Tasks)
                     {
-                        SendData(tuple.Item2, input);
+                        if(task.Id == MonitorTask.Item1)
+                        {
+                            SendData(client.Value, input);
+                        }
                     }
                 }
             }
+            return null;
         }
 
-        protected void ProcessMapReduce(DataInput input)
+        private object RefreshTaskState(DataInput input)
         {
-            dynamic worker = WorkerFactory.GetWorker<Object, Object>(input.Method);
-            Console.WriteLine("Process Display Function on Orch");
+           Console.WriteLine("Process RefreshTaskState ");
+           // On fait transiter l'info au client
+           SendData(GetClientFromGUID(input.ClientGUID), input);
+           // Et on ne renvoit rien au Node
+            return null;
+        }
+
+        #endregion
+
+        #region Map Reduce
+        protected Object ProcessMapReduce(DataInput input)
+        {
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            Console.WriteLine("Process Map/Reduce");
             if (input.MsgType == MessageType.CALL)
             {
-                // MAP
-                List<Object> list = worker.Mapper.map(worker.CastDataInput(input.Data));
-                LazyNodeTranfert(list, input);
+                LazyNodeTranfert(input);
             }
             else if (input.MsgType == MessageType.RESPONSE)
+            {   
+                PrepareReduce(input,executor);
+            }
+            return null;
+        }
+
+       // [MethodImpl(MethodImplOptions.Synchronized)]
+        private void PrepareReduce(DataInput input, TaskExecutor executor)
+        {
+            updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
+            UpdateResult(input.Data, input.TaskId);
+            updateNodeStatus(NodeState.WAIT, input.NodeGUID);
+            // Reduce
+            // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
+            // pour y concaténer le resultat du travail du noeud
+            List<Object> result = GetResultFromTaskId(input.TaskId);
+            if (TaskIsCompleted(input.TaskId))
             {
-                // Reduce
-                // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
-                // pour y concaténeer le resultat du travail du noeud
-                Tuple<int, Object> result = null;
-                foreach (Tuple<int, Object> tuple in Results)
+                Console.WriteLine("Reduce");
+                Object reduceRes = executor.Reducer.reduce(result);
+                // TODO check si tous les nodes ont finis
+                DataInput response = new DataInput()
                 {
-                    if (tuple.Item1 == input.TaskId)
+                    TaskId = input.TaskId,
+                    Method = input.Method,
+                    Data = reduceRes,
+                    ClientGUID = input.ClientGUID,
+                    NodeGUID = NodeGUID,
+                    MsgType = MessageType.RESPONSE,
+                };
+                SendData(GetClientFromGUID(input.ClientGUID), response);
+            }
+        }
+
+        private void LazyNodeTranfert(DataInput input)
+        {
+            int newTaskId = LastTaskID;
+            createClientTask(input, newTaskId);
+            Tuple<int, List<Object>> emptyResult = new Tuple<int, List<Object>>(newTaskId, new List<object>());
+            Results.Add(emptyResult);
+            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            // On récupère le résultat du map
+            IMapper mapper = executor.Mapper;
+            // Démarrage du thread en écoute sur la liste des nodes pour le mapping en lazzy loading
+            ManualResetEvent _busy = new ManualResetEvent(false);
+            BackgroundWorker bw = new BackgroundWorker()
+            {
+                WorkerSupportsCancellation = true
+            };
+            bw.DoWork += (o, a) =>
+            {
+                bool endMap = false;
+               
+                while (!endMap)
+                {
+                    bool allNodeWork = true;
+                    // On itère sur la liste des Nodes pour leur distribuer du travail
+                    foreach (var node in Nodes)
                     {
-                        result = tuple;
+                        // Si au moins un node de la liste est en train d'attendre 
+                        // on lui envoit du travail
+                        if (node.Value.State == NodeState.WAIT)
+                        {
+                            Object data = mapper.map(input.Data);
+                           
+                            sendSubTaskToNode(node.Value, newTaskId, input, data);
+                            node.Value.State = NodeState.WORK;
+                            if (mapper.mapIsEnd())
+                            {
+                                // endMap vaudra true si on a déjà tout mapper
+                                endMap = true;
+                                // Si on a tout mapper on l'indique dans le tableau de distribution des NodeTask
+                                setTaskIsMapped(newTaskId);
+                            }
+
+                            allNodeWork = false;
+                        }      
+                    }
+                    if (allNodeWork)
+                        _busy.Reset();
+                }
+            };
+
+            Nodes.CollectionChanged += delegate (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            {
+                // Si il est en train d'attendre on relance le map
+                bool oneNodeIsWaiting = false;
+                foreach(var node in e.NewItems)
+                {
+                    if (((KeyValuePair<String,Node>)node).Value.State == NodeState.WAIT)
+                    {
+                        oneNodeIsWaiting = true;
                     }
                 }
-                Object reduceRes = worker.Reducer.reduce(worker.CastDataInput(result.Item2), worker.CastDataInput(input.Data));
-                if (TaskIsCompleted(input.TaskId))
+                if (oneNodeIsWaiting)
                 {
-                    // TODO check si tous les nodes ont finis
-                    DataInput response = new DataInput()
+                    _busy.Set();
+                }
+            };
+            bw.RunWorkerAsync();
+        }
+
+        #endregion
+
+        #region Task Management
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void setTaskIsMapped(int newTaskId)
+        {
+            Tuple<List<int>, bool> task;
+            if (TaskDistrib.TryGetValue(newTaskId, out task))
+            {
+                Tuple<List<int>, bool> newTask = new Tuple<List<int>, bool>(task.Item1, true);
+                if(!TaskDistrib.TryUpdate(newTaskId, newTask, task))
+                {
+                    throw new Exception("Impossible de mettre à jour la tâche pour signifier quelle est mappée.");
+                }
+            }
+            else{
+                throw new Exception("Aucune Task avec cet id ");
+            }
+        }
+
+        private void sendSubTaskToNode(Node node, int newTaskID, DataInput input, Object data)
+        {
+            Console.WriteLine("SendMApToNode");
+            int newNodeTaskID = LastSubTaskID;
+            createNodeTasks(node, newTaskID, newNodeTaskID);
+            DataInput res = new DataInput()
+            {
+                TaskId = newTaskID,
+                NodeTaskId = newNodeTaskID,
+                MsgType = MessageType.CALL,
+                Method = input.Method,
+                Data = data,
+                ClientGUID = input.ClientGUID,
+                NodeGUID = this.NodeGUID,
+            };
+            SendData(node, res);
+        }
+
+        private void createClientTask(DataInput input, int newTaskID)
+        {
+            // Ajout de la task au client 
+            Node client = GetClientFromGUID(input.ClientGUID);
+            client.Tasks.Add(new Task(newTaskID, NodeState.WAIT));
+            // Ajout d'une ligne dans la table de ditribution des nodeTask
+            TaskDistrib.TryAdd(newTaskID,new Tuple<List<int>, bool>(new List<int>(),false));
+            // On envoit une réponse au client pour lui transmettre l'ID de la Task
+            DataInput resp = new DataInput()
+            {
+                ClientGUID = input.ClientGUID,
+                NodeGUID = NodeGUID,
+                Method = TASK_STATUS_METHOD,
+                TaskId = newTaskID,
+                MsgType = MessageType.RESPONSE,
+                Data = new Tuple<NodeState, Object>(NodeState.JOB_START, input.Method)
+            };
+            SendData(client, resp);
+        }
+
+        private void createNodeTasks( Node node, int newTaskID, int newSubTaskID)
+        {
+            // On ajoute la subtask au node 
+            node.Tasks.Add(new Task(newSubTaskID, NodeState.WAIT));
+            // Ajout de la node task à la ligne de la task dans le tableau de distribution des nodetask
+
+            Tuple<List<int>, bool> task;
+            if (TaskDistrib.TryGetValue(newTaskID, out task))
+            {
+                task.Item1.Add(newSubTaskID);
+            }
+            else
+            {
+                throw new Exception("Aucune Task avec cet id ");
+            }
+        }
+
+        private void updateNodeTaskStatus(int nodeTaskId, NodeState status, string nodeGUID)
+        {
+            Node node;
+            if (Nodes.TryGetValue(nodeGUID, out node))
+            {
+                for (int i = 0; i < node.Tasks.Count; i++)
+                {
+                    if (node.Tasks[i].Id == nodeTaskId)
                     {
-                        TaskId = input.TaskId,
-                        Method = input.Method,
-                        Data = reduceRes,
-                        ClientGUID = input.ClientGUID,
-                        NodeGUID = this.NodeGUID,
-                        MsgType = MessageType.RESPONSE,
-                    };
-                    SendData(GetClientFromGUID(input.ClientGUID), response);
+                        node.Tasks[i].State = status;
+                    }
                 }
-                else
+            }
+            else
+            {
+                throw new Exception("Aucon node trouvé avec ce GUID");
+            }
+        }
+
+        private void updateNodeStatus(NodeState status, string nodeGUID)
+        {
+            Console.WriteLine("Set status of node : " + nodeGUID + " to : " + status);
+            Node node;
+            if(Nodes.TryGetValue(nodeGUID,out node))
+            {
+                node.State = status;
+            }
+            else
+            {
+                throw new Exception("Aucon node trouvé avec ce GUID");
+            }
+        }
+
+        #endregion
+
+        #region Utilitary methods
+        private void SendNodeToClients(Node n)
+        {
+            List<List<String>> monitoringValues = new List<List<String>>
+            {
+                GetMonitoringInfos(n)
+            };
+            foreach (var client in Clients)
+            {
+                DataInput di = new DataInput()
                 {
-                    result = new Tuple<int, Object>(input.TaskId, reduceRes);
-                }
+                    ClientGUID = client.Value.NodeGUID,
+                    NodeGUID = NodeGUID,
+                    Method = IDENT_METHOD,
+                    Data = monitoringValues,
+                    MsgType = MessageType.NODE_IDENT
+                };
+                SendData(client.Value, di);
 
             }
         }
+
+        protected Node GetNodeFromGUID(String guid)
+        {
+            Node node;
+            if (Nodes.TryGetValue(guid, out node))
+            {
+                return node;
+            }
+            else
+            {
+                throw new Exception("Aucon node trouvé avec ce GUID");
+            }
+        }
+
+
+        protected Node GetClientFromGUID(String guid)
+        {
+            foreach (var client in Clients)
+            {
+                if (client.Value.NodeGUID.Equals(guid))
+                {
+                    return client.Value;
+                }
+            }
+            throw new Exception("Aucun client trouvé avec ce guid");
+        }
+
+        public void SendNodesToClient(Node client)
+        {
+            //TODO check Enumerator Thread safe
+            List<List<String>> monitoringValues = new List<List<String>>();
+            IEnumerator<KeyValuePair<String,Node>> en = Nodes.GetEnumerator();
+            while (en.MoveNext())
+            {
+                KeyValuePair<String, Node> node = en.Current;
+                List<string> l = GetMonitoringInfos(node.Value);
+                if (l != null)
+                {
+                    monitoringValues.Add(l);
+                }
+            }
+
+
+            if (monitoringValues.Count > 0)
+            {
+                DataInput di = new DataInput()
+                {
+                    ClientGUID = client.NodeGUID,
+                    NodeGUID = NodeGUID,
+                    Method = IDENT_METHOD,
+                    Data = monitoringValues,
+                    MsgType = MessageType.NODE_IDENT
+                };
+                SendData(client, di);
+            }
+        }
+
+        private Node getNodeBySubTaskId(int id)
+        {
+            foreach (var node in Nodes)
+            {
+                foreach (Task task in node.Value.Tasks)
+                {
+                    if (task.Id == id)
+                    {
+                        return node.Value;
+                    }
+                }
+            }
+            throw new Exception("Aucune node associé à cette subTask n'a été trouvé");
+        }
+
+        private NodeState getSubTaskState(int subtask)
+        {
+            foreach(var node in Nodes)
+            {
+                foreach(Task task in node.Value.Tasks)
+                {
+                    if(task.Id == subtask)
+                    {
+                        return task.State;
+                    }
+                }
+            }
+            throw new Exception("Aucune task trouvé pour cette subTask");
+        }
+
         // Checker si toutes les nodes correspondant à cette task sont en etat FINISH
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private bool TaskIsCompleted(int taskId)
         {
-            // STUB
-            return true;
-        }
+            bool completed = true;
 
-        private void LazyNodeTranfert(List<Object> data, DataInput input)
-        {
-            int newTaskID = LastTaskID;
-            Tuple<int, List<Tuple<int, State>>> newTask = new Tuple<int, List<Tuple<int, State>>>(newTaskID, new List<Tuple<int, State>>());
-            Tuple<int, Object> emptyResult = new Tuple<int, Object>(newTaskID, null);
-            Results.Add(emptyResult);
-            for (int i = 0; i < data.Count; i++)
+            Tuple<List<int>, bool> task;
+            if (TaskDistrib.TryGetValue(taskId, out task))
             {
-                Tuple<int, State> newSubTask = new Tuple<int, State>(LastSubTaskID, State.WORK);
-                newTask.Item2.Add(newSubTask);
-                UpdateNodeAndClientTasks(input.ClientGUID, input.NodeGUID, newTaskID, LastSubTaskID);
-                DataInput res = new DataInput()
+                // Si le booleen vaut true c'est que le mapping est terminé 
+                // donc on peut vérifier si toutes les subtask ont été process
+                if (task.Item2)
                 {
-                    TaskId = newTaskID,
-                    SubTaskId = LastSubTaskID,
-                    MsgType = MessageType.CALL,
-                    Method = input.Method,
-                    Data = data[i],
-                    ClientGUID = input.ClientGUID,
-                    NodeGUID = this.NodeGUID,
-                };
-                Node node = Nodes[Nodes.Count % i].Item2;
-                SendData(node, res);
-            }
-        }
-
-        private void UpdateNodeAndClientTasks(string clientGUID, string nodeGUID, int newTaskID, int newSubTaskID)
-        {
-            foreach (Tuple<List<int>, Node> tuple in Clients)
-            {
-                if (tuple.Item2.NodeGUID.Equals(clientGUID))
+                    // On itère sur toute la liste des subtask de cette task
+                    for(int i = 0; i < task.Item1.Count;i++)
+                    {
+                        // Ici on vérifie qsue toutes les subtask soient en état FINISH à part celle que l'on vient de recevoir
+                        if (getSubTaskState(task.Item1[i]) != NodeState.FINISH)
+                        {
+                            completed = false;
+                        }
+                    }
+                }
+                // Si le booleen vaut false pas la peine de vérifier
+                else
                 {
-                    tuple.Item1.Add(newTaskID);
+                    completed = false;
                 }
             }
-
-            foreach (Tuple<List<int>, Node> tuple in Nodes)
+            else
             {
-                if (tuple.Item2.NodeGUID.Equals(nodeGUID))
-                {
-                    tuple.Item1.Add(newSubTaskID);
-                }
+                throw new Exception("Aucune Task avec cet id ");
             }
-
+            Console.WriteLine("In TaskIsComplete -> complete : " + completed + " Thread : " + Thread.CurrentThread.ManagedThreadId);
+            return completed;
         }
+        #endregion
     }
 }

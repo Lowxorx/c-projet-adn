@@ -1,18 +1,29 @@
 ﻿using NodeNet.Data;
 using NodeNet.Network.Orch;
+using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace NodeNet.Network.Nodes
 {
+    public class StateObject
+    {
+        // Client socket.
+        public Node node = null;
+        // Size of receive buffer.
+        public const int BufferSize = 4096;
+        // Receive buffer.
+        public byte[] buffer = new byte[BufferSize];
+        // Received data
+        public List<byte[]> data = new List<byte[]>();
+    }
     public abstract class Node : INode
     {
         public String NodeGUID;
@@ -29,6 +40,28 @@ namespace NodeNet.Network.Nodes
         public static int BUFFER_SIZE = 4096;
         public PerformanceCounter PerfCpu { get; set; }
         public PerformanceCounter PerfRam { get; set; }
+
+        public NodeState State { get; set; }
+
+        private List<Task> tasks;
+
+        public List<Task> Tasks
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get { return tasks; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set { tasks = value; }
+        }
+
+        /* Stockage des résultats réduits par Task */
+        private List<Tuple<int, List<Object>>> results;
+        public List<Tuple<int, List<Object>>> Results
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get { return results; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set { results = value; }
+        }
 
         private int lastTaskID;
 
@@ -50,8 +83,25 @@ namespace NodeNet.Network.Nodes
         public float CpuValue { get { return (float)(Math.Truncate(cpuValue * 100.0) / 100.0); } set { cpuValue = value; } }
         private double ramValue { get; set; }
         public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
+        private int workingTask;
 
-        public GenericTaskExecFactory WorkerFactory { get; set; }
+        public int WorkingTask
+        {
+            get { return workingTask; }
+            set { workingTask = value; }
+        }
+
+        private double progression;
+
+        public double Progression
+        {
+            get { return progression; }
+            set { progression = value; }
+        }
+
+
+
+        public TaskExecFactory WorkerFactory { get; set; }
 
         protected List<byte[]> bytearrayList { get; set; }
 
@@ -59,13 +109,20 @@ namespace NodeNet.Network.Nodes
         protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
         protected static ManualResetEvent connectDone = new ManualResetEvent(false);
 
+        protected const String GET_CPU_METHOD = "GET_CPU";
+        protected const String IDENT_METHOD = "IDENT";
+        protected const String TASK_STATUS_METHOD = "TASK_STATE";
+
         public Node(String name, String adress, int port)
         {
-            WorkerFactory = GenericTaskExecFactory.GetInstance();
+            WorkerFactory = TaskExecFactory.GetInstance();
             Name = name;
             Address = adress;
             Port = port;
             genGUID();
+            Tasks = new List<Task>();
+            State = NodeState.WAIT;
+            Results = new List<Tuple<int, List<Object>>>();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -74,6 +131,8 @@ namespace NodeNet.Network.Nodes
             Address = adress;
             Port = port;
             NodeSocket = sock;
+            Tasks = new List<Task>();
+            State = NodeState.WAIT;
         }
 
         public void Stop()
@@ -95,9 +154,7 @@ namespace NodeNet.Network.Nodes
             try
             {
                 ServerSocket.BeginConnect(remoteEP, new AsyncCallback(ConnectCallback), ServerSocket);
-
                 connectDone.WaitOne();
-
             }
             catch (Exception e)
             {
@@ -132,7 +189,10 @@ namespace NodeNet.Network.Nodes
 
             try
             {
-                Console.WriteLine("Send data : " + obj + " to : " + node);
+                if (obj.Method != GET_CPU_METHOD)
+                {
+                    Console.WriteLine("Send data : " + obj + " to : " + node);
+                }
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
                     new AsyncCallback(SendCallback),node);
             }
@@ -155,8 +215,6 @@ namespace NodeNet.Network.Nodes
 
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to Node : {1}", bytesSent,node);
-
                 // Signal that all bytes have been sent.
                 sendDone.Set();
             }
@@ -171,9 +229,10 @@ namespace NodeNet.Network.Nodes
             try
             {
                 // Begin receiving the data from the remote device.
-                byte[] buffer = new byte[BUFFER_SIZE];
-                node.NodeSocket.BeginReceive(buffer, 0, BUFFER_SIZE, 0,
-                    new AsyncCallback(ReceiveCallback), Tuple.Create(node, buffer));
+                StateObject obj = new StateObject();
+                obj.node = node;
+                node.NodeSocket.BeginReceive(obj.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReceiveCallback), obj);
             }
             catch (Exception e)
             {
@@ -200,69 +259,43 @@ namespace NodeNet.Network.Nodes
             }
         }
 
-        public virtual void ReceiveCallback(IAsyncResult ar)
+        public void ReceiveCallback(IAsyncResult ar)
         {
-            Console.WriteLine("Hey le node reçoit quelquechose !!!");
-            Tuple<Node, byte[]> state = (Tuple<Node, byte[]>)ar.AsyncState;
-            byte[] buffer = state.Item2;
-            Node node = state.Item1;
-            Socket client = node.NodeSocket;
             try
             {
+                // Retrieve the state object and the client socket 
+                // from the asynchronous state object.
+                StateObject stateObj = (StateObject)ar.AsyncState;
+                Node node = stateObj.node;
+
                 // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Number of bytes received : " + bytesRead);
-                bytearrayList = new List<byte[]>();
-                if (bytesRead == 4096)
+                int bytesRead = node.NodeSocket.EndReceive(ar);
+
+                stateObj.data.Add(stateObj.buffer);
+                try
                 {
-                    byte[] data = buffer;
-                    bytearrayList.Add(data);
-                }
-                else
-                {
-                    DataInput input;
-                    if (bytearrayList.Count > 0)
-                    {
-                        byte[] data = bytearrayList
+                    byte[] data = stateObj.data
                                      .SelectMany(a => a)
                                      .ToArray();
-                        input = DataFormater.Deserialize<DataInput>(data);
-                    }
-                    else
-                    {
-                        input = DataFormater.Deserialize<DataInput>(buffer);
-                    }
-                    Object result = ProcessInput(input,node);
-                    if (result != null)
-                    {
-                        if (result is DataInput)
-                        {
-                            SendData(node, (DataInput)result);
-                        }
-                        else
-                        {
-                            DataInput res = new DataInput()
-                            {
-                                MsgType = MessageType.RESPONSE,
-                                Method = input.Method,
-                                Data = result,
-                                ClientGUID = input.ClientGUID,
-                                NodeGUID = NodeGUID
-                            };
-                            SendData(node, res);
-                        }
-                        receiveDone.Set();
-                    }
+                    DataInput input = DataFormater.Deserialize<DataInput>(data);
+                    Receive(node);
+                    ProcessInput(input, node);
+
                 }
-                Receive(node);
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                    node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReceiveCallback), stateObj);
+                }
             }
-            catch (SocketException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
         }
 
-        public abstract Object ProcessInput(DataInput input,Node node);    
+        public abstract void ProcessInput(DataInput input,Node node);    
 
         public override string ToString()
         {
@@ -273,5 +306,30 @@ namespace NodeNet.Network.Nodes
         {
             NodeGUID =  Name +":" + Address + ":" + Port;
         }
+
+        protected void UpdateResult(Object input, int taskId)
+        {
+            for (int i = 0; i < results.Count; i++)
+            {
+                if (results[i].Item1 == taskId)
+                {
+                    List<Object> list = results[i].Item2;
+                    list.Add(input);
+                    results[i] = new Tuple<int, List<object>>(results[i].Item1, list);                  
+                }
+            }
+        }
+        protected List<Object> GetResultFromTaskId(int taskId)
+        {
+            foreach (Tuple<int, List<Object>> result in Results)
+            {
+                if (result.Item1 == taskId)
+                {
+                    return result.Item2;
+                }
+            }
+            throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
+        }
+
     }
 }
