@@ -36,13 +36,13 @@
                 VerticalAlignment="Top"
                 Fill="#FF00BCD4" />
             <TextBlock
-                Width="161"
+                Width="246"
                 Margin="10,2,0,0"
                 HorizontalAlignment="Left"
                 FontSize="29"
                 FontWeight="Bold"
                 Foreground="White"
-                Text="ADNet" />
+                Text="ADNet - Serveur" />
             <Button
                 Width="45"
                 Height="45"

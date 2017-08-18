@@ -23,7 +23,7 @@ namespace ADNet.GUI.ViewModel
         {
             DNAOrchestra orch = new DNAOrchestra("Orchestrator", TxtIp, 3000);
             orch.Listen();
-            VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Serveur démarré, en écoute...";
+            VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Serveur démarré, en écoute..." + Environment.NewLine;
         }
 
         private string txtIp;
