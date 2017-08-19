@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -265,26 +266,36 @@ namespace NodeNet.Network.Nodes
                 StateObject stateObj = (StateObject)ar.AsyncState;
                 Node node = stateObj.node;
 
-                // Read data from the remote device.
-                int bytesRead = node.NodeSocket.EndReceive(ar);
-
-                stateObj.data.Add(stateObj.buffer);
-                try
+                TcpState state = GetState(node.NodeSocket);
+                if (state == TcpState.Established)
                 {
-                    byte[] data = stateObj.data
-                                     .SelectMany(a => a)
-                                     .ToArray();
-                    DataInput input = DataFormater.Deserialize<DataInput>(data);
-                    Receive(node);
-                    ProcessInput(input, node);
+                    // Read data from the remote device.
+                    int bytesRead = node.NodeSocket.EndReceive(ar);
 
+                    stateObj.data.Add(stateObj.buffer);
+                    try
+                    {
+                        byte[] data = stateObj.data
+                                         .SelectMany(a => a)
+                                         .ToArray();
+                        DataInput input = DataFormater.Deserialize<DataInput>(data);
+                        Receive(node);
+                        ProcessInput(input, node);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReceiveCallback), stateObj);
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine(e);
-                    node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), stateObj);
+                    RemoveDeadNode(node);
                 }
+
+               
             }
             catch (Exception e)
             {
@@ -326,6 +337,17 @@ namespace NodeNet.Network.Nodes
             }
             throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
         }
+
+        private static TcpState GetState(Socket tcpClient)
+        {
+            var foo = IPGlobalProperties.GetIPGlobalProperties()
+              .GetActiveTcpConnections()
+              .SingleOrDefault(x => x.LocalEndPoint.Equals(tcpClient.LocalEndPoint));
+            return foo != null ? foo.State : TcpState.Unknown;
+        }
+
+        public abstract void RemoveDeadNode(Node node);
+
 
     }
 }
