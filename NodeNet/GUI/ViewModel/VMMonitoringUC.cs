@@ -6,8 +6,10 @@ using NodeNet.Network.Nodes;
 using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NodeNet.GUI.ViewModel
 {
@@ -91,31 +93,70 @@ namespace NodeNet.GUI.ViewModel
             NodeList = list;
         }
 
-        public void RefreshTaskState(DataInput input)
+        public void RefreshTaskState(Task task)
         {
             Console.WriteLine("Refresh Task state");
-            //ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
-            //foreach (DefaultNode node in NodeList)
-            //{
-            //    if (node.NodeGUID != input.NodeGUID)
-            //    {
-            //        list.Add(node);
-            //    }
-            //    else
-            //    {
-            //        node.State = ((Tuple<NodeState, double>)input.Data).Item1;
-            //        node.Progression = ((Tuple<NodeState, Double>)input.Data).Item2;
-            //        node.WorkingTask = input.TaskId;
-            //        list.Add(node);
-            //    }
-            //}
-            //NodeList = null;
-            //NodeList = list;
+            ObservableCollection<Task> newList = new ObservableCollection<Task>();
+            bool taskIsAbsent = true;
+            foreach (Task t in TaskList)
+            {
+                if(t.Id == task.Id)
+                {
+                    taskIsAbsent = false;
+                    t.Progression = task.Progression;
+                }
+                newList.Add(t);  
+            }
+            TaskList = null;
+            TaskList = newList;
+            if (taskIsAbsent)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(task)));
+            }
         }
 
-        public void CancelTask(DataInput input)
+        public void CancelTask(Task task)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Refresh Task state");
+            ObservableCollection<Task> newTaskList = new ObservableCollection<Task>();
+            bool taskIsAbsent = true;
+            foreach (Task t in TaskList)
+            {
+                if (t.Id == task.Id)
+                {
+                    taskIsAbsent = false;
+                    t.Progression = 0;
+                }
+                newTaskList.Add(t);
+            }
+            TaskList = null;
+            TaskList = newTaskList;
+            if (taskIsAbsent)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(task)));
+            }
+        }
+
+        internal void RefreshNodeState(string nodeGUID, NodeState state,int taskId)
+        {
+            ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
+
+            foreach (DefaultNode n in NodeList)
+            {
+                if (n.NodeGUID == nodeGUID)
+                {
+                    n.State = state;
+                    n.WorkingTask = taskId;
+                }
+                newNodeList.Add(n);
+            }
+            NodeList = null;
+            NodeList = newNodeList;
+        }
+
+        internal void NodeIsFailed(string nodeGUID)
+        {
+           
         }
     }
 

@@ -14,23 +14,19 @@ namespace ADNet.Network.Impl
         private const String DNA_QUANT_METHOD = "DNA_QUANT";
         public DNANode(String name, String address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this,dnaQuant, new QuantStatsMapper(), new QuantStatsReducer()));
+            WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this,DnaQuantStarter, new QuantStatsMapper(), new QuantStatsReducer()));
             Name = name;
             Address = address;
             Port = port;
         }
-        private Object dnaQuant(DataInput input)
+        private Object DnaQuantStarter(DataInput input)
         {
-            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            List<String> list = (List<String>)executor.Mapper.map(input.Data);
-            foreach (string s in list)
-            {
-                LaunchBGForWork(DnaQuantProcess, PrepareData(input, s),list.Count);
-            }
-            return null;
+            return LaunchWork(input,DnaQuantProcess);
         }
+
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
+            //Thread.Sleep(5000);
             Tuple<int,DataInput, int> dataAndMeta = (Tuple <int,DataInput, int > )e.Argument;
             // On averti l'orchestrateur que l'on commence a process
             String dnaSequence = (String)dataAndMeta.Item2.Data;

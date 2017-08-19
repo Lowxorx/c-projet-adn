@@ -95,23 +95,22 @@ namespace NodeNet.Network
 
         private object RefreshTaskState(DataInput input)
         {
-            Tuple<NodeState, Object> tuple = (Tuple < NodeState, Object> )input.Data;
-            Console.WriteLine("Refresh state task : state : " + tuple.Item1 + " object : " + tuple.Item2);
-            switch (tuple.Item1)
+            List<Task> listTask = (List < Task > )input.Data;
+
+            foreach(Task task in listTask)
             {
-                case NodeState.JOB_START:
-                    Console.WriteLine("AddTaskToList");
-                    Task newTask = new Task(input.TaskId, NodeState.JOB_START, (String)tuple.Item2);
-                    Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(newTask)));
-                    break;
-                case NodeState.WORK:
-                    ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(input);
-                    break;
-                case NodeState.ERROR:
-                    ViewModelLocator.VMLMonitorUcStatic.CancelTask(input);
-                    break;
+                switch (task.State)
+                {
+                    case NodeState.WORK:
+                        ViewModelLocator.VMLMonitorUcStatic.RefreshNodeState(input.NodeGUID,NodeState.WORK,input.TaskId);
+                        ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(task);
+                        break;
+                    case NodeState.ERROR:
+                        ViewModelLocator.VMLMonitorUcStatic.RefreshNodeState(input.NodeGUID, NodeState.ERROR,-1);
+                        ViewModelLocator.VMLMonitorUcStatic.CancelTask(task);
+                        break;
+                }
             }
-            
             return null;
         }
 

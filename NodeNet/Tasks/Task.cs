@@ -4,6 +4,7 @@ using System;
 
 namespace NodeNet.Tasks
 {
+    [Serializable]
     public class Task
     {
         private int id;
@@ -36,6 +37,32 @@ namespace NodeNet.Tasks
             get { return taskName; }
             set { taskName = value; }
         }
+
+        private DateTime startTime;
+
+        public DateTime StartTime
+        {
+            get { return startTime; }
+            set { startTime = value; }
+        }
+
+        private DateTime endTime;
+
+        public DateTime EndTime
+        {
+            get { return endTime; }
+            set { endTime = value; }
+        }
+
+
+        private double duration;
+
+        public double Duration
+        {
+            get { return duration; }
+            set { duration = value; }
+        }
+
 
 
         public Task(int id,NodeState state)

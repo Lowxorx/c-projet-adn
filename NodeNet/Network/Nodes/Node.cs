@@ -334,10 +334,7 @@ namespace NodeNet.Network.Nodes
             throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
         }
 
-    
-
         public abstract void RemoveDeadNode(Node node);
-
 
     }
 }
