@@ -17,7 +17,8 @@ namespace ADNet.GUI.ViewModel
         public ICommand ProbSelectFile { get; set; }
         public ICommand QuantSendData { get; set; }
         public ICommand ProbSendData { get; set; }
-
+        public ICommand ProbCleanResultBox { get; private set; }
+        public ICommand QuantCleanResultBox { get; private set; }
 
         public VMLogBox VmLogBox { get; set; }
 
@@ -50,6 +51,34 @@ namespace ADNet.GUI.ViewModel
                 RaisePropertyChanged("QuantResultBox");
             }
         }
+
+        private String probSelectedFile;
+        public String ProbSelectedFile
+        {
+            get
+            {
+                return probSelectedFile;
+            }
+            set
+            {
+                probSelectedFile = value;
+                RaisePropertyChanged("ProbSelectedFile");
+            }
+        }
+        private String quantSelectedFile;
+        public String QuantSelectedFile
+        {
+            get
+            {
+                return quantSelectedFile;
+            }
+            set
+            {
+                quantSelectedFile = value;
+                RaisePropertyChanged("QuantSelectedFile");
+            }
+        }
+        
 
         private bool quantBtSendDataEnabled;
         public bool QuantBtSendDataEnabled
@@ -91,6 +120,8 @@ namespace ADNet.GUI.ViewModel
             ProbSelectFile = new RelayCommand(ProbLoadFile);
             QuantSendData = new RelayCommand(QuantSendFile);
             ProbSendData = new RelayCommand(ProbSendFile);
+            ProbCleanResultBox = new RelayCommand(CleanProbBox);
+            QuantCleanResultBox = new RelayCommand(CleanQuantBox);
 
             WindowLoaded = new RelayCommand(OnLoad);
             ICommandBtnClose = new RelayCommand(CloseWindow);
@@ -98,7 +129,7 @@ namespace ADNet.GUI.ViewModel
             UcVmMonitoring = NodeNet.GUI.ViewModel.ViewModelLocator.VMLMonitorUcStatic;
         }
 
-        public void OnLoad()
+        private void OnLoad()
         {
             ProbBtSendDataEnabled = false;
             QuantBtSendDataEnabled = false;
@@ -113,6 +144,7 @@ namespace ADNet.GUI.ViewModel
             if (loadfile.ShowDialog() == DialogResult.OK)
             {
                 QuantBtSendDataEnabled = true;
+                QuantSelectedFile = "Fichier sélectionné : " + loadfile.FileName;
                 VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Fichier sélectionné : " + loadfile.FileName + Environment.NewLine;
             }
         }
@@ -173,6 +205,8 @@ namespace ADNet.GUI.ViewModel
             OpenFileDialog loadfile = new OpenFileDialog();
             if (loadfile.ShowDialog() == DialogResult.OK)
             {
+                ProbBtSendDataEnabled = true;
+                ProbSelectedFile = "Fichier sélectionné : " + loadfile.FileName;
                 VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Fichier sélectionné : " + loadfile.FileName + Environment.NewLine;
             }
         }
@@ -180,15 +214,21 @@ namespace ADNet.GUI.ViewModel
         {
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - DNA_PROB n'est pas implémenté." + Environment.NewLine;
         }
-
         public void QuantDisplayResult(string s)
         {
             QuantResultBox = s;
         }
-
         private void CloseWindow()
         {
             CloseAction.Invoke();
+        }
+        private void CleanQuantBox()
+        {
+            QuantResultBox = string.Empty;
+        }
+        private void CleanProbBox()
+        {
+            ProbResultBox = string.Empty;
         }
 
     }

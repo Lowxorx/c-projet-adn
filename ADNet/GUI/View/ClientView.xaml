@@ -141,122 +141,6 @@
             FontWeight="Bold"
             Foreground="White"
             Text="Traitement ADN" />
-        <Button
-            Width="75"
-            Margin="171,574,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#FF00BCD4"
-            BorderThickness="2"
-            Command="{Binding QuantSendData}"
-            Content="Envoyer"
-            FontSize="14"
-            Foreground="White"
-            IsEnabled="{Binding QuantBtSendDataEnabled}" />
-        <TextBox
-            Width="463"
-            Height="117"
-            Margin="10,448,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding QuantResultBox}"
-            TextWrapping="Wrap" />
-        <Rectangle
-            Width="473"
-            Height="21"
-            Margin="0,395,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top">
-            <Rectangle.Fill>
-                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
-                    <GradientStop Offset="1" Color="White" />
-                    <GradientStop Color="#FF00BCD4" />
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        <TextBlock
-            Width="300"
-            Height="19"
-            Margin="10,397,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            FontSize="14"
-            FontWeight="Bold"
-            Foreground="White"><Run Text="Module 1" /><Run Text=" : DNA_QUANT" /></TextBlock>
-        <Label
-            Margin="10,421,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Résultat du traitement" />
-        <Button
-            Width="156"
-            Margin="10,574,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#FF00BCD4"
-            BorderThickness="2"
-            Command="{Binding QuantSelectFile}"
-            Content="Sélectionner un fichier"
-            FontSize="14"
-            Foreground="White" />
-        <Rectangle
-            Width="476"
-            Height="21"
-            Margin="524,395,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top">
-            <Rectangle.Fill>
-                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
-                    <GradientStop Offset="1" Color="White" />
-                    <GradientStop Color="#FF00BCD4" />
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        <TextBlock
-            Width="300"
-            Height="19"
-            Margin="532,397,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            FontSize="14"
-            FontWeight="Bold"
-            Foreground="White"><Run Text="Module " /><Run Text="2" /><Run Text=" : DNA_" /><Run Text="PROB" /></TextBlock>
-        <TextBox
-            Width="463"
-            Height="117"
-            Margin="524,448,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding ProbResultBox}"
-            TextWrapping="Wrap" />
-        <Label
-            Margin="524,421,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Résultat du traitement" />
-        <Button
-            Width="74"
-            Margin="685,574,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#FF00BCD4"
-            BorderThickness="2"
-            Command="{Binding ProbSendData}"
-            Content="Envoyer"
-            FontSize="14"
-            Foreground="White"
-            IsEnabled="{Binding ProbBtSendDataEnabled}" />
-        <Button
-            Width="156"
-            Margin="524,574,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#FF00BCD4"
-            BorderThickness="2"
-            Command="{Binding ProbSelectFile}"
-            Content="Sélectionner un fichier"
-            FontSize="14"
-            Foreground="White" />
         <Rectangle
             Width="1000"
             Height="32"
@@ -356,5 +240,259 @@
                 <RotateTransform Angle="0" />
             </Image.RenderTransform>
         </Image>
+        <TabControl
+            Width="986"
+            Height="224"
+            Margin="4,386,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            BorderThickness="0">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Grid>
+                                    <Border
+                                        Name="Border"
+                                        Margin="0,0,0,0"
+                                        Background="Transparent"
+                                        BorderBrush="Black">
+                                        <ContentPresenter
+                                            Margin="12,2,12,2"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            ContentSource="Header"
+                                            RecognizesAccessKey="True" />
+                                    </Border>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Panel.ZIndex" Value="100" />
+                                        <Setter TargetName="Border" Property="Background" Value="#FF00BCD4" />
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,1" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter Property="Panel.ZIndex" Value="100" />
+                                        <Setter TargetName="Border" Property="Background" Value="White" />
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,1" />
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="False" />
+                                            <Condition Property="IsMouseOver" Value="True" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="Border" Property="Background" Value="#5600BCD4" />
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,1" />
+                                    </MultiTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem
+                Background="White"
+                BorderBrush="White"
+                Header="Quant">
+                <Grid Background="White">
+                    <GroupBox
+                        Width="492"
+                        Height="147"
+                        Margin="10,36,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        BorderBrush="#FF00BCD4"
+                        Header="Sélection des données">
+
+                        <Grid>
+                            <Label
+                                Width="299"
+                                Height="25"
+                                Margin="171,10,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="{Binding QuantSelectedFile}" />
+
+                            <Button
+                                Width="156"
+                                Margin="10,90,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#FF00BCD4"
+                                BorderThickness="2"
+                                Command="{Binding QuantSendData}"
+                                Content="Envoyer"
+                                FontSize="14"
+                                Foreground="White"
+                                IsEnabled="{Binding QuantBtSendDataEnabled}" />
+                            <Button
+                                Width="156"
+                                Margin="10,10,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#FF00BCD4"
+                                BorderThickness="2"
+                                Command="{Binding QuantSelectFile}"
+                                Content="Sélectionner un fichier"
+                                FontSize="14"
+                                Foreground="White" />
+                            <Button
+                                Width="156"
+                                Margin="314,90,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#FF00BCD4"
+                                BorderThickness="2"
+                                Command="{Binding QuantCleanResultBox}"
+                                Content="Nettoyer les résultats"
+                                FontSize="14"
+                                Foreground="White" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox
+                        Width="463"
+                        Height="147"
+                        Margin="507,36,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        BorderBrush="#FF00BCD4"
+                        Header="Résultat du traitement">
+                        <Grid>
+                            <TextBox
+                                Margin="0"
+                                BorderThickness="0"
+                                IsReadOnly="True"
+                                Text="{Binding QuantResultBox}"
+                                TextWrapping="Wrap" />
+                        </Grid>
+                    </GroupBox>
+
+                    <Rectangle
+                        Width="980"
+                        Height="21"
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                                <GradientStop Offset="1" Color="White" />
+                                <GradientStop Color="#FF00BCD4" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <TextBlock
+                        Width="300"
+                        Height="19"
+                        Margin="6,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"><Run Text="Module 1" /><Run Text=" : DNA_QUANT" /></TextBlock>
+
+
+                </Grid>
+            </TabItem>
+            <TabItem
+                Background="White"
+                BorderBrush="White"
+                Header="Prob">
+                <Grid Background="White">
+                    <Rectangle
+                        Width="980"
+                        Height="21"
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0.5">
+                                <GradientStop Offset="1" Color="White" />
+                                <GradientStop Color="#FF00BCD4" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <TextBlock
+                        Width="300"
+                        Height="19"
+                        Margin="6,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"><Run Text="Module " /><Run Text="2" /><Run Text=" : DNA_" /><Run Text="PROB" /></TextBlock>
+                    <GroupBox
+                        Width="492"
+                        Height="147"
+                        Margin="10,36,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        BorderBrush="#FF00BCD4"
+                        Header="Sélection des données">
+                        <Grid>
+                            <Label
+                                Width="299"
+                                Height="25"
+                                Margin="171,10,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="{Binding ProbSelectedFile}" />
+                            <Button
+                                Width="156"
+                                Margin="8,90,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#FF00BCD4"
+                                BorderThickness="2"
+                                Command="{Binding ProbSendData}"
+                                Content="Envoyer"
+                                FontSize="14"
+                                Foreground="White"
+                                IsEnabled="{Binding ProbBtSendDataEnabled}" />
+                            <Button
+                                Width="156"
+                                Margin="8,10,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#FF00BCD4"
+                                BorderThickness="2"
+                                Command="{Binding ProbSelectFile}"
+                                Content="Sélectionner un fichier"
+                                FontSize="14"
+                                Foreground="White" />
+                            <Button
+                                Width="156"
+                                Margin="314,90,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#FF00BCD4"
+                                BorderThickness="2"
+                                Command="{Binding ProbCleanResultBox}"
+                                Content="Nettoyer les résultats"
+                                FontSize="14"
+                                Foreground="White" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox
+                        Width="463"
+                        Height="147"
+                        Margin="507,36,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        BorderBrush="#FF00BCD4"
+                        Header="Résultat du traitement">
+                        <Grid>
+                            <TextBox
+                                Margin="0,0,0,0"
+                                BorderThickness="0"
+                                IsReadOnly="True"
+                                Text="{Binding ProbResultBox}"
+                                TextWrapping="Wrap" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
