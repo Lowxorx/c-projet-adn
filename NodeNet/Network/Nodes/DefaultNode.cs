@@ -279,6 +279,11 @@ namespace NodeNet.Network.Nodes
             }
             return completed;
         }
+
+        public override void RemoveDeadNode(Node node)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

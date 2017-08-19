@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using ADNet.Map_Reduce.Node;
+using System.Threading;
 
 namespace ADNet.Network.Impl
 {
@@ -30,6 +31,7 @@ namespace ADNet.Network.Impl
         }
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
+            Thread.Sleep(5000);
             Tuple<int,DataInput, int> dataAndMeta = (Tuple <int,DataInput, int > )e.Argument;
             // On averti l'orchestrateur que l'on commence a process
             String dnaSequence = (String)dataAndMeta.Item2.Data;

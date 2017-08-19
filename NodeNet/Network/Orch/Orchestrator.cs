@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -115,23 +116,22 @@ namespace NodeNet.Network.Orch
             /* Multi Client */
             foreach (var node in Nodes)
             {
-                try
-                {
-                    SendData(node.Value, input);
-                }
-                catch (SocketException ex)
-                {
-                    /// Client Down ///
-                    if (!node.Value.NodeSocket.Connected)
-                    {
-                        Console.WriteLine("Client " + node.Value.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
-                    }
-                    Console.WriteLine(ex.ToString());
-                }
+                SendData(node.Value, input);
             }
         }
 
-      
+        private void SendDataToAllClients(DataInput input)
+        {
+            byte[] data = DataFormater.Serialize(input);
+            Console.WriteLine("Send Data to " + Nodes.Count + " Node in orch Nodes list");
+            /* Multi Client */
+            foreach (var node in Clients)
+            {
+                 SendData(node.Value, input);
+            }
+        }
+
+
         public override void ProcessInput(DataInput input, Node node)
         {
             if (input.Method != GET_CPU_METHOD)
@@ -274,30 +274,76 @@ namespace NodeNet.Network.Orch
 
         private void PrepareReduce(DataInput input, TaskExecutor executor)
         {
-            updateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
-            UpdateResult(input.Data, input.TaskId);
-            updateNodeStatus(NodeState.WAIT, input.NodeGUID);
-            // Reduce
-            // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
-            // pour y concaténer le resultat du travail du noeud
-            ConcurrentBag<Object> result = GetResultFromTaskId(input.TaskId);
-            if (TaskIsCompleted(input.TaskId))
+            if (TaskIsOK(input.TaskId))
             {
-                Console.WriteLine("Reduce");
-                Object reduceRes = executor.Reducer.reduce(result);
-                // TODO check si tous les nodes ont finis
-                DataInput response = new DataInput()
+                UpdateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
+                UpdateResult(input.Data, input.TaskId);
+                UpdateNodeStatus(NodeState.WAIT, input.NodeGUID);
+                // Reduce
+                // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
+                // pour y concaténer le resultat du travail du noeud
+                ConcurrentBag<Object> result = GetResultFromTaskId(input.TaskId);
+                if (TaskIsCompleted(input.TaskId))
                 {
-                    TaskId = input.TaskId,
-                    Method = input.Method,
-                    Data = reduceRes,
-                    ClientGUID = input.ClientGUID,
-                    NodeGUID = NodeGUID,
-                    MsgType = MessageType.RESPONSE,
-                };
-                SendData(GetClientFromGUID(input.ClientGUID), response);
-                RemoveResultForTask(input.TaskId);
+                    Console.WriteLine("Reduce");
+                    Object reduceRes = executor.Reducer.reduce(result);
+                    // TODO check si tous les nodes ont finis
+                    DataInput response = new DataInput()
+                    {
+                        TaskId = input.TaskId,
+                        Method = input.Method,
+                        Data = reduceRes,
+                        ClientGUID = input.ClientGUID,
+                        NodeGUID = NodeGUID,
+                        MsgType = MessageType.RESPONSE,
+                    };
+                    SendData(GetClientFromGUID(input.ClientGUID), response);
+                    RemoveResultForTask(input.TaskId);
+                }
             }
+            else
+            {
+                if (IsTaskReceiveAllRes(input.TaskId))
+                {
+                    RemoveTask(input.TaskId);
+                }
+            }
+        }
+
+        private void RemoveTask(int taskId)
+        {   
+            // On supprime la ligne dans le tableau de distribution des Task et NodeTask TaskDistrib
+            if(TaskDistrib.TryRemove(taskId,out var taskDistrib)) { 
+                foreach(var client in Clients)
+                {
+                    // On supprime la task dans le client
+                    if (Tasks.TryRemove(taskId, out var task))
+                    {
+                        RemoveResultForTask(taskId);
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception("Impossible de supprimer la ligne de task distrib après une erreur sur un Node");
+            }
+        }
+
+        private bool IsTaskReceiveAllRes(int taskId)
+        {
+            bool allResReceived = true;
+            Tuple<ConcurrentBag<int>,bool> subTasks;
+            if(TaskDistrib.TryGetValue(taskId, out subTasks))
+            {
+                foreach(int subId in subTasks.Item1)
+                {
+                    if (GetSubTaskState(subId) == NodeState.WAIT)
+                    {
+                        allResReceived = false;
+                    }
+                }
+            }
+            return allResReceived;
         }
 
         private void LazyNodeTranfert(DataInput input)
@@ -352,15 +398,22 @@ namespace NodeNet.Network.Orch
             Nodes.CollectionChanged += delegate (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
                 // Si il est en train d'attendre on relance le map
-                bool oneNodeIsWaiting = false;
-                foreach(var node in e.NewItems)
+                bool unlockThread = false;
+                if (e.NewItems != null)
                 {
-                    if (((KeyValuePair<String,Node>)node).Value.State == NodeState.WAIT)
+                    foreach (var node in e.NewItems)
                     {
-                        oneNodeIsWaiting = true;
+                        if (((KeyValuePair<String, Node>)node).Value.State == NodeState.WAIT)
+                        {
+                            unlockThread = true;
+                        }
                     }
                 }
-                if (oneNodeIsWaiting)
+                else
+                {
+                    unlockThread = true;
+                }
+                if (unlockThread)
                 {
                     _busy.Set();
                 }
@@ -391,7 +444,7 @@ namespace NodeNet.Network.Orch
         {
             Console.WriteLine("SendMApToNode");
             int newNodeTaskID = LastSubTaskID;
-            createNodeTasks(node, newTaskID, newNodeTaskID);
+            CreateNodeTasks(node, newTaskID, newNodeTaskID);
             DataInput res = new DataInput()
             {
                 TaskId = newTaskID,
@@ -425,7 +478,7 @@ namespace NodeNet.Network.Orch
             SendData(client, resp);
         }
 
-        private void createNodeTasks( Node node, int newTaskID, int newSubTaskID)
+        private void CreateNodeTasks( Node node, int newTaskID, int newSubTaskID)
         {
             // On ajoute la subtask au node 
             node.Tasks.TryAdd(newSubTaskID,new Task(newSubTaskID, NodeState.WAIT));
@@ -442,7 +495,23 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private void updateNodeTaskStatus(int nodeTaskId, NodeState status, string nodeGUID)
+        private void UpdateTaskStatus(int id, NodeState status)
+        {
+            foreach(var client in Clients)
+            {
+                Task task;
+                if(client.Value.Tasks.TryGetValue(id, out task))
+                {
+                    Task newTask = new Task(id, status);
+                    newTask.Progression = task.Progression;
+                    newTask.TaskName = task.TaskName;
+                    client.Value.Tasks.TryUpdate(id, newTask, task);
+                }
+            }
+        }
+
+
+        private void UpdateNodeTaskStatus(int nodeTaskId, NodeState status, string nodeGUID)
         {
             Node node;
             if (Nodes.TryGetValue(nodeGUID, out node))
@@ -468,7 +537,7 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private void updateNodeStatus(NodeState status, string nodeGUID)
+        private void UpdateNodeStatus(NodeState status, string nodeGUID)
         {
             Console.WriteLine("Set status of node : " + nodeGUID + " to : " + status);
             Node node;
@@ -480,6 +549,11 @@ namespace NodeNet.Network.Orch
             {
                 throw new Exception("Aucun Node trouvé avec ce GUID");
             }
+        }
+
+        private bool TaskIsOK(int taskId)
+        {
+            return GetTaskState(taskId) != NodeState.ERROR;
         }
 
         #endregion
@@ -561,7 +635,7 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private Node getNodeBySubTaskId(int subtaskID)
+        private Node GetNodeBySubTaskId(int subtaskID)
         {
             foreach (var node in Nodes)
             {
@@ -574,7 +648,19 @@ namespace NodeNet.Network.Orch
             throw new Exception("Aucune node associé à cette subTask n'a été trouvé");
         }
 
-        private NodeState getSubTaskState(int subtaskID)
+        private NodeState GetTaskState(int taskId)
+        {
+            foreach(var client in Clients)
+            {
+                Task task;
+                if(client.Value.Tasks.TryGetValue(taskId ,out task)) {
+                    return task.State;
+                }
+            }
+            throw new Exception("Aucune Task avec cet ID n'a été trouvée");
+        }
+
+        private NodeState GetSubTaskState(int subtaskID)
         {
             foreach (var node in Nodes)
             {
@@ -604,7 +690,7 @@ namespace NodeNet.Network.Orch
                     // On itère sur toute la liste des subtask de cette task
                     foreach(int subTask in task.Item1)
                     {
-                        NodeState state = getSubTaskState(subTask);
+                        NodeState state = GetSubTaskState(subTask);
                         Console.WriteLine("InTaskComplete state of subTask : " + subTask + " : " + state);
                         // Ici on vérifie qsue toutes les subtask soient en état FINISH à part celle que l'on vient de recevoir
                         if (state != NodeState.FINISH)
@@ -635,25 +721,63 @@ namespace NodeNet.Network.Orch
                 throw new Exception("Aucune Result avec ce task id");
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
         public override void RemoveDeadNode(Node node)
         {
-            List<Task> tasks = GetAllTaskForNode(node);
-            // Récupération de toutes les tasks sur lequel le node bosse
-            // Passage de l'état des task en ERROR
-            // Arrêt du mapping avec setIsMApped true
-            // Suppression de toutes les lignes de Result liées au node
-            // Suppression du node
-            // Envoi du statut du Node au Client
+            node.State = NodeState.DEAD;
+
+            List<int> tasks = GetAllTaskIdForNode(node);
+            List<int> subTasks = GetAllNodeTaskIdForNode(node);
+            // On passe le statut des NodeTask à ERROR
+            foreach (int id in subTasks)
+            {
+                UpdateNodeTaskStatus(id, NodeState.ERROR, node.NodeGUID);
+            }
+            List<Tuple<NodeState, int>> taskErrorStatus = new List<Tuple<NodeState, int>>();
+            foreach (int id in tasks)
+            {
+                // On stoppe le mapping pour toutes les tasks
+                setTaskIsMapped(id);
+                UpdateTaskStatus(id,NodeState.ERROR);
+                // On créé le status error pour chaque task 
+                taskErrorStatus.Add(new Tuple<NodeState, int>(NodeState.ERROR,id));
+            }
+            // On supprime le node
+            Nodes.Remove(node.NodeGUID);
+            // Envoi du status aux clients
+            DataInput errorInput = new DataInput()
+            {
+                Method = TASK_STATUS_METHOD,
+                ClientGUID = null,
+                NodeGUID = node.NodeGUID,
+                MsgType = MessageType.CALL,
+                NodeTaskId = -1,
+                TaskId = -1,
+                Data = taskErrorStatus
+            };
+            SendDataToAllClients(errorInput);
         }
 
-        private List<Task> GetAllTaskForNode(Node node)
+        private List<int> GetAllNodeTaskIdForNode(Node node)
         {
-            List<Task> tasks = new List<Task>();
+            return node.Tasks.Keys.ToList();
+        }
+
+        private List<int> GetAllTaskIdForNode(Node node)
+        {
+            List<int> tasks = new List<int>();
             List<int> subTaskIDs = node.Tasks.Keys.ToList();
-
-                return null;
-
+            foreach(int subIB in subTaskIDs)
+            {
+                foreach(KeyValuePair<int,Tuple<ConcurrentBag<int>,bool>> task in TaskDistrib)
+                {
+                    tasks.Add(task.Key);
+                }
+            }
+            return tasks;
         }
         #endregion
     }

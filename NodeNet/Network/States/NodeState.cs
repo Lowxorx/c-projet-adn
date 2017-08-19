@@ -6,6 +6,7 @@
         WORK,
         WAIT,
         FINISH,
-        ERROR
+        ERROR,
+        DEAD
     }
 }

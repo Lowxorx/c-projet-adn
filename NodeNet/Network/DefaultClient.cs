@@ -113,5 +113,10 @@ namespace NodeNet.Network
             
             return null;
         }
+
+        public override void RemoveDeadNode(Node node)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

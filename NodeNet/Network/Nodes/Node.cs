@@ -184,7 +184,7 @@ namespace NodeNet.Network.Nodes
         public void SendData(Node node, DataInput obj)
         {
             byte[] data = DataFormater.Serialize(obj);
-
+            // TODO TCP.Connected
             try
             {
                 if (obj.Method != GET_CPU_METHOD)
@@ -198,8 +198,10 @@ namespace NodeNet.Network.Nodes
             {
                 /// Client Down ///
                 if (!node.NodeSocket.Connected)
+                {
                     Console.WriteLine("Client " + node.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
-                Console.WriteLine(ex.ToString());
+                    RemoveDeadNode(node);
+                }
             }
         }
 
@@ -266,12 +268,10 @@ namespace NodeNet.Network.Nodes
                 StateObject stateObj = (StateObject)ar.AsyncState;
                 Node node = stateObj.node;
 
-                TcpState state = GetState(node.NodeSocket);
-                if (state == TcpState.Established)
+                try
                 {
                     // Read data from the remote device.
                     int bytesRead = node.NodeSocket.EndReceive(ar);
-
                     stateObj.data.Add(stateObj.buffer);
                     try
                     {
@@ -290,12 +290,10 @@ namespace NodeNet.Network.Nodes
                         new AsyncCallback(ReceiveCallback), stateObj);
                     }
                 }
-                else
+                catch(SocketException e)
                 {
                     RemoveDeadNode(node);
-                }
-
-               
+                }    
             }
             catch (Exception e)
             {
@@ -338,13 +336,7 @@ namespace NodeNet.Network.Nodes
             throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
         }
 
-        private static TcpState GetState(Socket tcpClient)
-        {
-            var foo = IPGlobalProperties.GetIPGlobalProperties()
-              .GetActiveTcpConnections()
-              .SingleOrDefault(x => x.LocalEndPoint.Equals(tcpClient.LocalEndPoint));
-            return foo != null ? foo.State : TcpState.Unknown;
-        }
+    
 
         public abstract void RemoveDeadNode(Node node);
 
