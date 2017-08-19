@@ -11,6 +11,7 @@ using System.Linq;
 using System.Management;
 using System.Net.Sockets;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace NodeNet.Network.Nodes
 {
@@ -282,8 +283,10 @@ namespace NodeNet.Network.Nodes
 
         public override void RemoveDeadNode(Node node)
         {
-            throw new NotImplementedException();
+            MessageBox.Show("Erreur sur l'orchestrateur. Fermeture de l'application...");
+            Process.GetCurrentProcess().CloseMainWindow();
         }
+
         #endregion
     }
 }

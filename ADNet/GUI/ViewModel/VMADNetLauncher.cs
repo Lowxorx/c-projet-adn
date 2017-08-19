@@ -176,6 +176,7 @@ namespace ADNet.GUI.ViewModel
             {
                 Console.WriteLine("Aucun mode sélectionné");
             }
+
         }
 
 
@@ -200,7 +201,7 @@ namespace ADNet.GUI.ViewModel
 
         public void ModeServClick()
         {
-            txtClientEnabled = false;
+            txtClientEnabled = true;
             RaisePropertyChanged("TxtClientEnabledProp");
         }
 

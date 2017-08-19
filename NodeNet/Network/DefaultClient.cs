@@ -5,6 +5,7 @@ using NodeNet.Network.States;
 using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Windows;
 
@@ -116,7 +117,8 @@ namespace NodeNet.Network
 
         public override void RemoveDeadNode(Node node)
         {
-            throw new NotImplementedException();
+            MessageBox.Show("Erreur sur l'orchestrateur. Fermeture de l'application...");
+            Process.GetCurrentProcess().CloseMainWindow();
         }
     }
 }

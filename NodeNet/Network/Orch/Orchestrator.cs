@@ -298,7 +298,6 @@ namespace NodeNet.Network.Orch
                         MsgType = MessageType.RESPONSE,
                     };
                     SendData(GetClientFromGUID(input.ClientGUID), response);
-                    RemoveResultForTask(input.TaskId);
                 }
             }
             else
