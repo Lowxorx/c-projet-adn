@@ -41,7 +41,7 @@
                     <Style.Resources>
                         <LinearGradientBrush x:Key="ListItemHoverFill" StartPoint="0,0" EndPoint="0,1">
                             <GradientStop Offset="0" Color="#FFF1FBFF" />
-                            <GradientStop Offset="1" Color="DarkBlue" />
+                            <GradientStop Offset="1" Color="#FF00BCD4" />
                         </LinearGradientBrush>
                     </Style.Resources>
                     <Setter Property="Template">
@@ -145,7 +145,7 @@
                     <Style.Resources>
                         <LinearGradientBrush x:Key="ListItemHoverFill" StartPoint="0,0" EndPoint="0,1">
                             <GradientStop Offset="0" Color="#FFF1FBFF" />
-                            <GradientStop Offset="1" Color="DarkBlue" />
+                            <GradientStop Offset="1" Color="#FF00BCD4" />
                         </LinearGradientBrush>
                     </Style.Resources>
                     <Setter Property="Template">

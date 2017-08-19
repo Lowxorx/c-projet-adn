@@ -4,6 +4,8 @@ using c_projet_adn.GUI.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
@@ -132,12 +134,25 @@ namespace ADNet.GUI.ViewModel
             IcommandRdbNodeClick = new RelayCommand(ModeNodeClick);
             ICommandBtnClose = new RelayCommand(CloseWindow);
             IcommandRdbServClick = new RelayCommand(ModeServClick);
-            TxtIpProp = "127.0.0.1";
+            TxtIpProp = GetLocalIPAddress();
             BtnContent = "-----";
             ServerChecked = false;
             ClientChecked = false;
             NodeChecked = false;
             BtnEnabled = false;
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return "127.0.0.1";
         }
 
         private void CloseWindow()
@@ -151,6 +166,8 @@ namespace ADNet.GUI.ViewModel
             {
                 Console.WriteLine("Launch Cli");
                 ClientView clientView = new ClientView();
+                VMClientView vm = (VMClientView)clientView.DataContext;
+                vm.Connectip = TxtIpProp;
                 clientView.Show();
                 CloseAction.Invoke();
             }
@@ -200,7 +217,7 @@ namespace ADNet.GUI.ViewModel
 
         public void ModeServClick()
         {
-            txtClientEnabled = false;
+            txtClientEnabled = true;
             RaisePropertyChanged("TxtClientEnabledProp");
         }
 

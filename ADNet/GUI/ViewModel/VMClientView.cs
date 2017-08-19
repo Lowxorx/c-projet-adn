@@ -65,6 +65,20 @@ namespace ADNet.GUI.ViewModel
                 RaisePropertyChanged("ProbSelectedFile");
             }
         }
+
+        private String connectIp;
+        public String Connectip
+        {
+            get
+            {
+                return connectIp;
+            }
+            set
+            {
+                connectIp = value;
+                RaisePropertyChanged("Connectip");
+            }
+        }
         private String quantSelectedFile;
         public String QuantSelectedFile
         {
@@ -134,8 +148,8 @@ namespace ADNet.GUI.ViewModel
             ProbBtSendDataEnabled = false;
             QuantBtSendDataEnabled = false;
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Client démarré, en attente..." + Environment.NewLine;
-            client = new DNAClient("Client","127.0.0.1",3001);
-            client.Connect("127.0.0.1", 3000);
+            client = new DNAClient("Client", Connectip, 3001);
+            client.Connect(Connectip, 3000);
         }
 
         private void QuantLoadFile()
