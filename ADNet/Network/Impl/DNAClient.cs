@@ -62,38 +62,40 @@ namespace c_projet_adn.Network.Impl
             char[] bases = { 'A', 'G', 'T', 'C', '-' };
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (StreamReader sr = new StreamReader(sourceFile))
+            //using (StreamReader sr = new StreamReader(sourceFile))
+            //{
+            //    while (!sr.EndOfStream)
+            //    {
+            //        String line = sr.ReadLine();
+            //        if (line.StartsWith("#"))
+            //        {
+            //            foreach (char c in line)
+            //            {
+            //                if (bases.Contains(c))
+            //                {
+            //                    pairsList.Add(c);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            foreach (string line in File.ReadAllLines(sourceFile))
             {
-                while (!sr.EndOfStream)
+                if (!line.StartsWith("#"))
                 {
-                    String line = sr.ReadLine();
-                    if (line.StartsWith("#"))
+                    foreach (char c in line)
                     {
-                        foreach (char c in line)
+                        if (bases.Contains(c))
                         {
-                            if (bases.Contains(c))
-                            {
-                                pairsList.Add(c);
-                            }
+                            pairsList.Add(c);
                         }
                     }
                 }
             }
             sw.Stop();
             Console.WriteLine(string.Format("read file : {0}", sw.Elapsed.TotalSeconds));
-            //foreach (string line in File.ReadAllLines(sourceFile))
-            //{
-            //    if (!line.StartsWith("#"))
-            //    {
-            //        foreach (char c in line)
-            //        {
-            //            if (bases.Contains(c))
-            //            {
-            //                pairsList.Add(c);
-            //            }
-            //        }
-            //    }
-            //}
+            Console.WriteLine(pairsList.Count);
             return pairsList.ToArray();
         }
     }
