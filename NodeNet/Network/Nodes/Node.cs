@@ -336,5 +336,10 @@ namespace NodeNet.Network.Nodes
 
         public abstract void RemoveDeadNode(Node node);
 
+        protected bool MethodIsNotInfra(String method)
+        {
+            return method != GET_CPU_METHOD && method != IDENT_METHOD && method != TASK_STATUS_METHOD;
+        }
+
     }
 }

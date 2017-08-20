@@ -24,11 +24,11 @@ namespace NodeNet.Network
 
         public override void ProcessInput(DataInput input,Node node)
         {
-            if (input.Method != GET_CPU_METHOD)
-            {
-                Console.WriteLine("Process input for : " + input.Method + " at : " + DateTime.Now.ToLongTimeString());
-            }
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+            if (MethodIsNotInfra(input.Method) && input.MsgType == MessageType.RESPONSE)
+            {
+                ViewModelLocator.VMLMonitorUcStatic.RefreshStateFromTaskResult(input);
+            }
             Object res = executor.DoWork(input);
             if (res != null)
             {
@@ -95,21 +95,22 @@ namespace NodeNet.Network
 
         private object RefreshTaskState(DataInput input)
         {
-            List<Task> listTask = (List < Task > )input.Data;
-
-            foreach(Task task in listTask)
+           Tuple<NodeState,Object> state = (Tuple<NodeState,Object>)input.Data;
+            switch (state.Item1)
             {
-                switch (task.State)
-                {
-                    case NodeState.WORK:
-                        ViewModelLocator.VMLMonitorUcStatic.RefreshNodeState(input.NodeGUID,NodeState.WORK,input.TaskId);
-                        ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(task);
-                        break;
-                    case NodeState.ERROR:
-                        ViewModelLocator.VMLMonitorUcStatic.RefreshNodeState(input.NodeGUID, NodeState.ERROR,-1);
-                        ViewModelLocator.VMLMonitorUcStatic.CancelTask(task);
-                        break;
-                }
+                case NodeState.JOB_START:
+                    ViewModelLocator.VMLMonitorUcStatic.CreateTask((Task)state.Item2);
+                    break;
+                case NodeState.NODE_IS_WORKING:
+                ViewModelLocator.VMLMonitorUcStatic.NodeISWorkingOnTask((String)state.Item2,input.TaskId);
+                break;
+                case NodeState.WORK:
+                    ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(input.TaskId,(double)input.Data);
+                    break;
+                case NodeState.ERROR:
+                    ViewModelLocator.VMLMonitorUcStatic.NodeIsFailed(input.NodeGUID);
+                    ViewModelLocator.VMLMonitorUcStatic.CancelTask((List<Task>)input.Data);
+                    break;
             }
             return null;
         }

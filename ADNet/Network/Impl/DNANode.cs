@@ -26,8 +26,9 @@ namespace ADNet.Network.Impl
 
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
-            //Thread.Sleep(5000);
+            
             Tuple<int,DataInput, int> dataAndMeta = (Tuple <int,DataInput, int > )e.Argument;
+            Thread.Sleep(3000*dataAndMeta.Item1);
             // On averti l'orchestrateur que l'on commence a process
             String dnaSequence = (String)dataAndMeta.Item2.Data;
             // Traitement

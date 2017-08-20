@@ -1,6 +1,6 @@
 ﻿using NodeNet.Network.States;
 using System;
-
+using System.Collections.Generic;
 
 namespace NodeNet.Tasks
 {
@@ -53,8 +53,7 @@ namespace NodeNet.Tasks
             get { return endTime; }
             set { endTime = value; }
         }
-
-
+        
         private double duration;
 
         public double Duration
@@ -62,8 +61,6 @@ namespace NodeNet.Tasks
             get { return duration; }
             set { duration = value; }
         }
-
-
 
         public Task(int id,NodeState state)
         {

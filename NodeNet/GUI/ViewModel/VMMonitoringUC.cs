@@ -68,6 +68,37 @@ namespace NodeNet.GUI.ViewModel
             NodeList = list;
         }
 
+        public void RefreshStateFromTaskResult(DataInput input)
+        {
+            int taskId = input.TaskId;
+            Console.WriteLine("Refresh Task state");
+            ObservableCollection<Task> newTaskList = new ObservableCollection<Task>();
+            foreach (Task t in TaskList)
+            {
+                if (t.Id == taskId)
+                {
+                    t.Progression = 100;
+                    t.State = NodeState.FINISH;
+                }
+                newTaskList.Add(t);
+            }
+            TaskList = null;
+            TaskList = newTaskList;
+
+            ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
+
+            foreach (DefaultNode n in NodeList)
+            {
+                if(n.WorkingTask == input.TaskId)
+                {
+                    n.State = NodeState.FINISH;
+                }
+                newNodeList.Add(n);
+            }
+            NodeList = null;
+            NodeList = newNodeList;
+        }
+
         public void OnLoad()
         {
             Console.WriteLine("monitor loaded");
@@ -75,7 +106,6 @@ namespace NodeNet.GUI.ViewModel
 
         public void RefreshNodesState(DataInput input)
         {
-            Console.WriteLine("Refresh Node state");
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
             foreach (DefaultNode node in NodeList)
             {
@@ -93,70 +123,107 @@ namespace NodeNet.GUI.ViewModel
             NodeList = list;
         }
 
-        public void RefreshTaskState(Task task)
+        public void RefreshTaskState(int taskID,double progression)
         {
-            Console.WriteLine("Refresh Task state");
             ObservableCollection<Task> newList = new ObservableCollection<Task>();
-            bool taskIsAbsent = true;
             foreach (Task t in TaskList)
             {
-                if(t.Id == task.Id)
+                if(t.Id == taskID)
                 {
-                    taskIsAbsent = false;
-                    t.Progression = task.Progression;
+                    t.Progression = progression;
                 }
                 newList.Add(t);  
             }
             TaskList = null;
             TaskList = newList;
-            if (taskIsAbsent)
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(task)));
-            }
         }
 
-        public void CancelTask(Task task)
+        public void NodeISWorkingOnTask(string nodeGuid, int taskId)
         {
-            Console.WriteLine("Refresh Task state");
+            ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
+            foreach (DefaultNode node in NodeList)
+            {
+                if (node.NodeGUID == nodeGuid)
+                {
+                    node.WorkingTask = taskId;
+                    node.State = NodeState.WORK;
+                }
+                list.Add(node);
+            }
+            NodeList = null;
+            NodeList = list;
+
+            ObservableCollection<Task> taskList = new ObservableCollection<Task>();
+            foreach (Task task in TaskList)
+            {
+                if (task.Id == taskId)
+                {
+                    task.State = NodeState.IN_PROGRESS;
+                }
+                taskList.Add(task);
+            }
+            TaskList = null;
+            TaskList = taskList;
+        }
+
+        public void CreateTask(Task task)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(task)));
+        }
+
+        public void CancelTask(List<Task> tasks)
+        {
             ObservableCollection<Task> newTaskList = new ObservableCollection<Task>();
-            bool taskIsAbsent = true;
             foreach (Task t in TaskList)
             {
-                if (t.Id == task.Id)
+                foreach (Task task in tasks)
                 {
-                    taskIsAbsent = false;
-                    t.Progression = 0;
+                    if (t.Id == task.Id)
+                    {
+                        t.Progression = 0;
+                        t.State = NodeState.ERROR;
+                    }   
                 }
                 newTaskList.Add(t);
             }
             TaskList = null;
             TaskList = newTaskList;
-            if (taskIsAbsent)
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(task)));
-            }
         }
 
-        internal void RefreshNodeState(string nodeGUID, NodeState state,int taskId)
+        public void RefreshNodeState(List<String> nodeGuid, NodeState state,int taskId)
         {
             ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
-
-            foreach (DefaultNode n in NodeList)
+            foreach(String guid in nodeGuid)
             {
-                if (n.NodeGUID == nodeGUID)
+                foreach (DefaultNode n in NodeList)
                 {
-                    n.State = state;
-                    n.WorkingTask = taskId;
+                    if (n.NodeGUID == guid)
+                    {
+                        n.State = state;
+                        n.WorkingTask = taskId;
+                    }
+                    newNodeList.Add(n);
                 }
-                newNodeList.Add(n);
+                NodeList = null;
+                NodeList = newNodeList;
             }
-            NodeList = null;
-            NodeList = newNodeList;
+            
         }
 
-        internal void NodeIsFailed(string nodeGUID)
+        public void NodeIsFailed(string nodeGUID)
         {
-           
+            ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
+                foreach (DefaultNode n in NodeList)
+                {
+                    if (n.NodeGUID == nodeGUID)
+                    {
+                        n.State = NodeState.ERROR;
+                        n.WorkingTask = -1;
+                    }
+                    newNodeList.Add(n);
+                }
+                NodeList = null;
+                NodeList = newNodeList;
         }
     }
 

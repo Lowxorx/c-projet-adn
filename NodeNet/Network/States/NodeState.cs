@@ -7,6 +7,8 @@
         WAIT,
         FINISH,
         ERROR,
+        NODE_IS_WORKING,
+        IN_PROGRESS,
         DEAD
     }
 }

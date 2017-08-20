@@ -166,53 +166,7 @@ namespace ADNet.GUI.ViewModel
         {
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Lancement du traitement DNA_QUANT " + Environment.NewLine;
             client.DNAQuantStat("AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG"+
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG\n" +
-                "AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG\n" +
-                "AA\tCC\tTT\tGG");
+                "AAA\tCCC\tTTT\tGGG");
         }
         private void ProbLoadFile()
         {

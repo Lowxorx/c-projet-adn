@@ -306,18 +306,16 @@ namespace NodeNet.Network.Orch
                     // A condition que le mapping soit terminé, sinon on ne pourra pas savoir combien de noeuds travaillent 
                     if(TaskDistrib.TryGetValue(input.TaskId,out var taskDist) && taskDist.Item2)
                     {
-                        List<Task> taskList = new List<Task>();
-                        Task task = GetClientTask(input.TaskId,input.ClientGUID);
-                        task.Progression = GetProgressionForTask(taskDist);
-                        taskList.Add(task);
+                        double progression = GetProgressionForTask(taskDist);
+                        Tuple<NodeState, Object> data = new Tuple<NodeState, object>(NodeState.WORK, progression);
                         DataInput progress = new DataInput()
                         {
                             TaskId = input.TaskId,
                             Method = TASK_STATUS_METHOD,
-                            Data = taskList,
+                            Data = data,
                             ClientGUID = input.ClientGUID,
                             NodeGUID = NodeGUID,
-                            MsgType = MessageType.CALL,
+                            MsgType = MessageType.RESPONSE,
                         };
                         // On envoit la progression de la tâche au client
                         SendData(GetClientFromGUID(input.ClientGUID), progress);
@@ -334,32 +332,7 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private Task GetClientTask(int taskId, string clientGUID)
-        {
-            Node Client = GetClientFromGUID(clientGUID);
-            if(Client.Tasks.TryGetValue(taskId,out Task task))
-            {
-                return task;
-            }
-            throw new Exception("Aucune task trouvé pour ce client et cet id");
-        }
 
-        private double GetProgressionForTask(Tuple<ConcurrentBag<int>, bool> taskDist)
-        {
-            int nbNodeWork = taskDist.Item1.Count();
-            int nbNodeEnded = 0;
-            foreach(var node in Nodes)
-            {
-                foreach (int idNodeTask in taskDist.Item1)
-                {
-                    if (node.Value.Tasks.TryGetValue(idNodeTask,out Task task) && task.State == NodeState.FINISH)
-                    {
-                        nbNodeWork++;
-                    }
-                }
-            }
-            return nbNodeEnded * 100 / nbNodeWork;
-        }
 
         private void LazyNodeTranfert(DataInput input)
         {
@@ -405,7 +378,8 @@ namespace NodeNet.Network.Orch
                         {
                             Object data = mapper.map(input.Data);
                             // On envoit le resultat du map au node
-                            sendSubTaskToNode(node.Value, newTaskId, input, data);
+                            int newNodeTaskID = SendSubTaskToNode(node.Value, newTaskId, input, data);
+                            SendNodeIsWorkingToClient(node.Value,newTaskId, newNodeTaskID, input);
                             // On passe son état à WORK
                             node.Value.State = NodeState.WORK;
                             if (mapper.mapIsEnd())
@@ -450,6 +424,22 @@ namespace NodeNet.Network.Orch
             bw.RunWorkerAsync();
         }
 
+        private void SendNodeIsWorkingToClient(Node node, int newTaskId,int newNodeTaskId, DataInput input)
+        {
+            Tuple<NodeState, Object> data = new Tuple<NodeState, object>(NodeState.NODE_IS_WORKING, node.NodeGUID);
+            DataInput nodeIsWorking = new DataInput()
+            {
+                Method = TASK_STATUS_METHOD,
+                MsgType = MessageType.RESPONSE,
+                ClientGUID = input.ClientGUID,
+                NodeGUID = NodeGUID,
+                Data = data,
+                TaskId = newTaskId,
+                NodeTaskId = newNodeTaskId
+            };
+            SendData(GetClientFromGUID(input.ClientGUID), nodeIsWorking);
+        }
+
         #endregion
 
         #region Task Management
@@ -470,7 +460,7 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private void sendSubTaskToNode(Node node, int newTaskID, DataInput input, Object data)
+        private int SendSubTaskToNode(Node node, int newTaskID, DataInput input, Object data)
         {
             Console.WriteLine("SendMApToNode");
             int newNodeTaskID = LastSubTaskID;
@@ -486,11 +476,12 @@ namespace NodeNet.Network.Orch
                 NodeGUID = this.NodeGUID,
             };
             SendData(node, res);
+            return newNodeTaskID;
         }
 
         private Task createClientTask(DataInput input, int newTaskID)
         {
-            Task task = new Task(newTaskID, NodeState.WORK);
+            Task task = new Task(newTaskID, NodeState.JOB_START);
             task.TaskName = input.Method;
             task.StartTime = DateTime.Now;
             // Ajout de la task au client 
@@ -498,8 +489,7 @@ namespace NodeNet.Network.Orch
             client.Tasks.TryAdd(newTaskID, task);
             // Ajout d'une ligne dans la table de ditribution des nodeTask
             TaskDistrib.TryAdd(newTaskID, new Tuple<ConcurrentBag<int>, bool>(new ConcurrentBag<int>(), false));
-            List<Task> taskList = new List<Task>();
-            taskList.Add(task);
+            Tuple<NodeState, Object> data = new Tuple<NodeState, object>(NodeState.JOB_START, task); 
             DataInput resp = new DataInput()
             {
                 ClientGUID = input.ClientGUID,
@@ -507,9 +497,10 @@ namespace NodeNet.Network.Orch
                 Method = TASK_STATUS_METHOD,
                 TaskId = newTaskID,
                 MsgType = MessageType.RESPONSE,
-                Data = taskList
+                Data = data
             };
             SendData(client, resp);
+            task.State = NodeState.WORK;
             return task;
         }
 
@@ -528,6 +519,55 @@ namespace NodeNet.Network.Orch
             {
                 throw new Exception("Aucune Task avec cet id ");
             }
+        }
+
+        private List<string> GetNodeGUIDFromNodeTaskIDs(List<int> list)
+        {
+            List<String> nodeGUIDS = new List<string>();
+            foreach (int subTaskID in list)
+            {
+                nodeGUIDS.Add(GetNodeGUIDFromNodeTaskID(subTaskID));
+            }
+            return nodeGUIDS;
+        }
+
+        private String GetNodeGUIDFromNodeTaskID(int subTaskId)
+        {
+            foreach (var node in Nodes)
+            {
+                if (node.Value.Tasks.TryGetValue(subTaskId, out Task task))
+                {
+                    return node.Value.NodeGUID;
+                }
+            }
+            throw new Exception("Aucun nodeGUID trouvé pour cet id de Nodetask");
+        }
+
+        private Task GetClientTask(int taskId, string clientGUID)
+        {
+            Node Client = GetClientFromGUID(clientGUID);
+            if (Client.Tasks.TryGetValue(taskId, out Task task))
+            {
+                return task;
+            }
+            throw new Exception("Aucune task trouvé pour ce client et cet id");
+        }
+
+        private double GetProgressionForTask(Tuple<ConcurrentBag<int>, bool> taskDist)
+        {
+            int nbNodeWork = taskDist.Item1.Count();
+            int nbNodeEnded = 0;
+            foreach (var node in Nodes)
+            {
+                foreach (int idNodeTask in taskDist.Item1)
+                {
+                    if (node.Value.Tasks.TryGetValue(idNodeTask, out Task task) && task.State == NodeState.FINISH)
+                    {
+                        nbNodeWork++;
+                    }
+                }
+            }
+            return nbNodeEnded * 100 / nbNodeWork;
         }
 
         private Task UpdateTaskStatus(int id, NodeState status)
@@ -562,7 +602,7 @@ namespace NodeNet.Network.Orch
                 Task task;
                 if (node.Tasks.TryGetValue(nodeTaskId, out task))
                 {
-                    Task newTask = new Task(task.Id, NodeState.FINISH);
+                    Task newTask = new Task(task.Id, status);
                     newTask.TaskName = task.TaskName;
                     if (!node.Tasks.TryUpdate(nodeTaskId, newTask, task))
                     {
@@ -775,12 +815,13 @@ namespace NodeNet.Network.Orch
             if (GetNodeFromGUID(node.NodeGUID) != null)
             {
                 List<Task> taskError = SetNodeTaskToError(node,false);
+                Tuple<NodeState, Object> data = new Tuple<NodeState, object>(NodeState.ERROR, taskError);
                 DataInput errorInput = new DataInput()
                 {
                     Method = TASK_STATUS_METHOD,
                     NodeGUID = node.NodeGUID,
                     MsgType = MessageType.CALL,
-                    Data = taskError
+                    Data = data
                 };
                 // Envoi du status aux clients
                 SendDataToAllClients(errorInput);
