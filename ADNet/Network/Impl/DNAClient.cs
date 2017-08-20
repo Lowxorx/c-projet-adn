@@ -8,6 +8,8 @@ using NodeNet.Data;
 using NodeNet.Tasks;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Diagnostics;
 
 namespace c_projet_adn.Network.Impl
 {
@@ -29,12 +31,12 @@ namespace c_projet_adn.Network.Impl
             return null;
         }
 
-        public void DNAQuantStat(String genomicString)
+        public void DNAQuantStat(char[] genomicData)
         {
             
             DataInput data = new DataInput()
             {
-                Data = DnaParseData(genomicString),
+                Data = genomicData,
                 ClientGUID = NodeGUID,
                 MsgType = MessageType.CALL,
                 Method = DNA_QUANT_METHOD
@@ -54,19 +56,44 @@ namespace c_projet_adn.Network.Impl
             return null;
         }
 
-        private char[] DnaParseData(string sourceFile)
+        public char[] DnaParseData(string sourceFile)
         {
             List<char> pairsList = new List<char>();
-            foreach (string line in File.ReadAllLines(sourceFile))
+            char[] bases = { 'A', 'G', 'T', 'C', '-' };
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            using (StreamReader sr = new StreamReader(sourceFile))
             {
-                if (!line.StartsWith("#"))
+                while (!sr.EndOfStream)
                 {
-                    foreach (char c in line.Split('\t')[3].ToCharArray())
+                    String line = sr.ReadLine();
+                    if (line.StartsWith("#"))
                     {
-                        pairsList.Add(c);
+                        foreach (char c in line)
+                        {
+                            if (bases.Contains(c))
+                            {
+                                pairsList.Add(c);
+                            }
+                        }
                     }
                 }
             }
+            sw.Stop();
+            Console.WriteLine(string.Format("read file : {0}", sw.Elapsed.TotalSeconds));
+            //foreach (string line in File.ReadAllLines(sourceFile))
+            //{
+            //    if (!line.StartsWith("#"))
+            //    {
+            //        foreach (char c in line)
+            //        {
+            //            if (bases.Contains(c))
+            //            {
+            //                pairsList.Add(c);
+            //            }
+            //        }
+            //    }
+            //}
             return pairsList.ToArray();
         }
     }

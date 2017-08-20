@@ -24,6 +24,8 @@ namespace ADNet.GUI.ViewModel
 
         private DNAClient client;
 
+        private OpenFileDialog loadfile;
+
         private String probResultBox;
         public String ProbResultBox
         {
@@ -154,7 +156,7 @@ namespace ADNet.GUI.ViewModel
 
         private void QuantLoadFile()
         {
-            OpenFileDialog loadfile = new OpenFileDialog();
+            loadfile = new OpenFileDialog();
             if (loadfile.ShowDialog() == DialogResult.OK)
             {
                 QuantBtSendDataEnabled = true;
@@ -165,8 +167,7 @@ namespace ADNet.GUI.ViewModel
         private void QuantSendFile()
         {
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Lancement du traitement DNA_QUANT " + Environment.NewLine;
-            client.DNAQuantStat("AAAA\tCCCC\tTTTT\tGGGG\n" +
-                "AAA\tCCC\tTTT\tGGG");
+            client.DNAQuantStat(client.DnaParseData(loadfile.FileName));
         }
         private void ProbLoadFile()
         {
