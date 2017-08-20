@@ -82,8 +82,8 @@ namespace NodeNet.Network.Nodes
         protected Object LaunchWork(DataInput input,Action<Object,DoWorkEventArgs> processFunction)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            List<String> list = (List<String>)executor.Mapper.map(input.Data);
-            foreach (string data in list)
+            List<Object> list = (List<Object>)executor.Mapper.map(input.Data);
+            foreach (object data in list)
             {
                 // Pour chaque resultat du map on lance un Background Worker 
                 // et on lui transmet le DataInput pour que le BW possède les métadata de cette Task
