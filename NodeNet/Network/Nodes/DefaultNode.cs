@@ -78,23 +78,7 @@ namespace NodeNet.Network.Nodes
                 SendData(node, resp);
             }
         }
-
-        protected Object LaunchWork(DataInput input,Action<Object,DoWorkEventArgs> processFunction)
-        {
-            TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            List<Object> list = (List<Object>)executor.Mapper.map(input.Data);
-            foreach (object data in list)
-            {
-                // Pour chaque resultat du map on lance un Background Worker 
-                // et on lui transmet le DataInput pour que le BW possède les métadata de cette Task
-                // On lui transmet également le nombre de Background Worker total qui seront créés.
-                LaunchBGForWork(processFunction, data, input, list.Count);
-            }
-            return null;
-        }
-
-
-
+   
         #region Worker method
 
         private DataInput ProcessIndent(DataInput d)
@@ -158,10 +142,11 @@ namespace NodeNet.Network.Nodes
             return null;
         }
 
-        private void LaunchBGForWork(Action<object, DoWorkEventArgs> ProcessFunction, Object data, DataInput input, int totalNbWorker)
+        protected void LaunchBGForWork(Action<object, DoWorkEventArgs> ProcessFunction, DataInput taskData, int totalNbWorker)
         {
-            DataInput taskData = PrepareData(input, data);
             BackgroundWorker bw = new BackgroundWorker();
+
+            //// Abonnage ////
             bw.DoWork += new DoWorkEventHandler(ProcessFunction);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerEndProcess);
             int workerTaskID = createWorkerTask(taskData.NodeTaskId);
