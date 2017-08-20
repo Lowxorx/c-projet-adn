@@ -246,7 +246,7 @@
             Margin="4,386,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            BorderThickness="1">
+            BorderThickness="1,0,1,1">
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="Template">
@@ -273,6 +273,7 @@
                                         <Setter Property="Panel.ZIndex" Value="100" />
                                         <Setter TargetName="Border" Property="Background" Value="#FF00BCD4" />
                                         <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,1" />
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="False">
                                         <Setter Property="Panel.ZIndex" Value="100" />
@@ -399,7 +400,7 @@
                 </Grid>
             </TabItem>
             <TabItem
-                Margin="-2,0,2,0"
+                Margin="-3,0,2,0"
                 Background="White"
                 BorderBrush="White"
                 Header="Prob">
