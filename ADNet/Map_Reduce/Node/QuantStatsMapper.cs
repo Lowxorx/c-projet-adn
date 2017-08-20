@@ -1,20 +1,31 @@
 ﻿using NodeNet.Map_Reduce;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsMapper : IMapper
     {
+        public int nbrchar { get; set; }
+
         public Object map(Object input)
         {
-            List<string> list = new List<string>();
-
-            foreach(String s in ((string)input).Split('\t'))
+            nbrchar = 100000;
+            List<char[]> result = new List<char[]>();
+            char[] data = (char[])input;
+            int currentIndex = 0;
+            while(currentIndex < data.Length)
             {
-                list.Add(s);
+                char[] chunk = new char[nbrchar];
+                for (int i = currentIndex; i + currentIndex < data.Length && i < nbrchar; i++)
+                {
+                    chunk[i] = data[currentIndex];
+                    currentIndex++;
+                }
+                result.Add(chunk);
             }
-            return list;
+            return result;
         }
 
         public bool mapIsEnd()

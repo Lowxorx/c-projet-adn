@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using NodeNet.Data;
 using NodeNet.Tasks;
 using System.Collections.Generic;
+using System.IO;
 
 namespace c_projet_adn.Network.Impl
 {
@@ -30,9 +31,10 @@ namespace c_projet_adn.Network.Impl
 
         public void DNAQuantStat(String genomicString)
         {
+            
             DataInput data = new DataInput()
             {
-                Data = genomicString,
+                Data = DnaParseData(genomicString),
                 ClientGUID = NodeGUID,
                 MsgType = MessageType.CALL,
                 Method = DNA_QUANT_METHOD
@@ -50,6 +52,22 @@ namespace c_projet_adn.Network.Impl
             }
             ViewModelLocator.VMLCliStatic.QuantDisplayResult(display);
             return null;
+        }
+
+        private char[] DnaParseData(string sourceFile)
+        {
+            List<char> pairsList = new List<char>();
+            foreach (string line in File.ReadAllLines(sourceFile))
+            {
+                if (!line.StartsWith("#"))
+                {
+                    foreach (char c in line.Split('\t')[3].ToCharArray())
+                    {
+                        pairsList.Add(c);
+                    }
+                }
+            }
+            return pairsList.ToArray();
         }
     }
 }

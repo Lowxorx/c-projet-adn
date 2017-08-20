@@ -6,47 +6,70 @@ namespace ADNet.Map_Reduce.Orch
 {
     public class OrchQuantStatMapper : IMapper
     {
-        public int nbrlines { get; set; }
-        private int currentline { get; set; }
-        private bool thisThisTheEnd;
+        public int NbrChunk { get; set; }
+        private int CurrentChar { get; set; }
+        private bool ThisIsTheEnd;
+        private int TotalNbChar;
+        private int NbCharByChunk;
+        private int Rest;
+        private bool FirstMap;
 
-        public OrchQuantStatMapper(int nbLineByNode)
+        public OrchQuantStatMapper(int nbrChunk)
         {
-            nbrlines = nbLineByNode;
-            currentline = 0;
+            NbrChunk = nbrChunk;
+            CurrentChar = 0;
+            FirstMap = true;
         }
 
         public object map(object input)
         {
-            int startLine = currentline;
-            String[] lines = ((String)input).Split('\n');
-            String output = "";
-            for(int i = currentline; i < lines.Length && i < startLine + nbrlines; i++)
+            char[] sequence = (char[])input;
+            char[] result;
+            if (FirstMap)
             {
-                output += lines[i];
-                currentline++;
+                TotalNbChar = sequence.Length;
+                NbCharByChunk = TotalNbChar / NbrChunk;
+                Rest = TotalNbChar % NbrChunk;
+                result = new char[Rest];
+                FirstMap = false;
             }
-            if (currentline >= lines.Length)
+            else
             {
-                thisThisTheEnd = true;
+                result = new char[NbCharByChunk];
             }
-            return output;
+
+            for (int i = CurrentChar, j = 0; i < TotalNbChar && i < result.Length; i++, j++)
+            {
+                result[j] = sequence[i];
+                CurrentChar++;
+            }
+
+            if (CurrentChar >= TotalNbChar)
+            {
+                ThisIsTheEnd = true;
+            }
+            return result;
         }
 
         public IMapper reset()
         {
-            currentline = 0;
+            CurrentChar = 0;
+            ThisIsTheEnd = false;
+            TotalNbChar = 0;
+            NbCharByChunk = 0;
+            Rest = 0;
+            FirstMap = true;
             return this;
         }
 
         public bool mapIsEnd()
         {
-            return thisThisTheEnd;
+            return ThisIsTheEnd;
         }
 
         public object Clone()
         {
-            return new OrchQuantStatMapper(nbrlines);
+            return new OrchQuantStatMapper(NbrChunk);
         }
     }
 }
