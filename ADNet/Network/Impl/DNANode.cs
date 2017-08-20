@@ -23,8 +23,8 @@ namespace ADNet.Network.Impl
         private Object DnaQuantStarter(DataInput input)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            List<String> list = (List<String>)executor.Mapper.map(input.Data);
-            foreach (string s in list)
+            List<char[]> list = (List<char[]>)executor.Mapper.map(input.Data);
+            foreach (char[] s in list)
             {
                 LaunchBGForWork(DnaQuantProcess, PrepareData(input, s), list.Count);
             }
