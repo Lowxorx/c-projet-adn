@@ -258,8 +258,8 @@
                                         Margin="0,0,0,0"
                                         Background="Transparent"
                                         BorderBrush="Black"
-                                        CornerRadius="3,3,0,0"
-                                        BorderThickness="1,1,1,0">
+                                        BorderThickness="1,1,1,0"
+                                        CornerRadius="3,3,0,0">
                                         <ContentPresenter
                                             Margin="12,2,12,2"
                                             HorizontalAlignment="Center"
@@ -295,6 +295,7 @@
                 </Style>
             </TabControl.Resources>
             <TabItem
+                Margin="-2,0,2,0"
                 Background="White"
                 BorderBrush="White"
                 Header="Quant">
@@ -398,6 +399,7 @@
                 </Grid>
             </TabItem>
             <TabItem
+                Margin="-2,0,2,0"
                 Background="White"
                 BorderBrush="White"
                 Header="Prob">
