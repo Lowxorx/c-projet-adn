@@ -62,38 +62,41 @@ namespace c_projet_adn.Network.Impl
             char[] bases = { 'A', 'G', 'T', 'C', '-' };
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (StreamReader sr = new StreamReader(sourceFile))
-            {
-                while (!sr.EndOfStream)
-                {
-                    String line = sr.ReadLine();
-                    if (line.StartsWith("#"))
-                    {
-                        foreach (char c in line)
-                        {
-                            if (bases.Contains(c))
-                            {
-                                pairsList.Add(c);
-                            }
-                        }
-                    }
-                }
-            }
-            sw.Stop();
-            Console.WriteLine(string.Format("read file : {0}", sw.Elapsed.TotalSeconds));
-            //foreach (string line in File.ReadAllLines(sourceFile))
+            //using (StreamReader sr = new StreamReader(sourceFile))
             //{
-            //    if (!line.StartsWith("#"))
+            //    while (!sr.EndOfStream)
             //    {
-            //        foreach (char c in line)
+            //        String line = sr.ReadLine();
+            //        if (line.StartsWith("#"))
             //        {
-            //            if (bases.Contains(c))
+            //            foreach (char c in line)
             //            {
-            //                pairsList.Add(c);
+            //                if (bases.Contains(c))
+            //                {
+            //                    Console.WriteLine("Add char in list");
+            //                    pairsList.Add(c);
+            //                }
             //            }
             //        }
             //    }
             //}
+            //sw.Stop();
+            Console.WriteLine(string.Format("read file : {0}", sw.Elapsed.TotalSeconds));
+            foreach (string line in File.ReadAllLines(sourceFile))
+            {
+                if (!line.StartsWith("#"))
+                {
+                    foreach (char c in line)
+                    {
+                        if (bases.Contains(c))
+                        {
+                            pairsList.Add(c);
+                            Console.Write(c);
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("In DNA CLient sequence size : " + pairsList.Count);
             return pairsList.ToArray();
         }
     }

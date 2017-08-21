@@ -23,9 +23,12 @@ namespace ADNet.Network.Impl
         private Object DnaQuantStarter(DataInput input)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
+
             List<char[]> list = (List<char[]>)executor.Mapper.map(input.Data);
+            Console.WriteLine("In DnaQuantStater list size after mapping : " + list.Count);
             foreach (char[] s in list)
             {
+                Console.WriteLine("Launch Background Worker ");
                 LaunchBGForWork(DnaQuantProcess, PrepareData(input, s), list.Count);
             }
             return null;
@@ -33,6 +36,7 @@ namespace ADNet.Network.Impl
 
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
+            Console.WriteLine("In DNAQuantPRocess");
             Tuple<int, DataInput, int> dataAndMeta = (Tuple<int, DataInput, int>)e.Argument;
             //Thread.Sleep(3000 * dataAndMeta.Item1);
             // On averti l'orchestrateur que l'on commence a process

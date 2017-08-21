@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace NodeNet.Network.Nodes
@@ -188,6 +189,7 @@ namespace NodeNet.Network.Nodes
                 if (obj.Method != GET_CPU_METHOD)
                 {
                     Console.WriteLine("Send data : " + obj + " to : " + node);
+                    //Console.WriteLine("Send data : " + Encoding.ASCII.GetString(data));
                 }
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,
                     new AsyncCallback(SendCallback), node);
@@ -210,7 +212,6 @@ namespace NodeNet.Network.Nodes
                 Node node = (Node)ar.AsyncState;
                 // Retrieve the socket from the state object.
                 Socket client = node.NodeSocket;
-
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
                 // Signal that all bytes have been sent.
@@ -265,26 +266,24 @@ namespace NodeNet.Network.Nodes
                 // from the asynchronous state object.
                 StateObject stateObj = (StateObject)ar.AsyncState;
                 Node node = stateObj.node;
-
                 try
                 {
                     // Read data from the remote device.
-                    int bytesRead = node.NodeSocket.EndReceive(ar);
-                    stateObj.data.Add(stateObj.buffer);
-                    try
+                    int nbByteRead = node.NodeSocket.EndReceive(ar);
+                    // Gety data from buffer
+                    byte[] dataToConcat = new byte[nbByteRead];
+                    Array.Copy(stateObj.buffer,0, dataToConcat, 0, nbByteRead);
+                    stateObj.data.Add(dataToConcat);
+                    if (IsEndOfMessage(stateObj.buffer, nbByteRead))
                     {
-                        byte[] data = stateObj.data
-                                         .SelectMany(a => a)
-                                         .ToArray();
+                        byte[] data = concatByteArray(stateObj.data);
                         DataInput input = DataFormater.Deserialize<DataInput>(data);
                         Receive(node);
                         ProcessInput(input, node);
-
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Console.WriteLine(e);
-                        node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
+                       node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), stateObj);
                     }
                 }
@@ -297,6 +296,27 @@ namespace NodeNet.Network.Nodes
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        private byte[] concatByteArray(List<byte[]> data)
+        {
+            List<byte> byteStorage = new List<byte>();
+            foreach(byte[] bytes in data)
+            {
+                foreach(byte bit in bytes)
+                {
+                    byteStorage.Add(bit);
+                }
+            }
+            return byteStorage.ToArray();
+        }
+
+        private bool IsEndOfMessage(byte[] buffer,int byteRead)
+        {
+            byte[] endSequence = Encoding.ASCII.GetBytes("CAFEBABE");
+            byte[] endOfBuffer = new byte[8];
+            Array.Copy(buffer, byteRead - endSequence.Length, endOfBuffer, 0, endSequence.Length);
+            return endSequence.SequenceEqual(endOfBuffer);
         }
 
         public abstract void ProcessInput(DataInput input, Node node);

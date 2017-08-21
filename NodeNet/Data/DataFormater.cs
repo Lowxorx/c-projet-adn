@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-
+using System.Text;
 
 namespace NodeNet.Data
 {
@@ -52,6 +53,8 @@ namespace NodeNet.Data
             }
         }
 
+
+
         /// <summary>
         /// Sérialize un objet générique dans un tableau d'octets.
         /// </summary>
@@ -66,9 +69,12 @@ namespace NodeNet.Data
                 using (MemoryStream ms = new MemoryStream())
                 {
                     bf.Serialize(ms, obj);
-                    byte[] compressed = Compress(ms.ToArray());
-                    // TOTO Concatener au tableau une sequence
-                    return compressed;
+                    byte[] data = Compress(ms.ToArray());
+                    byte[] endSequence = Encoding.ASCII.GetBytes("CAFEBABE");
+                    byte[] full = new byte[data.Length + endSequence.Length];
+                    Array.Copy(data, 0, full, 0, data.Length);
+                    Array.Copy(endSequence, 0, full, data.Length, endSequence.Length);
+                    return full;
                 }
             }
             catch (SerializationException ex)
@@ -84,7 +90,9 @@ namespace NodeNet.Data
         public static T Deserialize<T>(byte[] data)
         {
             object obj = null;
-            byte[] uncompressed = Decompress(data);
+            byte[] partOfData = new byte[data.Length - 8];
+            Array.Copy(data, 0, partOfData, 0, data.Length - 8);
+            byte[] uncompressed = Decompress(partOfData);
             BinaryFormatter bf = new BinaryFormatter();
             using (MemoryStream ms = new MemoryStream(uncompressed))
             {

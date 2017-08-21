@@ -11,18 +11,23 @@ namespace ADNet.Map_Reduce.Node
 
         public Object map(Object input)
         {
-            nbrchar = 100000;
+            nbrchar = 1000;
             List<char[]> result = new List<char[]>();
             char[] data = (char[])input;
+            Console.WriteLine("In mapping data[] size :" + data.Length);
             int currentIndex = 0;
-            while(currentIndex < data.Length)
+            Console.WriteLine(" data size : " + data.Length);
+            while (currentIndex < data.Length)
             {
-                char[] chunk = new char[nbrchar];
-                for (int i = currentIndex; i + currentIndex < data.Length && i < nbrchar; i++)
+                int resultSize = data.Length - currentIndex > nbrchar ? nbrchar : data.Length - currentIndex;
+                char[] chunk = new char[resultSize];
+                for (int i = currentIndex, j = 0; i < data.Length && j < nbrchar; i++, j++)
                 {
-                    chunk[i] = data[currentIndex];
+                    chunk[j] = data[i];
+                    Console.WriteLine("char :" + data[i] + " add to chunk " + result.Count + "current index : " + currentIndex);
                     currentIndex++;
                 }
+                Console.WriteLine("Add chunk in BG ") ;
                 result.Add(chunk);
             }
             return result;
