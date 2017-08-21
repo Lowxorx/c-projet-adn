@@ -105,7 +105,7 @@ namespace NodeNet.Network
                 ViewModelLocator.VMLMonitorUcStatic.NodeISWorkingOnTask((String)state.Item2,input.TaskId);
                 break;
                 case NodeState.WORK:
-                    ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(input.TaskId,(double)input.Data);
+                    //ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(input.TaskId,(double)input.Data);
                     break;
                 case NodeState.ERROR:
                     ViewModelLocator.VMLMonitorUcStatic.NodeIsFailed(input.NodeGUID);

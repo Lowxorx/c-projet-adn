@@ -14,9 +14,9 @@ namespace ADNet.Map_Reduce.Node
         {
             #region actuelle
 
-            List<Tuple<string, int>> result = new List<Tuple<string, int>>();
+            List<Tuple<string, int,double>> result = new List<Tuple<string, int, double>>();
             foreach (object obj in input)
-                result = result.Concat((List<Tuple<string, int>>)obj).ToList();
+                result = result.Concat((List<Tuple<string, int, double>>)obj).ToList();
 
             int maxA = 0;
             int maxG = 0;
@@ -28,7 +28,7 @@ namespace ADNet.Map_Reduce.Node
             int maxCG = 0;
             int totalunkonwbase = 0;
             List<Tuple<string, int, double>> finalresult = new List<Tuple<string, int, double>>();
-            List<Tuple<string, int>> séquences4 = new List<Tuple<string, int>>();
+            List<Tuple<string, int, double>> séquences4 = new List<Tuple<string, int, double>>();
 
             foreach (var kvp in result)
             {
@@ -74,11 +74,11 @@ namespace ADNet.Map_Reduce.Node
                     g => g.Select(
                         x => Tuple.Create(x.key, x.value)).ToList());
 
-            Tuple<string, int> maxseq = new Tuple<string, int>("", 0);
+            Tuple<string, int, double> maxseq = new Tuple<string, int, double>("", 0,0.0);
             foreach (var tmp in grpseq)
             {
                 if (tmp.Value.Count > maxseq.Item2)
-                    maxseq = new Tuple<string, int>(tmp.Key, tmp.Value.Count);
+                    maxseq = new Tuple<string, int, double>(tmp.Key, tmp.Value.Count,0.0);
             }
             int totalbases = maxA + maxC + maxG + maxT;
             finalresult.Add(new Tuple<string, int, double>("A", maxA, (double)(Decimal.Divide(maxA, totalbases)) * 100));

@@ -94,25 +94,25 @@ namespace ADNet.Network.Impl
                     listpairesbases.Add(data[i].ToString());
             }
 
-            List<Tuple<string, int>> occurences2 = new List<Tuple<string, int>>();
+            List<Tuple<string, int,double>> occurences2 = new List<Tuple<string, int,double>>();
             var tmp = sequences2.GroupBy(i => i);
             foreach (var cp in tmp)
-                occurences2.Add(new Tuple<string, int>(cp.Key, cp.Count()));
+                occurences2.Add(new Tuple<string, int,double>(cp.Key, cp.Count(),0.0));
 
 
-            List<Tuple<string, int>> occurences4 = new List<Tuple<string, int>>();
+            List<Tuple<string, int,double>> occurences4 = new List<Tuple<string, int,double>>();
             var cpt = sequences4.GroupBy(i => i);
             foreach (var cp in cpt)
-                occurences4.Add(new Tuple<string, int>(cp.Key, cp.Count()));
+                occurences4.Add(new Tuple<string, int,double>(cp.Key, cp.Count(),0.0));
 
-            var alloccurences = new List<Tuple<string, int>>(occurences2.Concat(occurences4));
+            var alloccurences = new List<Tuple<string, int,double>>(occurences2.Concat(occurences4));
 
-            List<Tuple<string, int>> occurences1 = new List<Tuple<string, int>>();
+            List<Tuple<string, int,double>> occurences1 = new List<Tuple<string, int,double>>();
             var tmpp = listpairesbases.GroupBy(i => i);
             foreach (var cp in tmpp)
-                occurences1.Add(new Tuple<string, int>(cp.Key, cp.Count()));
+                occurences1.Add(new Tuple<string, int,double>(cp.Key, cp.Count(),0.0));
 
-            var finalresult = new List<Tuple<string, int>>(alloccurences.Concat(occurences1));
+            var finalresult = new List<Tuple<string, int,double>>(alloccurences.Concat(occurences1));
             dataAndMeta.Item2.Data = finalresult;
             e.Result = dataAndMeta;
         }
