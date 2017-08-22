@@ -51,70 +51,79 @@ namespace ADNet.Network.Impl
             List<string> sequences4 = new List<string>();
             List<string> listpairesbases = new List<string>();
 
+            Dictionary<string, Tuple<int, double>> results = new Dictionary<string, Tuple<int, double>>();
+            bool buffer4OK = false;
+            bool buff2OK = false;
+
             for (int i = 0; i < data.Length; i++)
-            {
+            {   
+                Console.WriteLine("position : " + i);
                 if (bases.Contains(data[i]))
                 {
-                    listpairesbases.Add(data[i].ToString());
-                    if (buffersequences.Count < 4)
+                    buffer4OK = i >= 3 ? true : false;
+                    buff2OK = i >= 1 ? true : false;
+                    // Ajout ou Mise à Jour base simple
+                    if (results.TryGetValue(data[i].ToString(), out var occur))
+                        results[data[i].ToString()] = new Tuple<int, double>(occur.Item1 + 1, 0);
+                    else
+                        results.Add(data[i].ToString(), new Tuple<int, double>(1, 0));
+                    // Ajout ou Mise à Jour séquences de 4
+                    if (!buffer4OK)
                         buffersequences.Add(data[i]);
                     else
                     {
-                        sequences4.Add(String.Format("{0}{1}{2}{3}", buffersequences[0], buffersequences[1], buffersequences[2], buffersequences[3]));
-
-                        buffersequences[0] = buffersequences[1];
-                        buffersequences[1] = buffersequences[2];
-                        buffersequences[2] = buffersequences[3];
-                        buffersequences[3] = data[i];
+                        Updateres(results, data[i], bufferpaires);
                     }
-
-                    if (bufferpaires.Count < 2)
+                    // Ajout ou Mise à Jour paires de bases
+                    if (!buff2OK)
                         bufferpaires.Add(data[i]);
                     else
                     {
-                        string concat = String.Format("{0}{1}", bufferpaires[0], bufferpaires[1]);
-
-                        if (pairesbases.Contains(concat))
-                            sequences2.Add(concat);
-
-                        bufferpaires[0] = bufferpaires[1];
-                        bufferpaires[1] = data[i];
-
+                        Updateres(results, data[i], bufferpaires);
                     }
                     if (i == data.Length - 1)
                     {
-                        sequences4.Add(String.Format("{0}{1}{2}{3}", buffersequences[0], buffersequences[1], buffersequences[2], buffersequences[3]));
-                        string concat = String.Format("{0}{1}", bufferpaires[0], bufferpaires[1]);
-                        if (pairesbases.Contains(concat))
-                            sequences2.Add(concat);
-                        Console.WriteLine("stop");
+                        Updateres(results, data[i], bufferpaires);
+                        Updateres(results, data[i], buffersequences);
                     }
                 }
+                // Ajout ou Mise à Jour bases inconnues
                 else if (data[i] == '-')
-                    listpairesbases.Add(data[i].ToString());
+                    if (results.TryGetValue(data[i].ToString(), out var occur))
+                        results[data[i].ToString()] = new Tuple<int, double>(occur.Item1 + 1, 0);
+                    else
+                        results.Add(data[i].ToString(), new Tuple<int, double>(1, 0));
             }
 
-            List<Tuple<string, int,double>> occurences2 = new List<Tuple<string, int,double>>();
-            var tmp = sequences2.GroupBy(i => i);
-            foreach (var cp in tmp)
-                occurences2.Add(new Tuple<string, int,double>(cp.Key, cp.Count(),0.0));
-
-
-            List<Tuple<string, int,double>> occurences4 = new List<Tuple<string, int,double>>();
-            var cpt = sequences4.GroupBy(i => i);
-            foreach (var cp in cpt)
-                occurences4.Add(new Tuple<string, int,double>(cp.Key, cp.Count(),0.0));
-
-            var alloccurences = new List<Tuple<string, int,double>>(occurences2.Concat(occurences4));
-
-            List<Tuple<string, int,double>> occurences1 = new List<Tuple<string, int,double>>();
-            var tmpp = listpairesbases.GroupBy(i => i);
-            foreach (var cp in tmpp)
-                occurences1.Add(new Tuple<string, int,double>(cp.Key, cp.Count(),0.0));
-
-            var finalresult = new List<Tuple<string, int,double>>(alloccurences.Concat(occurences1));
-            dataAndMeta.Item2.Data = finalresult;
+            dataAndMeta.Item2.Data = results;
             e.Result = dataAndMeta;
+        }
+
+        private void Updateres(Dictionary<String, Tuple<int, double>> results, char a, List<char> buffer)
+        {
+            string seq = String.Concat(buffer);
+
+            if (results.TryGetValue(seq, out var tpl))
+            {
+                results[seq] = new Tuple<int, double>(tpl.Item1 + 1, 0);
+            }
+            else
+            {
+                results.Add(seq, new Tuple<int, double>(1, 0));
+            }
+
+            if (buffer.Count == 2)
+            {
+                buffer[0] = buffer[1];
+                buffer[1] = a;
+            }
+            else if (buffer.Count == 4)
+            {
+                buffer[0] = buffer[1];
+                buffer[1] = buffer[2];
+                buffer[2] = buffer[3];
+                buffer[3] = a;
+            }
         }
     }
 }
