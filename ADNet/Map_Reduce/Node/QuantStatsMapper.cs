@@ -7,25 +7,43 @@ namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsMapper : IMapper
     {
-        public int nbrchar { get; set; }
-
-        public Object map(Object input)
+        public Object map(Object input,int nbMap)
         {
-            nbrchar = 100000;
+
             List<char[]> result = new List<char[]>();
             char[] data = (char[])input;
-            int currentIndex = 0;
-            Console.WriteLine(" data size : " + data.Length);
-            while (currentIndex < data.Length)
+            int totalNbChar = data.Length;
+            int nbCharByChunk = totalNbChar / nbMap;
+            int rest = totalNbChar % nbMap;
+            int currentChar = 0;
+
+            for(int i = 0; i < nbMap; i++)
             {
-                int resultSize = data.Length - currentIndex > nbrchar ? nbrchar : data.Length - currentIndex;
-                char[] chunk = new char[resultSize];
-                for (int i = currentIndex, j = 0; i < data.Length && j < nbrchar; i++, j++)
+                if (i == 0)
                 {
-                    chunk[j] = data[i];
-                    currentIndex++;
+                    if(rest < nbCharByChunk / 2)
+                    {
+                        rest += nbCharByChunk;
+                        i++;
+                    }
+                    char[] chunk = new char[rest];
+                    for(int j = 0; j < rest; j++)
+                    {
+                        chunk[j] = data[currentChar];
+                        currentChar++;
+                    }
+                    result.Add(chunk);
                 }
-                result.Add(chunk);
+                else
+                {
+                    char[] chunk = new char[nbCharByChunk];
+                    for (int j = 0; j < nbCharByChunk; j++)
+                    {
+                        chunk[j] = data[currentChar];
+                        currentChar++;
+                    }
+                    result.Add(chunk);
+                }
             }
             return result;
         }

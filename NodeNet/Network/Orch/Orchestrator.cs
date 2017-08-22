@@ -376,7 +376,7 @@ namespace NodeNet.Network.Orch
                         // on lui envoit du travail
                         if (node.Value.State == NodeState.WAIT)
                         {
-                            Object data = mapper.map(input.Data);
+                            Object data = mapper.map(input.Data,Nodes.Count);
                             // On envoit le resultat du map au node
                             int newNodeTaskID = SendSubTaskToNode(node.Value, newTaskId, input, data);
                             SendNodeIsWorkingToClient(node.Value,newTaskId, newNodeTaskID, input);

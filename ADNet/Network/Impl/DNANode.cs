@@ -23,8 +23,8 @@ namespace ADNet.Network.Impl
         private Object DnaQuantStarter(DataInput input)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-
-            List<char[]> list = (List<char[]>)executor.Mapper.map(input.Data);
+            
+            List<char[]> list = (List<char[]>)executor.Mapper.map(input.Data, Environment.ProcessorCount);
             Console.WriteLine("In DnaQuantStater list size after mapping : " + list.Count);
             foreach (char[] s in list)
             {

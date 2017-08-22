@@ -21,7 +21,7 @@ namespace ADNet.Map_Reduce.Orch
             FirstMap = true;
         }
 
-        public object map(object input)
+        public object map(object input,int nbMap)
         {
             char[] sequence = (char[])input;
             char[] result;
