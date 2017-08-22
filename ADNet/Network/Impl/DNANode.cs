@@ -52,30 +52,27 @@ namespace ADNet.Network.Impl
             List<string> listpairesbases = new List<string>();
 
             Dictionary<string, Tuple<int, double>> results = new Dictionary<string, Tuple<int, double>>();
-            bool buffer4OK = false;
-            bool buff2OK = false;
+
 
             for (int i = 0; i < data.Length; i++)
             {   
                 Console.WriteLine("position : " + i);
                 if (bases.Contains(data[i]))
                 {
-                    buffer4OK = i >= 3 ? true : false;
-                    buff2OK = i >= 1 ? true : false;
                     // Ajout ou Mise à Jour base simple
                     if (results.TryGetValue(data[i].ToString(), out var occur))
                         results[data[i].ToString()] = new Tuple<int, double>(occur.Item1 + 1, 0);
                     else
                         results.Add(data[i].ToString(), new Tuple<int, double>(1, 0));
                     // Ajout ou Mise à Jour séquences de 4
-                    if (!buffer4OK)
+                    if (buffersequences.Count < 4)
                         buffersequences.Add(data[i]);
                     else
                     {
                         Updateres(results, data[i], bufferpaires);
                     }
                     // Ajout ou Mise à Jour paires de bases
-                    if (!buff2OK)
+                    if (bufferpaires.Count < 2)
                         bufferpaires.Add(data[i]);
                     else
                     {

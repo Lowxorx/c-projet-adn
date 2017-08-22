@@ -48,9 +48,9 @@ namespace c_projet_adn.Network.Impl
         {
             Console.WriteLine("DNAQuantStatDisplay");
             String display = "";
-            foreach(Tuple<string,int,double> result in (List<Tuple<string,int,double>>)input.Data)
+            foreach(var result in (Dictionary<string,Tuple<int,double>>)input.Data)
             {
-                display += result.Item1 + " : " + result.Item2.ToString() + " : " + result.Item3.ToString() + "\n"; 
+                display += result.Key + " : " + result.Value.Item1.ToString() + " : " + result.Value.Item2.ToString() + "\n"; 
             }
             ViewModelLocator.VMLCliStatic.QuantDisplayResult(display);
             return null;
