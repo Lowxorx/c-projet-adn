@@ -22,7 +22,7 @@
             <TextBox
                 Margin="0,0,0,0"
                 FontFamily="Consolas"
-                FontSize="16"
+                FontSize="12"
                 IsReadOnly="True"
                 Text="{Binding Path=LogBox}"
                 TextWrapping="Wrap" />
