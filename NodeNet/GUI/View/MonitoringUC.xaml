@@ -34,7 +34,7 @@
             BorderBrush="Transparent"
             BorderThickness="1"
             FontSize="14"
-            Foreground="#FF00BCD4"
+            Foreground="Black"
             ItemsSource="{Binding TaskList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
@@ -132,7 +132,7 @@
             BorderBrush="Transparent"
             BorderThickness="1"
             FontSize="14"
-            Foreground="#15619D"
+            Foreground="Black"
             ItemsSource="{Binding NodeList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             SelectionMode="Single">
             <ListView.ItemContainerStyle>

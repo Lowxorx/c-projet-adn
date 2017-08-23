@@ -98,7 +98,7 @@
             RenderTransformOrigin=".5,.5"
             Source="/Resources/dna.png">
             <Image.Triggers>
-                <EventTrigger RoutedEvent="Loaded">
+                <EventTrigger RoutedEvent="Image.Loaded">
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation
