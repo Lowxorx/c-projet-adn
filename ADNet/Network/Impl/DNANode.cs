@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 
 namespace ADNet.Network.Impl
 {
@@ -53,11 +54,9 @@ namespace ADNet.Network.Impl
             Dictionary<string, int> results = new Dictionary<string, int>();
             string startSeq = string.Empty;
             string endSeq = string.Empty;
-
+            Thread.Sleep(100 * dataAndMeta.Item1);
             for (int i = 0; i < data.Item2.Length; i++)
             {
-                Console.WriteLine(@"bufferpaires : " + bufferpaires.Count);
-                Console.WriteLine(@"bufferseq : " + buffersequences.Count);
                 if (bases.Contains(data.Item2[i]))
                 {
                     // Ajout ou Mise à Jour base simple
@@ -104,6 +103,12 @@ namespace ADNet.Network.Impl
                 }
             }
             dataAndMeta.Item2.Data = new Tuple<Dictionary<string, int>, string, string>(results, startSeq,endSeq);
+
+            foreach (KeyValuePair<string, int> v in results)
+            {
+                Logger.Write(string.Format("key : {0} - value : {1} - workerTaskID : {2} - nbChar : {3} - threadID : {4}", v.Key, v.Value, dataAndMeta.Item1, data.Item2.Length, Thread.CurrentThread.ManagedThreadId), false);
+            }
+
             e.Result = dataAndMeta;
         }
 
