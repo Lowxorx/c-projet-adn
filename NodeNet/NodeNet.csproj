@@ -86,6 +86,7 @@
     <Compile Include="GUI\View\Logbox.xaml.cs">
       <DependentUpon>Logbox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Map_Reduce\AbstractReducer.cs" />
     <Compile Include="Map_Reduce\IMapper.cs" />
     <Compile Include="Map_Reduce\IReducer.cs" />
     <Compile Include="GUI\ViewModel\ViewModelLocator.cs" />

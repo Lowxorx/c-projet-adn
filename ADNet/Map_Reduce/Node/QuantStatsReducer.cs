@@ -6,15 +6,12 @@ using System.Linq;
 
 namespace ADNet.Map_Reduce.Node
 {
-    public class QuantStatsReducer : IReducer
+    public class QuantStatsReducer : AbstractReducer
     {
 
-        public object Reduce(ConcurrentBag<object> input)
+        public override object Reduce(ConcurrentBag<object> input)
         {
-
-            // input = List<Tuple<int, Tuple<Dictionary<string, int>, string, string>>>
-
-            Dictionary<string, Tuple<int, double>> concat = new Dictionary<string, Tuple<int, double>>();
+            Dictionary<string, int> concat = new Dictionary<string,int>();
             string prevEndSeq = string.Empty;
             string startSeq = string.Empty;
             string endSeq = string.Empty;
@@ -43,18 +40,19 @@ namespace ADNet.Map_Reduce.Node
                 {
                     if (concat.TryGetValue(entry.Key, out var occur))
                     {
-                        concat[entry.Key] = new Tuple<int, double>(occur.Item1 + entry.Value, 0);
+                        concat[entry.Key] = occur + entry.Value;
                     }
                     else
                     {
-                        concat.Add(entry.Key, new Tuple<int, double>(entry.Value, 0));
+                        concat.Add(entry.Key,entry.Value);
                     }
                 }
             }
-            return concat;
+            Tuple<Dictionary<string, int>, string, string> result = new Tuple<Dictionary<string, int>, string, string>(concat, startSeq, endSeq);
+            return result;
         }
 
-        private void UpdatePairsSeq(string prevEndSeq, string startSeq, Dictionary<string, Tuple<int, double>> concat)
+        private void UpdatePairsSeq(string prevEndSeq, string startSeq, Dictionary<string,int> concat)
         {
             List<string> joinSequences = new List<string>()
             {
@@ -70,29 +68,18 @@ namespace ADNet.Map_Reduce.Node
             {
                 if (concat.TryGetValue(s, out var occur))
                 {
-                    concat[s] = new Tuple<int, double>(occur.Item1 + 1, 0);
+                    concat[s] = occur + 1;
                 }
                 else if (s.Length == 4 || pairesbases.Contains(s))
                 {
-                    concat.Add(s, new Tuple<int, double>(1, 0));
+                    concat.Add(s, 1);
                 }
             }
         }
 
-        public object Clone()
+        public override object Clone()
         {
             return new QuantStatsReducer();
-        }
-
-        public List<Tuple<int, object>> SortByTaskId(ConcurrentBag<object> input)
-        {
-            List<Tuple<int, object>> list = new List<Tuple<int, object>>();
-            foreach (Tuple<int, object> item in input)
-            {
-                list.Add(item);
-            }
-            list.Sort((a, b) => a.Item1.CompareTo(b.Item1));
-            return list;
         }
     }
 }

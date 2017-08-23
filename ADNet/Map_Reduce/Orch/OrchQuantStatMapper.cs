@@ -31,7 +31,7 @@ namespace ADNet.Map_Reduce.Orch
                 Console.WriteLine(@"In Orch mapping sequence size : " + sequence.Length);
                 nbCharByChunk = totalNbChar / NbrChunk;
                 rest = totalNbChar % NbrChunk;
-                result = rest < nbCharByChunk / 2 ? new char[rest+ nbCharByChunk] : new char[rest];
+                result = rest < nbCharByChunk / 2 ? new char[rest + nbCharByChunk] : new char[rest];
                 firstMap = false;
             }
             else
