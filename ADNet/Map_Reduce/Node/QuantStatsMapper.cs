@@ -20,10 +20,7 @@ namespace ADNet.Map_Reduce.Node
             {
                 if (i == 0)
                 {
-                    if(rest < nbCharByChunk / 2)
-                    {
-                        rest += nbCharByChunk;                 
-                    }
+                    rest += nbCharByChunk;                 
                     char[] chunk = new char[rest];
                     for(int j = 0; j < rest; j++)
                     {
