@@ -8,7 +8,7 @@ namespace NodeNet.Map_Reduce
 {
     public interface IMapper : ICloneable
     {
-        Object map(Object input,int nbMap);
+        Object Map(Object input,int nbMap);
 
         bool mapIsEnd();
 

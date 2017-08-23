@@ -278,7 +278,7 @@ namespace NodeNet.Network.Orch
             if (TaskIsOK(input.TaskId))
             {
                 UpdateNodeTaskStatus(input.NodeTaskId, NodeState.FINISH, input.NodeGUID);
-                UpdateResult(input.Data, input.TaskId);
+                UpdateResult(input.Data, input.TaskId, input.NodeTaskId);
                 UpdateNodeStatus(NodeState.WAIT, input.NodeGUID);
                 // Reduce
                 // On cherche l'emplacement du resultat pour cette task et on l'envoit au Reduce 
@@ -287,7 +287,7 @@ namespace NodeNet.Network.Orch
                 if (TaskIsCompleted(input.TaskId))
                 {
                     Console.WriteLine("Reduce");
-                    Object reduceRes = executor.Reducer.reduce(result);
+                    Object reduceRes = executor.Reducer.Reduce(result);
                     // TODO check si tous les nodes ont finis
                     DataInput response = new DataInput()
                     {
@@ -376,7 +376,7 @@ namespace NodeNet.Network.Orch
                         // on lui envoit du travail
                         if (node.Value.State == NodeState.WAIT)
                         {
-                            Object data = mapper.map(input.Data,Nodes.Count);
+                            Object data = mapper.Map(input.Data,Nodes.Count);
                             // On envoit le resultat du map au node
                             int newNodeTaskID = SendSubTaskToNode(node.Value, newTaskId, input, data);
                             SendNodeIsWorkingToClient(node.Value,newTaskId, newNodeTaskID, input);

@@ -42,7 +42,7 @@ namespace NodeNet.Utilities
             }
         }
 
-        public static void Write(Exception e, bool toFile)
+        public void Write(Exception e, bool toFile)
         {
             FileMode mode;
             if (toFile)

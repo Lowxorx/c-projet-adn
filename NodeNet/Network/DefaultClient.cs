@@ -86,7 +86,7 @@ namespace NodeNet.Network
                 Tuple<String, int> orchIDentifiers = (Tuple < String, int>) input.Data;
                 Name = Name + orchIDentifiers.Item1;
                 Port = orchIDentifiers.Item2;
-                genGUID();
+                GenGUID();
                 input.ClientGUID = NodeGUID;
                 return input;
             }

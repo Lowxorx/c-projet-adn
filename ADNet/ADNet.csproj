@@ -95,6 +95,7 @@
     <Compile Include="Map_Reduce\Node\QuantStatsMapper.cs" />
     <Compile Include="Map_Reduce\Node\QuantStatsReducer.cs" />
     <Compile Include="Map_Reduce\Orch\OrchQuantStatMapper.cs" />
+    <Compile Include="Map_Reduce\Orch\OrchQuantStatReducer.cs" />
     <Compile Include="Network\Impl\DNAClient.cs" />
     <Compile Include="Network\Impl\DNANode.cs" />
     <Compile Include="App.xaml.cs">

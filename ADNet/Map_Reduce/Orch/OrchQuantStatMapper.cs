@@ -14,15 +14,15 @@ namespace ADNet.Map_Reduce.Orch
         private int Rest;
         private bool FirstMap;
 
-        public OrchQuantStatMapper(int nbrChunk)
+        public OrchQuantStatMapper()
         {
-            NbrChunk = nbrChunk;
             CurrentChar = 0;
             FirstMap = true;
         }
 
-        public object map(object input,int nbMap)
+        public object Map(object input,int nbMap)
         {
+            NbrChunk = nbMap;
             char[] sequence = (char[])input;
             char[] result;
             if (FirstMap)
@@ -78,7 +78,7 @@ namespace ADNet.Map_Reduce.Orch
 
         public object Clone()
         {
-            return new OrchQuantStatMapper(NbrChunk);
+            return new OrchQuantStatMapper();
         }
     }
 }

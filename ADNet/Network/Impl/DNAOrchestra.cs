@@ -12,8 +12,8 @@ namespace ADNet.Network.Impl
         private const String DNA_QUANT_METHOD = "DNA_QUANT";
         public DNAOrchestra(string name, string address, int port) : base(name, address, port)
         {
-            OrchQuantStatMapper quantStatMapper = new OrchQuantStatMapper(6);
-            QuantStatsReducer quantStatReducer = new QuantStatsReducer();
+            OrchQuantStatMapper quantStatMapper = new OrchQuantStatMapper();
+            OrchQuantStatReducer quantStatReducer = new OrchQuantStatReducer();
             WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this, ProcessMapReduce, quantStatMapper, quantStatReducer));
         }
     }

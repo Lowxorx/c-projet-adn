@@ -9,7 +9,7 @@ namespace NodeNet.Map_Reduce
 {
     public interface IReducer : ICloneable
     {
-        Object reduce(ConcurrentBag<Object> input);
+        Object Reduce(ConcurrentBag<Object> input);
         new object Clone();
     }
 }

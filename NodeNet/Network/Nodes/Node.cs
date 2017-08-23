@@ -2,6 +2,7 @@
 using NodeNet.Network.Orch;
 using NodeNet.Network.States;
 using NodeNet.Tasks;
+using NodeNet.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -27,31 +28,26 @@ namespace NodeNet.Network.Nodes
     }
     public abstract class Node : INode
     {
+        #region Properties
         public String NodeGUID;
 
         public Node Orch { get; set; }
-
+        private Logger logger;
         public String Address { get; set; }
         public int Port { get; set; }
         public String Name { get; set; }
-
         public Socket NodeSocket { get; set; }
         public Socket ServerSocket { get; set; }
-
         public static int BUFFER_SIZE = 4096;
         public PerformanceCounter PerfCpu { get; set; }
         public PerformanceCounter PerfRam { get; set; }
-
         public NodeState State { get; set; }
-
-        private ConcurrentDictionary<int,Task> tasks;
-
-        public ConcurrentDictionary<int,Task> Tasks
+        private ConcurrentDictionary<int, Task> tasks;
+        public ConcurrentDictionary<int, Task> Tasks
         {
             get { return tasks; }
             set { tasks = value; }
         }
-
         /* Stockage des résultats réduits par Task */
         private ConcurrentDictionary<int, ConcurrentBag<Object>> results;
         public ConcurrentDictionary<int, ConcurrentBag<Object>> Results
@@ -59,67 +55,56 @@ namespace NodeNet.Network.Nodes
             get { return results; }
             set { results = value; }
         }
-
         private int lastTaskID;
-
         protected int LastTaskID
         {
             get { return lastTaskID += 1; }
             set { new InvalidOperationException(); }
         }
-
         private int lastSubTaskID;
-
         protected int LastSubTaskID
         {
             get { return lastSubTaskID += 1; }
             set { new InvalidOperationException(); }
         }
-
         private float cpuValue { get; set; }
         public float CpuValue { get { return (float)(Math.Truncate(cpuValue * 100.0) / 100.0); } set { cpuValue = value; } }
         private double ramValue { get; set; }
         public double RamValue { get { return (Math.Truncate(ramValue * 100.0) / 100.0); } set { ramValue = value; } }
         private int workingTask;
-
         public int WorkingTask
         {
             get { return workingTask; }
             set { workingTask = value; }
         }
-
         private double progression;
-
         public double Progression
         {
             get { return progression; }
             set { progression = value; }
         }
-
-
-
         public TaskExecFactory WorkerFactory { get; set; }
-
         protected List<byte[]> bytearrayList { get; set; }
-
         protected static ManualResetEvent sendDone = new ManualResetEvent(false);
         protected static ManualResetEvent receiveDone = new ManualResetEvent(false);
         protected static ManualResetEvent connectDone = new ManualResetEvent(false);
-
         protected const String GET_CPU_METHOD = "GET_CPU";
         protected const String IDENT_METHOD = "IDENT";
         protected const String TASK_STATUS_METHOD = "TASK_STATE";
+        #endregion
 
+        #region Ctor
         public Node(String name, String adress, int port)
         {
             WorkerFactory = TaskExecFactory.GetInstance();
             Name = name;
             Address = adress;
             Port = port;
-            genGUID();
+            GenGUID();
             Tasks = new ConcurrentDictionary<int, Task>();
             State = NodeState.WAIT;
             Results = new ConcurrentDictionary<int, ConcurrentBag<object>>();
+            logger = new Logger();
         }
 
         public Node(string name, string adress, int port, Socket sock)
@@ -130,8 +115,11 @@ namespace NodeNet.Network.Nodes
             NodeSocket = sock;
             Tasks = new ConcurrentDictionary<int, Task>();
             State = NodeState.WAIT;
+            logger = new Logger();
         }
+        #endregion
 
+        #region Methods
         public void Stop()
         {
             throw new NotImplementedException();
@@ -155,6 +143,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
+                logger.Write(e, true);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -167,15 +156,15 @@ namespace NodeNet.Network.Nodes
                 Socket client = (Socket)ar.AsyncState;
                 // Complete the connection.
                 client.EndConnect(ar);
-                Console.WriteLine(String.Format("Connection accepted to {0} ", client.RemoteEndPoint.ToString()));
+                logger.Write(String.Format("Connection accepted : {0} ", client.RemoteEndPoint.ToString()), true);
+                Console.WriteLine(String.Format("Connection accepted : {0} ", client.RemoteEndPoint.ToString()));
                 // Signal that the connection has been made.
                 connectDone.Set();
                 Receive(Orch);
-
-
             }
             catch (SocketException e)
             {
+                logger.Write(e, true);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -188,17 +177,18 @@ namespace NodeNet.Network.Nodes
             {
                 if (obj.Method != GET_CPU_METHOD)
                 {
+                    logger.Write(String.Format("Send data : {0} to {1}", obj, node), true);
                     Console.WriteLine("Send data : " + obj + " to : " + node);
-                    //Console.WriteLine("Send data : " + Encoding.ASCII.GetString(data));
                 }
-                node.NodeSocket.BeginSend(data, 0, data.Length, 0,
-                    new AsyncCallback(SendCallback), node);
+                node.NodeSocket.BeginSend(data, 0, data.Length, 0,new AsyncCallback(SendCallback), node);
             }
-            catch (SocketException ex)
+            catch (SocketException e)
             {
                 /// Client Down ///
                 if (!node.NodeSocket.Connected)
                 {
+                    logger.Write(e, true);
+                    logger.Write(String.Format("Client {0} disconnected", node.NodeSocket.RemoteEndPoint.ToString()), true);
                     Console.WriteLine("Client " + node.NodeSocket.RemoteEndPoint.ToString() + " Disconnected");
                     RemoveDeadNode(node);
                 }
@@ -219,6 +209,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
+                logger.Write(e, true);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -230,11 +221,11 @@ namespace NodeNet.Network.Nodes
                 // Begin receiving the data from the remote device.
                 StateObject obj = new StateObject();
                 obj.node = node;
-                node.NodeSocket.BeginReceive(obj.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), obj);
+                node.NodeSocket.BeginReceive(obj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), obj);
             }
             catch (Exception e)
             {
+                logger.Write(e, true);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -272,38 +263,39 @@ namespace NodeNet.Network.Nodes
                     int nbByteRead = node.NodeSocket.EndReceive(ar);
                     // Gety data from buffer
                     byte[] dataToConcat = new byte[nbByteRead];
-                    Array.Copy(stateObj.buffer,0, dataToConcat, 0, nbByteRead);
+                    Array.Copy(stateObj.buffer, 0, dataToConcat, 0, nbByteRead);
                     stateObj.data.Add(dataToConcat);
                     if (IsEndOfMessage(stateObj.buffer, nbByteRead))
                     {
-                        byte[] data = concatByteArray(stateObj.data);
+                        byte[] data = ConcatByteArray(stateObj.data);
                         DataInput input = DataFormater.Deserialize<DataInput>(data);
                         Receive(node);
                         ProcessInput(input, node);
                     }
                     else
                     {
-                       node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), stateObj);
+                        node.NodeSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), stateObj);
                     }
                 }
-                catch(SocketException e)
+                catch (SocketException e)
                 {
+                    logger.Write(e, true);
                     RemoveDeadNode(node);
-                }    
+                }
             }
             catch (Exception e)
             {
+                logger.Write(e, true);
                 Console.WriteLine(e.ToString());
             }
         }
 
-        private byte[] concatByteArray(List<byte[]> data)
+        private byte[] ConcatByteArray(List<byte[]> data)
         {
             List<byte> byteStorage = new List<byte>();
-            foreach(byte[] bytes in data)
+            foreach (byte[] bytes in data)
             {
-                foreach(byte bit in bytes)
+                foreach (byte bit in bytes)
                 {
                     byteStorage.Add(bit);
                 }
@@ -311,7 +303,7 @@ namespace NodeNet.Network.Nodes
             return byteStorage.ToArray();
         }
 
-        private bool IsEndOfMessage(byte[] buffer,int byteRead)
+        private bool IsEndOfMessage(byte[] buffer, int byteRead)
         {
             byte[] endSequence = Encoding.ASCII.GetBytes("CAFEBABE");
             byte[] endOfBuffer = new byte[8];
@@ -326,18 +318,17 @@ namespace NodeNet.Network.Nodes
             return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGUID;
         }
 
-        protected void genGUID()
+        protected void GenGUID()
         {
             NodeGUID = Name + ":" + Address + ":" + Port;
         }
 
-        protected void UpdateResult(Object input, int taskId)
+        protected void UpdateResult(Object input, int taskId, int subTaskId)
         {
             Console.WriteLine("Update result");
-            ConcurrentBag<Object> result;
-            if (Results.TryGetValue(taskId, out result))
+            if (Results.TryGetValue(taskId, out ConcurrentBag<object> result))
             {
-                result.Add(input);
+                result.Add(new Tuple<int, Object>(subTaskId, input));
             }
             else
             {
@@ -360,6 +351,9 @@ namespace NodeNet.Network.Nodes
         {
             return method != GET_CPU_METHOD && method != IDENT_METHOD && method != TASK_STATUS_METHOD;
         }
+        #endregion 
+
+
 
     }
 }

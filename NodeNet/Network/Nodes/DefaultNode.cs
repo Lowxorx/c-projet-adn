@@ -86,7 +86,7 @@ namespace NodeNet.Network.Nodes
             Tuple<String, int> orchIDentifiers = (Tuple<String, int>)d.Data;
             Name = Name + orchIDentifiers.Item1;
             Port = orchIDentifiers.Item2;
-            genGUID();
+            GenGUID();
             DataInput resp = new DataInput()
             {
                 ClientGUID = null,
@@ -146,10 +146,10 @@ namespace NodeNet.Network.Nodes
         {
             BackgroundWorker bw = new BackgroundWorker();
 
-            //// Abonnage ////
+            //// Abonnement ////
             bw.DoWork += new DoWorkEventHandler(ProcessFunction);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerEndProcess);
-            int workerTaskID = createWorkerTask(taskData.NodeTaskId);
+            int workerTaskID = CreateWorkerTask(taskData.NodeTaskId);
             Tuple<int, DataInput, int> dataAndMeta = new Tuple<int, DataInput, int>(workerTaskID, taskData, totalNbWorker);
             bw.RunWorkerAsync(dataAndMeta);
         }
@@ -173,12 +173,12 @@ namespace NodeNet.Network.Nodes
             Tuple<int, DataInput, int> data = (Tuple<int, DataInput, int>)e.Result;
             DataInput resp = data.Item2;
             updateWorkerTaskStatus(data.Item1, data.Item2.NodeTaskId, NodeState.FINISH);
-            UpdateResult(resp.Data, data.Item2.NodeTaskId);
+            UpdateResult(resp.Data, data.Item2.NodeTaskId, data.Item1);
             if (TaskIsCompleted(resp.NodeTaskId))
             {
                 Console.WriteLine("Task is completed");
                 IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
-                Object result = reducer.reduce(GetResultFromTaskId(resp.NodeTaskId));
+                Object result = reducer.Reduce(GetResultFromTaskId(resp.NodeTaskId));
                 resp.Data = result;
                 SendData(Orch, resp);
             }
@@ -209,11 +209,10 @@ namespace NodeNet.Network.Nodes
        * si elle existe ou création d'une nouvelle.
        * @return retourne l'id de la workerTask crée
        */
-        private int createWorkerTask(int taskID)
+        private int CreateWorkerTask(int taskID)
         {
             int lastWorkerTaskID = LastSubTaskID;
-            Task task;
-            if (Tasks.TryGetValue(taskID, out task))
+            if (Tasks.TryGetValue(taskID, out Task task))
             {
                 WorkerTaskStatus.TryAdd(lastWorkerTaskID, new Tuple<int, NodeState>(taskID, NodeState.WORK));
                 return lastWorkerTaskID;

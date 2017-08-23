@@ -7,10 +7,10 @@ namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsMapper : IMapper
     {
-        public Object map(Object input,int nbMap)
+        public Object Map(Object input,int nbMap)
         {
 
-            List<char[]> result = new List<char[]>();
+            List<Tuple<int, char[]>> result = new List<Tuple<int, char[]>>();
             char[] data = (char[])input;
             int totalNbChar = data.Length;
             int nbCharByChunk = totalNbChar / nbMap;
@@ -23,8 +23,7 @@ namespace ADNet.Map_Reduce.Node
                 {
                     if(rest < nbCharByChunk / 2)
                     {
-                        rest += nbCharByChunk;
-                        i++;
+                        rest += nbCharByChunk;                 
                     }
                     char[] chunk = new char[rest];
                     for(int j = 0; j < rest; j++)
@@ -32,7 +31,7 @@ namespace ADNet.Map_Reduce.Node
                         chunk[j] = data[currentChar];
                         currentChar++;
                     }
-                    result.Add(chunk);
+                    result.Add(new Tuple<int, char[]>(i, chunk));
                 }
                 else
                 {
@@ -42,7 +41,7 @@ namespace ADNet.Map_Reduce.Node
                         chunk[j] = data[currentChar];
                         currentChar++;
                     }
-                    result.Add(chunk);
+                    result.Add(new Tuple<int, char[]>(i, chunk));
                 }
             }
             return result;

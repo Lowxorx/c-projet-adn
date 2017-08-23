@@ -24,12 +24,12 @@ namespace ADNet.Network.Impl
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             
-            List<char[]> list = (List<char[]>)executor.Mapper.map(input.Data, Environment.ProcessorCount);
+            List<Tuple<int,char[]>> list = (List<Tuple<int, char[]>>)executor.Mapper.Map(input.Data, Environment.ProcessorCount);
             Console.WriteLine("In DnaQuantStater list size after mapping : " + list.Count);
-            foreach (char[] s in list)
+            foreach (Tuple<int,char[]> t in list)
             {
                 Console.WriteLine("Launch Background Worker ");
-                LaunchBGForWork(DnaQuantProcess, PrepareData(input, s), list.Count);
+                LaunchBGForWork(DnaQuantProcess, PrepareData(input, t), list.Count);
             }
             return null;
         }
@@ -38,75 +38,87 @@ namespace ADNet.Network.Impl
         {
             Console.WriteLine("In DNAQuantPRocess");
             Tuple<int, DataInput, int> dataAndMeta = (Tuple<int, DataInput, int>)e.Argument;
-            //Thread.Sleep(3000 * dataAndMeta.Item1);
             // On averti l'orchestrateur que l'on commence a process
-            char[] data = (char[])dataAndMeta.Item2.Data;
-            int a = data.Count();
-            char[] bases = { 'A', 'T', 'G', 'C' };
-            string[] pairesbases = { "AT", "TA", "GC", "CG" };
-
+            Tuple<int, char[]> data = (Tuple<int, char[]>)dataAndMeta.Item2.Data;
+            int a = data.Item2.Count();
+            char[] bases = { 'A', 'T', 'G', 'C', '-' };
             List<char> bufferpaires = new List<char>();
             List<char> buffersequences = new List<char>();
-            List<string> sequences2 = new List<string>();
-            List<string> sequences4 = new List<string>();
-            List<string> listpairesbases = new List<string>();
+            List<string> listpairesbases = new List<string>()
+            {
+                "AT", "GC"
+            };
+            Dictionary<string, int> results = new Dictionary<string, int>();
+            string startSeq = string.Empty;
+            string endSeq = string.Empty;
 
-            Dictionary<string, Tuple<int, double>> results = new Dictionary<string, Tuple<int, double>>();
-
-
-            for (int i = 0; i < data.Length; i++)
-            {   
-                Console.WriteLine("position : " + i);
-                if (bases.Contains(data[i]))
+            for (int i = 0; i < data.Item2.Length; i++)
+            {
+                Console.WriteLine("bufferpaires : " + bufferpaires.Count);
+                Console.WriteLine("bufferseq : " + buffersequences.Count);
+                if (bases.Contains(data.Item2[i]))
                 {
                     // Ajout ou Mise à Jour base simple
-                    if (results.TryGetValue(data[i].ToString(), out var occur))
-                        results[data[i].ToString()] = new Tuple<int, double>(occur.Item1 + 1, 0);
-                    else
-                        results.Add(data[i].ToString(), new Tuple<int, double>(1, 0));
-                    // Ajout ou Mise à Jour séquences de 4
-                    if (buffersequences.Count < 4)
-                        buffersequences.Add(data[i]);
+                    if (results.TryGetValue(data.Item2[i].ToString(), out int occur))
+                    {
+                        results[data.Item2[i].ToString()] = occur + 1;
+                    }
                     else
                     {
-                        Updateres(results, data[i], bufferpaires);
+                        results.Add(data.Item2[i].ToString(), 1);
+                    }
+                    // Ajout ou Mise à Jour séquences de 4
+                    if (buffersequences.Count < 4)
+                    {
+                        buffersequences.Add(data.Item2[i]);
+                    }
+                    else
+                    {
+                        Updateres(results, data.Item2[i], buffersequences, null);
                     }
                     // Ajout ou Mise à Jour paires de bases
                     if (bufferpaires.Count < 2)
-                        bufferpaires.Add(data[i]);
+                    {
+                        bufferpaires.Add(data.Item2[i]);
+                    }
                     else
                     {
-                        Updateres(results, data[i], bufferpaires);
+                       Updateres(results, data.Item2[i], bufferpaires, listpairesbases);
                     }
-                    if (i == data.Length - 1)
+                    if (i == data.Item2.Length - 1)
                     {
-                        Updateres(results, data[i], bufferpaires);
-                        Updateres(results, data[i], buffersequences);
+                        Updateres(results, data.Item2[i], bufferpaires, listpairesbases);
+                        Updateres(results, data.Item2[i], buffersequences, null);
+                    }
+
+                    if (startSeq.Length < 3)
+                    {
+                        startSeq += data.Item2[i];
+                    }
+                    if (i >= data.Item2.Length - 3)
+                    {
+                        endSeq += data.Item2[i];
                     }
                 }
-                // Ajout ou Mise à Jour bases inconnues
-                else if (data[i] == '-')
-                    if (results.TryGetValue(data[i].ToString(), out var occur))
-                        results[data[i].ToString()] = new Tuple<int, double>(occur.Item1 + 1, 0);
-                    else
-                        results.Add(data[i].ToString(), new Tuple<int, double>(1, 0));
             }
-
-            dataAndMeta.Item2.Data = results;
+            dataAndMeta.Item2.Data = new Tuple<Dictionary<string, int>, string, string>(results, startSeq,endSeq);
             e.Result = dataAndMeta;
         }
 
-        private void Updateres(Dictionary<String, Tuple<int, double>> results, char a, List<char> buffer)
+        private void Updateres(Dictionary<String, int> results, char a, List<char> buffer, List<string> listpairesbases)
         {
             string seq = String.Concat(buffer);
-
-            if (results.TryGetValue(seq, out var tpl))
+            if (seq == "AT")
             {
-                results[seq] = new Tuple<int, double>(tpl.Item1 + 1, 0);
+                Console.WriteLine("at");
             }
-            else
+            if (results.TryGetValue(seq, out int occur))
             {
-                results.Add(seq, new Tuple<int, double>(1, 0));
+                results[seq] = occur + 1;
+            }
+            else if (buffer.Count == 4 || listpairesbases.Contains(seq))
+            {
+                results.Add(seq, 1);
             }
 
             if (buffer.Count == 2)
