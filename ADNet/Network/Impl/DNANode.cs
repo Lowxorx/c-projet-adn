@@ -1,11 +1,10 @@
-﻿using NodeNet.Data;
+﻿using ADNet.Map_Reduce.Node;
+using NodeNet.Data;
 using NodeNet.Network.Nodes;
 using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using ADNet.Map_Reduce.Node;
-using System.Threading;
 using System.Linq;
 
 namespace ADNet.Network.Impl
@@ -26,9 +25,12 @@ namespace ADNet.Network.Impl
             
             List<Tuple<int,char[]>> list = (List<Tuple<int, char[]>>)executor.Mapper.Map(input.Data, Environment.ProcessorCount);
             Console.WriteLine("In DnaQuantStater list size after mapping : " + list.Count);
+            logger.Write("DnaQuantStater list size after mapping : " + list.Count, false);
+
             foreach (Tuple<int,char[]> t in list)
             {
                 Console.WriteLine("Launch Background Worker ");
+                logger.Write("Backgroundworker for DNAQuantProcess started", false);
                 LaunchBGForWork(DnaQuantProcess, PrepareData(input, t), list.Count);
             }
             return null;
@@ -37,6 +39,7 @@ namespace ADNet.Network.Impl
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
             Console.WriteLine("In DNAQuantPRocess");
+            logger.Write("DNAQuantProcess started", false);
             Tuple<int, DataInput, int> dataAndMeta = (Tuple<int, DataInput, int>)e.Argument;
             // On averti l'orchestrateur que l'on commence a process
             Tuple<int, char[]> data = (Tuple<int, char[]>)dataAndMeta.Item2.Data;

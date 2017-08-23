@@ -32,7 +32,6 @@ namespace NodeNet.Network.Nodes
             set { workerTaskStatus = value; }
         }
         bool monitoringEnable = true;
-
         #endregion
 
         public DefaultNode(String name, String adress, int port) : base(name, adress, port)
@@ -46,6 +45,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
+                logger.Write(e, true);
                 Console.WriteLine(e.Message);
             }
         }
@@ -54,6 +54,7 @@ namespace NodeNet.Network.Nodes
 
         public override void ProcessInput(DataInput input, Node node)
         {
+            logger.Write(string.Format("Process input for {0}", input.Method), true);
             Console.WriteLine("ProcessInput for " + input.Method);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             if (!input.Method.Equals(IDENT_METHOD) && !input.Method.Equals(GET_CPU_METHOD))
@@ -177,6 +178,7 @@ namespace NodeNet.Network.Nodes
             if (TaskIsCompleted(resp.NodeTaskId))
             {
                 Console.WriteLine("Task is completed");
+                logger.Write("Task is completed", false);
                 IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
                 Object result = reducer.Reduce(GetResultFromTaskId(resp.NodeTaskId));
                 resp.Data = result;
@@ -227,6 +229,7 @@ namespace NodeNet.Network.Nodes
         private void updateWorkerTaskStatus(int workerTaskID, int nodeTaskId, NodeState status)
         {
             Console.WriteLine("Update Worker status : " + status);
+            logger.Write(string.Format("Update worker status {0}", status), true);
             Tuple<int, NodeState> workerTask;
             Tuple<int, NodeState> updatedWorkerTask = new Tuple<int, NodeState>(nodeTaskId, status);
             if (WorkerTaskStatus.TryGetValue(workerTaskID, out workerTask))

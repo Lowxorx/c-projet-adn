@@ -32,7 +32,7 @@ namespace NodeNet.Network.Nodes
         public String NodeGUID;
 
         public Node Orch { get; set; }
-        private Logger logger;
+        public Logger logger { get; set; }
         public String Address { get; set; }
         public int Port { get; set; }
         public String Name { get; set; }
