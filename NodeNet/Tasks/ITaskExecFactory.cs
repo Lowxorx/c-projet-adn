@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace NodeNet.Tasks
+﻿namespace NodeNet.Tasks
 {
     interface ITaskExecFactory
     {
-        void AddWorker(String methodName, TaskExecutor worker);
-        TaskExecutor GetWorker(String methodName);
+        void AddWorker(string methodName, TaskExecutor worker);
+        TaskExecutor GetWorker(string methodName);
     }
 }

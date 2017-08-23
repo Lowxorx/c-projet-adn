@@ -1,58 +1,58 @@
-﻿
-using ADNet.GUI.ViewModel;
-using NodeNet.Network;
-using NodeNet.Network.Nodes;
-using System;
-using System.Net.Sockets;
-using NodeNet.Data;
-using NodeNet.Tasks;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
+using System.Net.Sockets;
+using ADNet.GUI.ViewModel;
+using NodeNet.Data;
+using NodeNet.Network;
+using NodeNet.Tasks;
 
-namespace c_projet_adn.Network.Impl
+namespace ADNet.Network.Impl
 {
-    public class DNAClient : DefaultClient
+    public class DnaClient : DefaultClient
     {
-        private const String DNA_QUANT_METHOD = "DNA_QUANT";
-        public DNAClient(String name, String adress, int port) : base(name,adress,port)
+        private const string DnaQuantMethod = "DNA_QUANT";
+        public DnaClient(string name, string adress, int port) : base(name,adress,port)
         {
-            WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this, DNAQuantStatDisplay, null, null));
+            WorkerFactory.AddWorker(DnaQuantMethod, new TaskExecutor(this, DnaQuantStatDisplay, null, null));
         }
 
-        public DNAClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
+        public DnaClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
 
 
-        public Object ProcessDisplayMessageFunction(DataInput input)
+        public object ProcessDisplayMessageFunction(DataInput input)
         {
-            Console.WriteLine("Client Process Display Response From Orchestrator Msg : " + input.Data);
-            ViewModelLocator.VMLCliStatic.QuantDisplayResult((String)input.Data);
+            Console.WriteLine(@"Client Process Display Response From Orchestrator Msg : " + input.Data);
+            Logger.Write("Client Process Display Response From Orchestrator Msg : " + input.Data, true);
+            ViewModelLocator.VmlCliStatic.QuantDisplayResult((string)input.Data);
             return null;
         }
 
-        public void DNAQuantStat(char[] genomicData)
+        public void DnaQuantStat(char[] genomicData)
         {
             
             DataInput data = new DataInput()
             {
                 Data = genomicData,
-                ClientGUID = NodeGUID,
-                MsgType = MessageType.CALL,
-                Method = DNA_QUANT_METHOD
+                ClientGuid = NodeGuid,
+                MsgType = MessageType.Call,
+                Method = DnaQuantMethod
             };
             SendData(Orch, data);
         }
 
-        public Object DNAQuantStatDisplay(DataInput input)
+        public object DnaQuantStatDisplay(DataInput input)
         {
-            Console.WriteLine("DNAQuantStatDisplay");
-            String display = "";
+            Console.WriteLine(@"Launch Cli");
+            string display = "";
             foreach(var result in (Dictionary<string,Tuple<int,double>>)input.Data)
             {
-                display += result.Key + " : " + result.Value.Item1.ToString() + " : " + result.Value.Item2.ToString() + "\n"; 
+                display += result.Key + " : " + result.Value.Item1 + " : " + result.Value.Item2.ToString(CultureInfo.InvariantCulture) + "\n"; 
             }
-            ViewModelLocator.VMLCliStatic.QuantDisplayResult(display);
+            ViewModelLocator.VmlCliStatic.QuantDisplayResult(display);
             return null;
         }
 
@@ -81,7 +81,7 @@ namespace c_projet_adn.Network.Impl
             //    }
             //}
             //sw.Stop();
-            Console.WriteLine(string.Format("read file : {0}", sw.Elapsed.TotalSeconds));
+            Console.WriteLine($@"read file : {sw.Elapsed.TotalSeconds}");
             foreach (string line in File.ReadAllLines(sourceFile))
             {
                 if (!line.StartsWith("#"))
@@ -96,7 +96,8 @@ namespace c_projet_adn.Network.Impl
                     }
                 }
             }
-            Console.WriteLine("In DNA CLient sequence size : " + pairsList.Count);
+            Console.WriteLine(@"In DNA CLient sequence size : " + pairsList.Count);
+            Logger.Write("In DNA Client sequence size : " + pairsList.Count, true);
             return pairsList.ToArray();
         }
     }

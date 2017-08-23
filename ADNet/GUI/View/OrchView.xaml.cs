@@ -1,23 +1,21 @@
-﻿using ADNet.GUI.ViewModel;
-using System;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using ADNet.GUI.ViewModel;
 
-namespace c_projet_adn.GUI.View
+namespace ADNet.GUI.View
 {
     /// <summary>
     /// Logique d'interaction pour Window1.xaml
     /// </summary>
-    public partial class OrchView : Window
+    public partial class OrchView
     {
         public OrchView()
         {
             InitializeComponent();
 
-            VMOrchView vm = (VMOrchView)DataContext;
+            VmOrchView vm = (VmOrchView)DataContext;
             if (vm.CloseAction == null)
             {
-                vm.CloseAction = new Action(() => Close());
+                vm.CloseAction = Close;
             }
             MouseDown += Window_MouseDown;
         }

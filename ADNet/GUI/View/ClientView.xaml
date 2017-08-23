@@ -9,7 +9,7 @@
     Title="ClientView"
     Width="1000"
     Height="877.667"
-    DataContext="{Binding VMLCli, Source={StaticResource Locator}}"
+    DataContext="{Binding VmlCli, Source={StaticResource Locator}}"
     ResizeMode="NoResize"
     WindowState="Normal"
     WindowStyle="None"
@@ -46,7 +46,7 @@
                 VerticalAlignment="Top"
                 Background="#00DDDDDD"
                 BorderBrush="#00000000"
-                Command="{Binding ICommandBtnClose}"
+                Command="{Binding CommandBtnClose}"
                 Content="X"
                 FontSize="21"
                 FontWeight="Bold"
@@ -67,7 +67,7 @@
             </Rectangle.Fill>
         </Rectangle>
         <Image
-            x:Name="dna"
+            x:Name="Dna"
             Width="32"
             Height="32"
             Margin="968,63,0,0"
@@ -81,7 +81,7 @@
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation
-                                Storyboard.TargetName="dna"
+                                Storyboard.TargetName="Dna"
                                 Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
                                 From="0"
                                 To="360"
@@ -111,7 +111,7 @@
             FontWeight="Bold"
             Foreground="White"
             Text="Monitoring" />
-        <sharecontrols:MonitoringUC
+        <sharecontrols:MonitoringUc
             Grid.Column="0"
             Width="1000"
             Margin="0,105,0,0"
@@ -171,7 +171,7 @@
             VerticalAlignment="Bottom"
             DataContext="{Binding VmLogBox}" />
         <Image
-            x:Name="dna2"
+            x:Name="Dna2"
             Width="32"
             Height="32"
             Margin="968,352,0,0"
@@ -185,7 +185,7 @@
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation
-                                Storyboard.TargetName="dna2"
+                                Storyboard.TargetName="Dna2"
                                 Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
                                 From="0"
                                 To="360"
@@ -206,7 +206,7 @@
             </Image.RenderTransform>
         </Image>
         <Image
-            x:Name="dna3"
+            x:Name="Dna3"
             Width="32"
             Height="32"
             Margin="968,615,0,0"
@@ -220,7 +220,7 @@
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation
-                                Storyboard.TargetName="dna3"
+                                Storyboard.TargetName="Dna3"
                                 Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
                                 From="0"
                                 To="360"

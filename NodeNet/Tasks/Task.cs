@@ -1,6 +1,5 @@
 ﻿using NodeNet.Network.States;
 using System;
-using System.Collections.Generic;
 
 namespace NodeNet.Tasks
 {
@@ -11,55 +10,55 @@ namespace NodeNet.Tasks
 
         public int Id
         {
-            get { return id; }
-            set { id = value; }
+            get => id;
+            set => id = value;
         }
 
         private NodeState state;
         public NodeState State
         {
-            get { return state; }
-            set { state = value; }
+            get => state;
+            set => state = value;
         }
 
         private double progression;
 
         public double Progression
         {
-            get { return progression; }
-            set { progression = value; }
+            get => progression;
+            set => progression = value;
         }
 
-        private String taskName;
+        private string taskName;
 
-        public String TaskName
+        public string TaskName
         {
-            get { return taskName; }
-            set { taskName = value; }
+            get => taskName;
+            set => taskName = value;
         }
 
         private DateTime startTime;
 
         public DateTime StartTime
         {
-            get { return startTime; }
-            set { startTime = value; }
+            get => startTime;
+            set => startTime = value;
         }
 
         private DateTime endTime;
 
         public DateTime EndTime
         {
-            get { return endTime; }
-            set { endTime = value; }
+            get => endTime;
+            set => endTime = value;
         }
         
         private double duration;
 
         public double Duration
         {
-            get { return duration; }
-            set { duration = value; }
+            get => duration;
+            set => duration = value;
         }
 
         public Task(int id,NodeState state)
@@ -67,7 +66,7 @@ namespace NodeNet.Tasks
             this.id = id;
             this.state = state;
         }
-        public Task(int id, NodeState state,String taskName)
+        public Task(int id, NodeState state,string taskName)
         {
             this.id = id;
             this.state = state;

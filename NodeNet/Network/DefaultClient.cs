@@ -13,55 +13,56 @@ namespace NodeNet.Network
 {
     public abstract class DefaultClient : Node
     {
-
-        public DefaultClient(String name, String adress, int port) : base(name,adress,port) {
-            WorkerFactory.AddWorker(GET_CPU_METHOD, new TaskExecutor(this,RefreshCpuState,null,null));
-            WorkerFactory.AddWorker(IDENT_METHOD, new TaskExecutor(this,ProcessIdent,null,null));
-            WorkerFactory.AddWorker(TASK_STATUS_METHOD, new TaskExecutor(this, RefreshTaskState, null, null));
+        protected DefaultClient(string name, string adress, int port) : base(name,adress,port)
+        {
+            WorkerFactory.AddWorker(GetCpuMethod, new TaskExecutor(this,RefreshCpuState,null,null));
+            WorkerFactory.AddWorker(IdentMethod, new TaskExecutor(this,ProcessIdent,null,null));
+            WorkerFactory.AddWorker(TaskStatusMethod, new TaskExecutor(this, RefreshTaskState, null, null));
         }
 
-        public DefaultClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
+        protected DefaultClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
 
         public override void ProcessInput(DataInput input,Node node)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            if (MethodIsNotInfra(input.Method) && input.MsgType == MessageType.RESPONSE)
+            if (MethodIsNotInfra(input.Method) && input.MsgType == MessageType.Response)
             {
-                ViewModelLocator.VMLMonitorUcStatic.RefreshStateFromTaskResult(input);
+                ViewModelLocator.VmlMonitorUcStatic.RefreshStateFromTaskResult(input);
             }
-            Object res = executor.DoWork(input);
+            object res = executor.DoWork(input);
             if (res != null)
             {
                 DataInput resp = new DataInput()
                 {
-                    ClientGUID = input.ClientGUID,
-                    NodeGUID = NodeGUID,
+                    ClientGuid = input.ClientGuid,
+                    NodeGuid = NodeGuid,
                     TaskId = input.TaskId,
                     Method = input.Method,
                     Data = res,
-                    MsgType = MessageType.RESPONSE
+                    MsgType = MessageType.Response
                 };
                 SendData(node, resp);
             }
         }
 
         /* Multi Client */
-        public Object RefreshCpuState(DataInput input)
+        public object RefreshCpuState(DataInput input)
         {
-            ViewModelLocator.VMLMonitorUcStatic.RefreshNodesInfo(input);
+            ViewModelLocator.VmlMonitorUcStatic.RefreshNodesInfo(input);
             return null;
         }
 
         public void StartMonitorNodes()
         {
-            Console.WriteLine("Start monitor node");
+            Console.WriteLine(@"Launch Cli");
+            Logger.Write("Start monitoring node...", false);
             DataInput input = new DataInput()
             {
-                Method = GET_CPU_METHOD,
+                Method = GetCpuMethod,
                 Data = null,
-                ClientGUID = NodeGUID,
-                NodeGUID = NodeGUID,
-                MsgType = MessageType.CALL
+                ClientGuid = NodeGuid,
+                NodeGuid = NodeGuid,
+                MsgType = MessageType.Call
             };
             SendData(Orch, input);
         }
@@ -71,23 +72,23 @@ namespace NodeNet.Network
             foreach (List<string> nodeinfo in monitoringValues)
             {
                 DefaultNode n = new DefaultNode(nodeinfo[0], nodeinfo[1], Convert.ToInt32(nodeinfo[2]));
-                Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.NodeList.Add(n)));      
+                Application.Current.Dispatcher.Invoke(() => ViewModelLocator.VmlMonitorUcStatic.NodeList.Add(n));      
             }
         }
 
-        public Object ProcessIdent(DataInput input)
+        public object ProcessIdent(DataInput input)
         {
-            if (input.MsgType == MessageType.NODE_IDENT)
+            if (input.MsgType == MessageType.NodeIdent)
             {
                 AddNodeToList((List<List<string>>)input.Data);
             }
-            else if(input.MsgType == MessageType.IDENT)
+            else if(input.MsgType == MessageType.Ident)
             {
-                Tuple<String, int> orchIDentifiers = (Tuple < String, int>) input.Data;
+                Tuple<string, int> orchIDentifiers = (Tuple < string, int>) input.Data;
                 Name = Name + orchIDentifiers.Item1;
                 Port = orchIDentifiers.Item2;
-                GenGUID();
-                input.ClientGUID = NodeGUID;
+                GenGuid();
+                input.ClientGuid = NodeGuid;
                 return input;
             }
             return null;
@@ -95,21 +96,21 @@ namespace NodeNet.Network
 
         private object RefreshTaskState(DataInput input)
         {
-           Tuple<NodeState,Object> state = (Tuple<NodeState,Object>)input.Data;
+           Tuple<NodeState,object> state = (Tuple<NodeState,object>)input.Data;
             switch (state.Item1)
             {
-                case NodeState.JOB_START:
-                    ViewModelLocator.VMLMonitorUcStatic.CreateTask((Task)state.Item2);
+                case NodeState.JobStart:
+                    ViewModelLocator.VmlMonitorUcStatic.CreateTask((Task)state.Item2);
                     break;
-                case NodeState.NODE_IS_WORKING:
-                ViewModelLocator.VMLMonitorUcStatic.NodeISWorkingOnTask((String)state.Item2,input.TaskId);
+                case NodeState.NodeIsWorking:
+                ViewModelLocator.VmlMonitorUcStatic.NodeIsWorkingOnTask((string)state.Item2,input.TaskId);
                 break;
-                case NodeState.WORK:
+                case NodeState.Work:
                     //ViewModelLocator.VMLMonitorUcStatic.RefreshTaskState(input.TaskId,(double)input.Data);
                     break;
-                case NodeState.ERROR:
-                    ViewModelLocator.VMLMonitorUcStatic.NodeIsFailed(input.NodeGUID);
-                    ViewModelLocator.VMLMonitorUcStatic.CancelTask((List<Task>)input.Data);
+                case NodeState.Error:
+                    ViewModelLocator.VmlMonitorUcStatic.NodeIsFailed(input.NodeGuid);
+                    ViewModelLocator.VmlMonitorUcStatic.CancelTask(input.Data as List<Task>);
                     break;
             }
             return null;

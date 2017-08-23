@@ -1,97 +1,82 @@
-﻿using c_projet_adn.Network.Impl;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using NodeNet.GUI.ViewModel;
 using System;
 using System.Windows.Forms;
 using System.Windows.Input;
+using ADNet.Network.Impl;
 
 namespace ADNet.GUI.ViewModel
 {
-    public class VMClientView : ViewModelBase
+    public class VmClientView : ViewModelBase
     {
         #region Properties
         public ICommand WindowLoaded { get; set; }
-        public ICommand ICommandBtnClose { get; set; }
+        public ICommand CommandBtnClose { get; set; }
         public ICommand QuantSelectFile { get; set; }
         public ICommand ProbSelectFile { get; set; }
         public ICommand QuantSendData { get; set; }
         public ICommand ProbSendData { get; set; }
-        public ICommand ProbCleanResultBox { get; private set; }
-        public ICommand QuantCleanResultBox { get; private set; }
+        public ICommand ProbCleanResultBox { get; set; }
+        public ICommand QuantCleanResultBox { get; set; }
 
-        public VMLogBox VmLogBox { get; set; }
+        public VmLogBox VmLogBox { get; set; }
 
-        private DNAClient client;
+        private DnaClient client;
 
         private OpenFileDialog loadfile;
 
-        private String probResultBox;
-        public String ProbResultBox
+        private string probResultBox;
+        public string ProbResultBox
         {
-            get
-            {
-                return probResultBox;
-            }
+            get => probResultBox;
             set
             {
                 probResultBox = value;
-                RaisePropertyChanged("ProbResultBox");
+                RaisePropertyChanged();
             }
         }
 
-        private String quantResultBox;
-        public String QuantResultBox
+        private string quantResultBox;
+        public string QuantResultBox
         {
-            get
-            {
-                return quantResultBox;
-            }
+            get => quantResultBox;
             set
             {
                 quantResultBox = value;
-                RaisePropertyChanged("QuantResultBox");
+                RaisePropertyChanged();
             }
         }
 
-        private String probSelectedFile;
-        public String ProbSelectedFile
+        private string probSelectedFile;
+        public string ProbSelectedFile
         {
-            get
-            {
-                return probSelectedFile;
-            }
+            get => probSelectedFile;
             set
             {
                 probSelectedFile = value;
-                RaisePropertyChanged("ProbSelectedFile");
+                RaisePropertyChanged();
             }
         }
 
-        private String connectIp;
-        public String Connectip
+        private string connectIp;
+        public string Connectip
         {
-            get
-            {
-                return connectIp;
-            }
+            get => connectIp;
             set
             {
                 connectIp = value;
-                RaisePropertyChanged("Connectip");
+                RaisePropertyChanged();
             }
         }
-        private String quantSelectedFile;
-        public String QuantSelectedFile
+        private string quantSelectedFile;
+        public string QuantSelectedFile
         {
-            get
-            {
-                return quantSelectedFile;
-            }
+            get => quantSelectedFile;
             set
             {
                 quantSelectedFile = value;
-                RaisePropertyChanged("QuantSelectedFile");
+                RaisePropertyChanged();
             }
         }
         
@@ -99,38 +84,32 @@ namespace ADNet.GUI.ViewModel
         private bool quantBtSendDataEnabled;
         public bool QuantBtSendDataEnabled
         {
-            get
-            {
-                return quantBtSendDataEnabled;
-            }
+            get => quantBtSendDataEnabled;
             set
             {
                 quantBtSendDataEnabled = value;
-                RaisePropertyChanged("QuantBtSendDataEnabled");
+                RaisePropertyChanged();
             }
         }
 
         private bool probBtSendDataEnabled;
         public bool ProbBtSendDataEnabled
         {
-            get
-            {
-                return probBtSendDataEnabled;
-            }
+            get => probBtSendDataEnabled;
             set
             {
                 probBtSendDataEnabled = value;
-                RaisePropertyChanged("ProbBtSendDataEnabled");
+                RaisePropertyChanged();
             }
         }
 
-        public VMMonitoringUC UcVmMonitoring { get; set; }
+        public VmMonitoringUc UcVmMonitoring { get; set; }
         public Action CloseAction { get; set; }
 
 
         #endregion
 
-        public VMClientView()
+        public VmClientView()
         {
             QuantSelectFile = new RelayCommand(QuantLoadFile);
             ProbSelectFile = new RelayCommand(ProbLoadFile);
@@ -140,9 +119,9 @@ namespace ADNet.GUI.ViewModel
             QuantCleanResultBox = new RelayCommand(CleanQuantBox);
 
             WindowLoaded = new RelayCommand(OnLoad);
-            ICommandBtnClose = new RelayCommand(CloseWindow);
-            VmLogBox = NodeNet.GUI.ViewModel.ViewModelLocator.VMLLogBoxUcStatic;
-            UcVmMonitoring = NodeNet.GUI.ViewModel.ViewModelLocator.VMLMonitorUcStatic;
+            CommandBtnClose = new RelayCommand(CloseWindow);
+            VmLogBox = NodeNet.GUI.ViewModel.ViewModelLocator.VmlLogBoxUcStatic;
+            UcVmMonitoring = NodeNet.GUI.ViewModel.ViewModelLocator.VmlMonitorUcStatic;
         }
 
         private void OnLoad()
@@ -150,7 +129,7 @@ namespace ADNet.GUI.ViewModel
             ProbBtSendDataEnabled = false;
             QuantBtSendDataEnabled = false;
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Client démarré, en attente..." + Environment.NewLine;
-            client = new DNAClient("Client", Connectip, 3001);
+            client = new DnaClient("Client", Connectip, 3001);
             client.Connect(Connectip, 3000);
         }
 
@@ -167,17 +146,15 @@ namespace ADNet.GUI.ViewModel
         private void QuantSendFile()
         {
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Lancement du traitement DNA_QUANT " + Environment.NewLine;
-            client.DNAQuantStat(client.DnaParseData(loadfile.FileName));
+            client.DnaQuantStat(client.DnaParseData(loadfile.FileName));
         }
         private void ProbLoadFile()
         {
-            OpenFileDialog loadfile = new OpenFileDialog();
-            if (loadfile.ShowDialog() == DialogResult.OK)
-            {
-                ProbBtSendDataEnabled = true;
-                ProbSelectedFile = "Fichier sélectionné : " + loadfile.FileName;
-                VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Fichier sélectionné : " + loadfile.FileName + Environment.NewLine;
-            }
+            OpenFileDialog openFile = new OpenFileDialog();
+            if (openFile.ShowDialog() != DialogResult.OK) return;
+            ProbBtSendDataEnabled = true;
+            ProbSelectedFile = "Fichier sélectionné : " + openFile.FileName;
+            VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Fichier sélectionné : " + openFile.FileName + Environment.NewLine;
         }
         private void ProbSendFile()
         {

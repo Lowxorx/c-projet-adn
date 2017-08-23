@@ -1,6 +1,4 @@
 ﻿using ADNet.GUI.ViewModel;
-using System;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ADNet.GUI.View
@@ -8,15 +6,15 @@ namespace ADNet.GUI.View
     /// <summary>
     /// Logique d'interaction pour ADNetLauncher.xaml
     /// </summary>
-    public partial class ADNetLauncher : Window
+    public partial class AdNetLauncher
     {
-        public ADNetLauncher()
+        public AdNetLauncher()
         {
             InitializeComponent();
-            VMADNetLauncher vm = (VMADNetLauncher)DataContext;
+            VmadNetLauncher vm = (VmadNetLauncher)DataContext;
             if ( vm.CloseAction == null)
             {
-                vm.CloseAction = new Action(() => Close());
+                vm.CloseAction = Close;
             }
             MouseDown += Window_MouseDown;
         }

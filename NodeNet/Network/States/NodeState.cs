@@ -2,13 +2,13 @@
 {
     public enum NodeState
     {
-        JOB_START,
-        WORK,
-        WAIT,
-        FINISH,
-        ERROR,
-        NODE_IS_WORKING,
-        IN_PROGRESS,
-        DEAD
+        JobStart,
+        Work,
+        Wait,
+        Finish,
+        Error,
+        NodeIsWorking,
+        InProgress,
+        Dead
     }
 }

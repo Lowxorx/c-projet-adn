@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NodeNet.Map_Reduce
 {
     public interface IMapper : ICloneable
     {
-        Object Map(Object input,int nbMap);
+        object Map(object input,int nbMap);
 
-        bool mapIsEnd();
+        bool MapIsEnd();
 
-        IMapper reset();
+        IMapper Reset();
 
         new object Clone();
     }

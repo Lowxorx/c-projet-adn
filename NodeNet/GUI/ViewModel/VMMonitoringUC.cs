@@ -9,38 +9,37 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NodeNet.GUI.ViewModel
 {
-   public class VMMonitoringUC : ViewModelBase
+   public class VmMonitoringUc : ViewModelBase
     {
         public ICommand MonitoringUcLoaded { get; set; }
 
         private ObservableCollection<DefaultNode> nodeList;
         public ObservableCollection<DefaultNode> NodeList
         {
-            get { return nodeList; }
+            get => nodeList;
             set
             {
                 nodeList = value;
-                RaisePropertyChanged("NodeList");
+                RaisePropertyChanged();
             }
         }
 
         private ObservableCollection<Task> taskList;
         public ObservableCollection<Task> TaskList
         {
-            get { return taskList; }
+            get => taskList;
             set
             {
                 taskList = value;
-                RaisePropertyChanged("TaskList");
+                RaisePropertyChanged();
             }
         }
 
         [PreferredConstructor]
-        public VMMonitoringUC()
+        public VmMonitoringUc()
         {
             MonitoringUcLoaded = new RelayCommand(OnLoad);
             NodeList = new ObservableCollection<DefaultNode>();
@@ -53,7 +52,7 @@ namespace NodeNet.GUI.ViewModel
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
             foreach (DefaultNode n in NodeList)
             {
-                if (n.NodeGUID != d.NodeGUID)
+                if (n.NodeGuid != d.NodeGuid)
                 {
                     list.Add(n);
                 }
@@ -71,14 +70,14 @@ namespace NodeNet.GUI.ViewModel
         public void RefreshStateFromTaskResult(DataInput input)
         {
             int taskId = input.TaskId;
-            Console.WriteLine("Refresh Task state");
+            Console.WriteLine(@"Launch Cli");
             ObservableCollection<Task> newTaskList = new ObservableCollection<Task>();
             foreach (Task t in TaskList)
             {
                 if (t.Id == taskId)
                 {
                     t.Progression = 100;
-                    t.State = NodeState.FINISH;
+                    t.State = NodeState.Finish;
                 }
                 newTaskList.Add(t);
             }
@@ -91,7 +90,7 @@ namespace NodeNet.GUI.ViewModel
             {
                 if(n.WorkingTask == input.TaskId)
                 {
-                    n.State = NodeState.FINISH;
+                    n.State = NodeState.Finish;
                 }
                 newNodeList.Add(n);
             }
@@ -101,7 +100,7 @@ namespace NodeNet.GUI.ViewModel
 
         public void OnLoad()
         {
-            Console.WriteLine("monitor loaded");
+            Console.WriteLine(@"Launch Cli");
         }
 
         public void RefreshNodesState(DataInput input)
@@ -109,13 +108,13 @@ namespace NodeNet.GUI.ViewModel
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
             foreach (DefaultNode node in NodeList)
             {
-                if (node.NodeGUID != input.NodeGUID)
+                if (node.NodeGuid != input.NodeGuid)
                 {
                     list.Add(node);
                 }
                 else
                 {
-                    node.State = ((Tuple<NodeState, Double>)input.Data).Item1;
+                    node.State = ((Tuple<NodeState, double>)input.Data).Item1;
                     list.Add(node);
                 }
             }
@@ -123,12 +122,12 @@ namespace NodeNet.GUI.ViewModel
             NodeList = list;
         }
 
-        public void RefreshTaskState(int taskID,double progression)
+        public void RefreshTaskState(int taskId,double progression)
         {
             ObservableCollection<Task> newList = new ObservableCollection<Task>();
             foreach (Task t in TaskList)
             {
-                if(t.Id == taskID)
+                if(t.Id == taskId)
                 {
                     t.Progression = progression;
                 }
@@ -138,37 +137,37 @@ namespace NodeNet.GUI.ViewModel
             TaskList = newList;
         }
 
-        public void NodeISWorkingOnTask(string nodeGuid, int taskId)
+        public void NodeIsWorkingOnTask(string nodeGuid, int taskId)
         {
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
             foreach (DefaultNode node in NodeList)
             {
-                if (node.NodeGUID == nodeGuid)
+                if (node.NodeGuid == nodeGuid)
                 {
                     node.WorkingTask = taskId;
-                    node.State = NodeState.WORK;
+                    node.State = NodeState.Work;
                 }
                 list.Add(node);
             }
             NodeList = null;
             NodeList = list;
 
-            ObservableCollection<Task> taskList = new ObservableCollection<Task>();
+            ObservableCollection<Task> tList = new ObservableCollection<Task>();
             foreach (Task task in TaskList)
             {
                 if (task.Id == taskId)
                 {
-                    task.State = NodeState.IN_PROGRESS;
+                    task.State = NodeState.InProgress;
                 }
-                taskList.Add(task);
+                tList.Add(task);
             }
             TaskList = null;
-            TaskList = taskList;
+            TaskList = tList;
         }
 
         public void CreateTask(Task task)
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => ViewModelLocator.VMLMonitorUcStatic.TaskList.Add(task)));
+            System.Windows.Application.Current.Dispatcher.Invoke(() => ViewModelLocator.VmlMonitorUcStatic.TaskList.Add(task));
         }
 
         public void CancelTask(List<Task> tasks)
@@ -181,7 +180,7 @@ namespace NodeNet.GUI.ViewModel
                     if (t.Id == task.Id)
                     {
                         t.Progression = 0;
-                        t.State = NodeState.ERROR;
+                        t.State = NodeState.Error;
                     }   
                 }
                 newTaskList.Add(t);
@@ -190,14 +189,14 @@ namespace NodeNet.GUI.ViewModel
             TaskList = newTaskList;
         }
 
-        public void RefreshNodeState(List<String> nodeGuid, NodeState state,int taskId)
+        public void RefreshNodeState(List<string> nodeGuid, NodeState state,int taskId)
         {
             ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
-            foreach(String guid in nodeGuid)
+            foreach(string guid in nodeGuid)
             {
                 foreach (DefaultNode n in NodeList)
                 {
-                    if (n.NodeGUID == guid)
+                    if (n.NodeGuid == guid)
                     {
                         n.State = state;
                         n.WorkingTask = taskId;
@@ -210,14 +209,14 @@ namespace NodeNet.GUI.ViewModel
             
         }
 
-        public void NodeIsFailed(string nodeGUID)
+        public void NodeIsFailed(string nodeGuid)
         {
             ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
                 foreach (DefaultNode n in NodeList)
                 {
-                    if (n.NodeGUID == nodeGUID)
+                    if (n.NodeGuid == nodeGuid)
                     {
-                        n.State = NodeState.ERROR;
+                        n.State = NodeState.Error;
                         n.WorkingTask = -1;
                     }
                     newNodeList.Add(n);

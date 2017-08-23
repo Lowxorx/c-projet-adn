@@ -9,41 +9,40 @@ using System.Linq;
 
 namespace ADNet.Network.Impl
 {
-    public class DNANode : DefaultNode
+    public class DnaNode : DefaultNode
     {
-        private const String DNA_QUANT_METHOD = "DNA_QUANT";
-        public DNANode(String name, String address, int port) : base(name, address, port)
+        private const string DnaQuantMethod = "DNA_QUANT";
+        public DnaNode(string name, string address, int port) : base(name, address, port)
         {
-            WorkerFactory.AddWorker(DNA_QUANT_METHOD, new TaskExecutor(this, DnaQuantStarter, new QuantStatsMapper(), new QuantStatsReducer()));
+            WorkerFactory.AddWorker(DnaQuantMethod, new TaskExecutor(this, DnaQuantStarter, new QuantStatsMapper(), new QuantStatsReducer()));
             Name = name;
             Address = address;
             Port = port;
         }
-        private Object DnaQuantStarter(DataInput input)
+        private object DnaQuantStarter(DataInput input)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             
             List<Tuple<int,char[]>> list = (List<Tuple<int, char[]>>)executor.Mapper.Map(input.Data, Environment.ProcessorCount);
-            Console.WriteLine("In DnaQuantStater list size after mapping : " + list.Count);
-            logger.Write("DnaQuantStater list size after mapping : " + list.Count, false);
+            Console.WriteLine(@"In DnaQuantStater list size after mapping : " + list.Count);
+            Logger.Write("DnaQuantStater list size after mapping : " + list.Count, false);
 
             foreach (Tuple<int,char[]> t in list)
             {
-                Console.WriteLine("Launch Background Worker ");
-                logger.Write("Backgroundworker for DNAQuantProcess started", false);
-                LaunchBGForWork(DnaQuantProcess, PrepareData(input, t), list.Count);
+                Console.WriteLine(@"Launch Cli");
+                Logger.Write("Backgroundworker for DNAQuantProcess started", false);
+                LaunchBgForWork(DnaQuantProcess, PrepareData(input, t), list.Count);
             }
             return null;
         }
 
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
-            Console.WriteLine("In DNAQuantPRocess");
-            logger.Write("DNAQuantProcess started", false);
+            Console.WriteLine(@"Launch Cli");
+            Logger.Write("DNAQuantProcess started", false);
             Tuple<int, DataInput, int> dataAndMeta = (Tuple<int, DataInput, int>)e.Argument;
             // On averti l'orchestrateur que l'on commence a process
             Tuple<int, char[]> data = (Tuple<int, char[]>)dataAndMeta.Item2.Data;
-            int a = data.Item2.Count();
             char[] bases = { 'A', 'T', 'G', 'C', '-' };
             List<char> bufferpaires = new List<char>();
             List<char> buffersequences = new List<char>();
@@ -57,8 +56,8 @@ namespace ADNet.Network.Impl
 
             for (int i = 0; i < data.Item2.Length; i++)
             {
-                Console.WriteLine("bufferpaires : " + bufferpaires.Count);
-                Console.WriteLine("bufferseq : " + buffersequences.Count);
+                Console.WriteLine(@"bufferpaires : " + bufferpaires.Count);
+                Console.WriteLine(@"bufferseq : " + buffersequences.Count);
                 if (bases.Contains(data.Item2[i]))
                 {
                     // Ajout ou Mise à Jour base simple
@@ -108,12 +107,12 @@ namespace ADNet.Network.Impl
             e.Result = dataAndMeta;
         }
 
-        private void Updateres(Dictionary<String, int> results, char a, List<char> buffer, List<string> listpairesbases)
+        private void Updateres(Dictionary<string, int> results, char a, List<char> buffer, List<string> listpairesbases)
         {
-            string seq = String.Concat(buffer);
+            string seq = string.Concat(buffer);
             if (seq == "AT")
             {
-                Console.WriteLine("at");
+                Console.WriteLine(@"Launch Cli");
             }
             if (results.TryGetValue(seq, out int occur))
             {

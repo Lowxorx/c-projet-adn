@@ -17,35 +17,13 @@ namespace NodeNet.GUI.ViewModel
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
         }
 
-        private static VMMonitoringUC vMLMonitorUc;
-        public static VMMonitoringUC VMLMonitorUcStatic
-        {
-            get
-            {
-                if (vMLMonitorUc == null)
-                    vMLMonitorUc = new VMMonitoringUC();
-                return vMLMonitorUc;
-            }
-        }
-        public VMMonitoringUC VMLMonitorUc
-        {
-            get { return VMLMonitorUcStatic; }
-        }
+        private static VmMonitoringUc vMlMonitorUc;
+        public static VmMonitoringUc VmlMonitorUcStatic => vMlMonitorUc ?? (vMlMonitorUc = new VmMonitoringUc());
+        public VmMonitoringUc VmlMonitorUc => VmlMonitorUcStatic;
 
-        private static VMLogBox vMLLogBoxUc;
-        public static VMLogBox VMLLogBoxUcStatic
-        {
-            get
-            {
-                if (vMLLogBoxUc == null)
-                    vMLLogBoxUc = new VMLogBox();
-                return vMLLogBoxUc;
-            }
-        }
-        public VMLogBox VMLLogBoxUc
-        {
-            get { return VMLLogBoxUcStatic; }
-        }
+        private static VmLogBox vMlLogBoxUc;
+        public static VmLogBox VmlLogBoxUcStatic => vMlLogBoxUc ?? (vMlLogBoxUc = new VmLogBox());
+        public VmLogBox VmlLogBoxUc => VmlLogBoxUcStatic;
 
         public static void Cleanup()
         {

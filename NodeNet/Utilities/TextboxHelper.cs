@@ -7,15 +7,15 @@ namespace NodeNet.Utilities
 
     public class TextboxHelper : Behavior<ScrollViewer>
     {
-        private double height = 0.0d;
-        private ScrollViewer scrollViewer = null;
+        private double height;
+        private ScrollViewer scrollViewer;
 
         protected override void OnAttached()
         {
             base.OnAttached();
 
             scrollViewer = AssociatedObject;
-            scrollViewer.LayoutUpdated += new EventHandler(ScrollViewer_LayoutUpdated);
+            scrollViewer.LayoutUpdated += ScrollViewer_LayoutUpdated;
         }
 
         private void ScrollViewer_LayoutUpdated(object sender, EventArgs e)
@@ -33,7 +33,7 @@ namespace NodeNet.Utilities
 
             if (scrollViewer != null)
             {
-                scrollViewer.LayoutUpdated -= new EventHandler(ScrollViewer_LayoutUpdated);
+                scrollViewer.LayoutUpdated -= ScrollViewer_LayoutUpdated;
             }
         }
     }

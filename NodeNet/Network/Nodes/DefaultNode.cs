@@ -18,34 +18,27 @@ namespace NodeNet.Network.Nodes
     public class DefaultNode : Node
     {
         #region Properties
-        private List<Tuple<int, int, NodeState>> processingTask;
-        public List<Tuple<int, int, NodeState>> ProcessingTask
-        {
-            get { return processingTask; }
-            set { processingTask = value; }
-        }
+
+        public List<Tuple<int, int, NodeState>> ProcessingTask { get; set; }
+
         // int -> id de la worker task, int -> id de la task, NodeStatus -> Status de la WorkerTask
-        private ConcurrentDictionary<int, Tuple<int, NodeState>> workerTaskStatus;
-        public ConcurrentDictionary<int, Tuple<int, NodeState>> WorkerTaskStatus
-        {
-            get { return workerTaskStatus; }
-            set { workerTaskStatus = value; }
-        }
+        public ConcurrentDictionary<int, Tuple<int, NodeState>> WorkerTaskStatus { get; set; }
+
         bool monitoringEnable = true;
         #endregion
 
-        public DefaultNode(String name, String adress, int port) : base(name, adress, port)
+        public DefaultNode(string name, string adress, int port) : base(name, adress, port)
         {
             WorkerTaskStatus = new ConcurrentDictionary<int, Tuple<int, NodeState>>();
             WorkerFactory = TaskExecFactory.GetInstance();
             try
             {
-                WorkerFactory.AddWorker(IDENT_METHOD, new TaskExecutor(this, ProcessIndent, null, null));
-                WorkerFactory.AddWorker(GET_CPU_METHOD, new TaskExecutor(this, StartMonitoring, null, null));
+                WorkerFactory.AddWorker(IdentMethod, new TaskExecutor(this, ProcessIndent, null, null));
+                WorkerFactory.AddWorker(GetCpuMethod, new TaskExecutor(this, StartMonitoring, null, null));
             }
             catch (Exception e)
             {
-                logger.Write(e, true);
+                Logger.Write(e, true);
                 Console.WriteLine(e.Message);
             }
         }
@@ -54,27 +47,27 @@ namespace NodeNet.Network.Nodes
 
         public override void ProcessInput(DataInput input, Node node)
         {
-            logger.Write(string.Format("Process input for {0}", input.Method), true);
-            Console.WriteLine("ProcessInput for " + input.Method);
+            Logger.Write($"Process input for {input.Method}", true);
+            Console.WriteLine(@"ProcessInput for " + input.Method);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            if (!input.Method.Equals(IDENT_METHOD) && !input.Method.Equals(GET_CPU_METHOD))
+            if (!input.Method.Equals(IdentMethod) && !input.Method.Equals(GetCpuMethod))
             {
                 // Creation d'une nouvelle task
-                Tasks.TryAdd(input.NodeTaskId, new Task(input.NodeTaskId, NodeState.WAIT));
+                Tasks.TryAdd(input.NodeTaskId, new Task(input.NodeTaskId, NodeState.Wait));
                 Results.TryAdd(input.NodeTaskId, new ConcurrentBag<object>());
             }
-            Object res = executor.DoWork(input);
+            object res = executor.DoWork(input);
             if (res != null)
             {
                 DataInput resp = new DataInput()
                 {
-                    ClientGUID = input.ClientGUID,
-                    NodeGUID = NodeGUID,
+                    ClientGuid = input.ClientGuid,
+                    NodeGuid = NodeGuid,
                     TaskId = input.TaskId,
                     NodeTaskId = input.NodeTaskId,
                     Method = input.Method,
                     Data = res,
-                    MsgType = MessageType.RESPONSE
+                    MsgType = MessageType.Response
                 };
                 SendData(node, resp);
             }
@@ -84,22 +77,22 @@ namespace NodeNet.Network.Nodes
 
         private DataInput ProcessIndent(DataInput d)
         {
-            Tuple<String, int> orchIDentifiers = (Tuple<String, int>)d.Data;
+            Tuple<string, int> orchIDentifiers = (Tuple<string, int>)d.Data;
             Name = Name + orchIDentifiers.Item1;
             Port = orchIDentifiers.Item2;
-            GenGUID();
+            GenGuid();
             DataInput resp = new DataInput()
             {
-                ClientGUID = null,
+                ClientGuid = null,
                 TaskId = d.TaskId,
-                NodeGUID = NodeGUID,
-                MsgType = MessageType.RESPONSE,
+                NodeGuid = NodeGuid,
+                MsgType = MessageType.Response,
                 Method = d.Method
             };
             return resp;
         }
 
-        private Object StartMonitoring(DataInput input)
+        private object StartMonitoring(DataInput input)
         {
 
             ManagementObjectSearcher wmiObject = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
@@ -118,8 +111,8 @@ namespace NodeNet.Network.Nodes
                     float cpuCount = PerfCpu.NextValue();
                     var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
                     {
-                        FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
-                        TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+                        FreePhysicalMemory = double.Parse(mo["FreePhysicalMemory"].ToString()),
+                        TotalVisibleMemorySize = double.Parse(mo["TotalVisibleMemorySize"].ToString())
                     }).FirstOrDefault();
                     double ramCount = 0;
                     if (memoryValues != null)
@@ -128,10 +121,10 @@ namespace NodeNet.Network.Nodes
                     }
                     DataInput perfInfo = new DataInput()
                     {
-                        ClientGUID = input.ClientGUID,
-                        NodeGUID = NodeGUID,
-                        MsgType = MessageType.RESPONSE,
-                        Method = GET_CPU_METHOD,
+                        ClientGuid = input.ClientGuid,
+                        NodeGuid = NodeGuid,
+                        MsgType = MessageType.Response,
+                        Method = GetCpuMethod,
                         TaskId = input.TaskId,
                         Data = new Tuple<float, double>(cpuCount, ramCount)
                     };
@@ -143,28 +136,21 @@ namespace NodeNet.Network.Nodes
             return null;
         }
 
-        protected void LaunchBGForWork(Action<object, DoWorkEventArgs> ProcessFunction, DataInput taskData, int totalNbWorker)
+        protected void LaunchBgForWork(Action<object, DoWorkEventArgs> processFunction, DataInput taskData, int totalNbWorker)
         {
             BackgroundWorker bw = new BackgroundWorker();
 
             //// Abonnement ////
-            bw.DoWork += new DoWorkEventHandler(ProcessFunction);
-            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerEndProcess);
-            int workerTaskID = CreateWorkerTask(taskData.NodeTaskId);
-            Tuple<int, DataInput, int> dataAndMeta = new Tuple<int, DataInput, int>(workerTaskID, taskData, totalNbWorker);
+            bw.DoWork += new DoWorkEventHandler(processFunction);
+            bw.RunWorkerCompleted += WorkerEndProcess;
+            int workerTaskId = CreateWorkerTask(taskData.NodeTaskId);
+            Tuple<int, DataInput, int> dataAndMeta = new Tuple<int, DataInput, int>(workerTaskId, taskData, totalNbWorker);
             bw.RunWorkerAsync(dataAndMeta);
         }
 
-        private double getWorkersProgression(int nodeTaskID, int totalNbWorker)
+        private double GetWorkersProgression(int nodeTaskId, int totalNbWorker)
         {
-            int nbWorkerEnd = 0;
-            foreach (var item in WorkerTaskStatus)
-            {
-                if (item.Value.Item1 == nodeTaskID && item.Value.Item2 == NodeState.FINISH)
-                {
-                    nbWorkerEnd++;
-                }
-            }
+            int nbWorkerEnd = WorkerTaskStatus.Count(item => item.Value.Item1 == nodeTaskId && item.Value.Item2 == NodeState.Finish);
             return nbWorkerEnd * 100 / totalNbWorker;
         }
 
@@ -173,14 +159,14 @@ namespace NodeNet.Network.Nodes
             // Manage if e.Error != null
             Tuple<int, DataInput, int> data = (Tuple<int, DataInput, int>)e.Result;
             DataInput resp = data.Item2;
-            updateWorkerTaskStatus(data.Item1, data.Item2.NodeTaskId, NodeState.FINISH);
+            UpdateWorkerTaskStatus(data.Item1, data.Item2.NodeTaskId, NodeState.Finish);
             UpdateResult(resp.Data, data.Item2.NodeTaskId, data.Item1);
             if (TaskIsCompleted(resp.NodeTaskId))
             {
-                Console.WriteLine("Task is completed");
-                logger.Write("Task is completed", false);
+                Console.WriteLine(@"Launch Cli");
+                Logger.Write("Task is completed", false);
                 IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
-                Object result = reducer.Reduce(GetResultFromTaskId(resp.NodeTaskId));
+                object result = reducer.Reduce(GetResultFromTaskId(resp.NodeTaskId));
                 resp.Data = result;
                 SendData(Orch, resp);
             }
@@ -211,30 +197,30 @@ namespace NodeNet.Network.Nodes
        * si elle existe ou création d'une nouvelle.
        * @return retourne l'id de la workerTask crée
        */
-        private int CreateWorkerTask(int taskID)
+        private int CreateWorkerTask(int taskId)
         {
-            int lastWorkerTaskID = LastSubTaskID;
-            if (Tasks.TryGetValue(taskID, out Task task))
+            int lastWorkerTaskId = LastSubTaskId;
+            if (Tasks.TryGetValue(taskId, out Task _))
             {
-                WorkerTaskStatus.TryAdd(lastWorkerTaskID, new Tuple<int, NodeState>(taskID, NodeState.WORK));
-                return lastWorkerTaskID;
+                WorkerTaskStatus.TryAdd(lastWorkerTaskId, new Tuple<int, NodeState>(taskId, NodeState.Work));
+                return lastWorkerTaskId;
             }
             else
             {
-                throw new Exception("Aucune Task trouvé dans la liste Tasks du Node pour cet ID : " + taskID);
+                throw new Exception("Aucune Task trouvé dans la liste Tasks du Node pour cet ID : " + taskId);
             }
 
         }
 
-        private void updateWorkerTaskStatus(int workerTaskID, int nodeTaskId, NodeState status)
+        private void UpdateWorkerTaskStatus(int workerTaskId, int nodeTaskId, NodeState status)
         {
-            Console.WriteLine("Update Worker status : " + status);
-            logger.Write(string.Format("Update worker status {0}", status), true);
+            Console.WriteLine(@"Update Worker status : " + status);
+            Logger.Write($"Update worker status {status}", true);
             Tuple<int, NodeState> workerTask;
             Tuple<int, NodeState> updatedWorkerTask = new Tuple<int, NodeState>(nodeTaskId, status);
-            if (WorkerTaskStatus.TryGetValue(workerTaskID, out workerTask))
+            if (WorkerTaskStatus.TryGetValue(workerTaskId, out workerTask))
             {
-                WorkerTaskStatus.TryUpdate(workerTaskID, updatedWorkerTask, workerTask);
+                WorkerTaskStatus.TryUpdate(workerTaskId, updatedWorkerTask, workerTask);
             }
         }
 
@@ -242,26 +228,26 @@ namespace NodeNet.Network.Nodes
         {
             DataInput duplicate = new DataInput()
             {
-                ClientGUID = input.ClientGUID,
-                NodeGUID = NodeGUID,
+                ClientGuid = input.ClientGuid,
+                NodeGuid = NodeGuid,
                 TaskId = input.TaskId,
                 NodeTaskId = input.NodeTaskId,
                 Method = input.Method,
-                MsgType = MessageType.RESPONSE,
+                MsgType = MessageType.Response,
                 Data = data
             };
             return duplicate;
         }
 
-        private bool isFirstToStart(int taskID)
+        private bool IsFirstToStart(int taskId)
         {
             int nbWorking = 0;
 
             foreach (var item in WorkerTaskStatus)
             {
-                if (item.Value.Item1 == taskID)
+                if (item.Value.Item1 == taskId)
                 {
-                    nbWorking = item.Value.Item2 == NodeState.WORK ? nbWorking + 1 : nbWorking;
+                    nbWorking = item.Value.Item2 == NodeState.Work ? nbWorking + 1 : nbWorking;
                 }
             }
 
@@ -273,7 +259,7 @@ namespace NodeNet.Network.Nodes
             bool completed = true;
             foreach (var item in WorkerTaskStatus)
             {
-                if (item.Value.Item1 == taskId && item.Value.Item2 != NodeState.FINISH)
+                if (item.Value.Item1 == taskId && item.Value.Item2 != NodeState.Finish)
                 {
                     completed = false;
                 }
@@ -283,7 +269,7 @@ namespace NodeNet.Network.Nodes
 
         public override void RemoveDeadNode(Node node)
         {
-            MessageBox.Show("Erreur sur l'orchestrateur. Fermeture de l'application...");
+            MessageBox.Show(@"Erreur sur l'orchestrateur. Fermeture de l'application...");
             Process.GetCurrentProcess().CloseMainWindow();
         }
 

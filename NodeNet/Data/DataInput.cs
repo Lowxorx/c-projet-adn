@@ -5,17 +5,17 @@ namespace NodeNet.Data
     [Serializable]
     public class DataInput
     {
-        public String ClientGUID;
-        public String NodeGUID;
+        public string ClientGuid;
+        public string NodeGuid;
         public int TaskId;
         public int NodeTaskId;
         public MessageType MsgType;
-        public String Method { get; set; }
-        public Object Data { get; set; }
+        public string Method { get; set; }
+        public object Data { get; set; }
 
         public override string ToString()
         {
-            return "Data -> Method : " + Method + " ClientGuid : " + ClientGUID + " NodeGuid : " + NodeGUID + " TaskId  : " + TaskId + " Data : " + Data ; 
+            return "Data -> Method : " + Method + " ClientGuid : " + ClientGuid + " NodeGuid : " + NodeGuid + " TaskId  : " + TaskId + " Data : " + Data ; 
         }
     }
 }

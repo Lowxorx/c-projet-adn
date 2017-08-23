@@ -163,6 +163,7 @@
                         <ScrollBar
                             Name="PART_HorizontalScrollBar"
                             Grid.Row="1"
+                            Grid.Column="0"
                             Maximum="{TemplateBinding ScrollableWidth}"
                             Orientation="Horizontal"
                             ViewportSize="{TemplateBinding ViewportWidth}"
@@ -171,6 +172,7 @@
 
                         <ScrollBar
                             Name="PART_VerticalScrollBar"
+                            Grid.Row="0"
                             Grid.Column="1"
                             Maximum="{TemplateBinding ScrollableHeight}"
                             Template="{DynamicResource VerticalScrollBar}"
@@ -347,6 +349,7 @@
         <Grid Height="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.00001*" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Border
                 Background="#DBEBF8"
@@ -378,6 +381,7 @@
         <Grid Width="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.01*" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Border
                 Background="#14619d"
@@ -422,7 +426,7 @@
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <Style x:Key="styleScrollBar" TargetType="{x:Type ScrollBar}">
+    <Style x:Key="StyleScrollBar" TargetType="{x:Type ScrollBar}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Style.Triggers>

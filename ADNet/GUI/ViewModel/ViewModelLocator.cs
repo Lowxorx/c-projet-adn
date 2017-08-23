@@ -16,37 +16,12 @@ namespace ADNet.GUI.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
         }
-
-        private static VMADNetLauncher vMADNetLauncher;
-        public static VMADNetLauncher VMADNetLauncherStatic
-        {
-            get
-            {
-                if (vMADNetLauncher == null)
-                    vMADNetLauncher = new VMADNetLauncher();
-                return vMADNetLauncher;
-            }
-        }
-        public VMADNetLauncher VMLlauncher
-        {
-            get { return VMADNetLauncherStatic; }
-        }
-
-        private static VMClientView vMLCli;
-        public static VMClientView VMLCliStatic
-        {
-            get
-            {
-                if (vMLCli == null)
-                    vMLCli = new VMClientView();
-                return vMLCli;
-            }
-        }
-        public VMClientView VMLCli
-        {
-            get { return VMLCliStatic; }
-        }
-
+        private static VmadNetLauncher vMadNetLauncher;
+        public static VmadNetLauncher VmadNetLauncherStatic => vMadNetLauncher ?? (vMadNetLauncher = new VmadNetLauncher());
+        public VmadNetLauncher VmLlauncher => VmadNetLauncherStatic;
+        private static VmClientView vMlCli;
+        public static VmClientView VmlCliStatic => vMlCli ?? (vMlCli = new VmClientView());
+        public VmClientView VmlCli => VmlCliStatic;
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

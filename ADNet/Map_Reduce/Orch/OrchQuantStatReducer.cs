@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
 namespace ADNet.Map_Reduce.Orch
@@ -18,11 +16,11 @@ namespace ADNet.Map_Reduce.Orch
         public object Reduce(ConcurrentBag<object> input)
         {
             int totalbases = 0;
-            Dictionary<String, Tuple<int, double>> concat = new Dictionary<String, Tuple<int, double>>();
+            Dictionary<string, Tuple<int, double>> concat = new Dictionary<string, Tuple<int, double>>();
 
-            foreach (Dictionary<String, Tuple<int, double>> dico in input)
+            foreach (Dictionary<string, Tuple<int, double>> dico in input)
             {
-                foreach (var entry in dico)
+                foreach (KeyValuePair<string, Tuple<int, double>> entry in dico)
                 {
                     if (entry.Key.Length == 1)
                     {
@@ -37,18 +35,18 @@ namespace ADNet.Map_Reduce.Orch
             }
 
             // Sélectionne les clés de 4 caractères qui ne correspondent pas à une entrée du dictionaire dont le nombre d'occurences est maximal
-            List<String> keys = concat.Where(y => y.Key.Length == 4).Where(z => z.Value.Item1 != concat.Max(o => z.Value.Item1)).Select(x => x.Key).ToList();
+            List<string> keys = concat.Where(y => y.Key.Length == 4).Where(z => z.Value.Item1 != concat.Max(o => z.Value.Item1)).Select(x => x.Key).ToList();
 
 
-            double percent = (double)(Decimal.Divide(concat["A"].Item1, totalbases)) * 100;
+            double percent = (double)(decimal.Divide(concat["A"].Item1, totalbases)) * 100;
             concat["A"] = new Tuple<int, double>(concat["A"].Item1, percent);
-            percent = (double)(Decimal.Divide(concat["T"].Item1, totalbases)) * 100;
+            percent = (double)(decimal.Divide(concat["T"].Item1, totalbases)) * 100;
             concat["T"] = new Tuple<int, double>(concat["T"].Item1, percent);
-            percent = (double)(Decimal.Divide(concat["G"].Item1, totalbases)) * 100;
+            percent = (double)(decimal.Divide(concat["G"].Item1, totalbases)) * 100;
             concat["G"] = new Tuple<int, double>(concat["G"].Item1, percent);
-            percent = (double)(Decimal.Divide(concat["C"].Item1, totalbases)) * 100;
+            percent = (double)(decimal.Divide(concat["C"].Item1, totalbases)) * 100;
             concat["C"] = new Tuple<int, double>(concat["C"].Item1, percent);
-            percent = (double)(Decimal.Divide(concat["-"].Item1, totalbases)) * 100;
+            percent = (double)(decimal.Divide(concat["-"].Item1, totalbases)) * 100;
             concat[""] = new Tuple<int, double>(concat["-"].Item1, percent);
 
             foreach (string key in keys)

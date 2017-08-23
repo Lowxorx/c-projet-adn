@@ -6,29 +6,29 @@ using System.Windows.Input;
 
 namespace NodeNet.GUI.ViewModel
 {
-    public class VMLogBox : ViewModelBase
+    public class VmLogBox : ViewModelBase
     {
         public ICommand LogboxLoaded { get; set; }
 
         [PreferredConstructor]
-        public VMLogBox()
+        public VmLogBox()
         {
             LogboxLoaded = new RelayCommand(OnLoad);
         }
 
         public void OnLoad()
         {
-            Console.WriteLine("logbox loaded");
+            Console.WriteLine(@"Launch Cli");
         }
 
         private string logBox;
         public string LogBox
         {
-            get { return logBox; }
+            get => logBox;
             set
             {
                 logBox = value;
-                RaisePropertyChanged("LogBox");
+                RaisePropertyChanged();
             }
         }
 

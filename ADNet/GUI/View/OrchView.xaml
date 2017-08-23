@@ -1,5 +1,5 @@
 ﻿<Window
-    x:Class="c_projet_adn.GUI.View.OrchView"
+    x:Class="ADNet.GUI.View.OrchView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,7 +15,7 @@
     WindowStyle="None"
     mc:Ignorable="d">
     <Window.DataContext>
-        <vm:VMOrchView />
+        <vm:VmOrchView />
     </Window.DataContext>
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
@@ -51,7 +51,7 @@
                 VerticalAlignment="Top"
                 Background="#00DDDDDD"
                 BorderBrush="#00000000"
-                Command="{Binding ICommandBtnClose}"
+                Command="{Binding CommandBtnClose}"
                 Content="X"
                 FontSize="21"
                 FontWeight="Bold"
@@ -88,7 +88,7 @@
             HorizontalAlignment="Left"
             DataContext="{Binding VmLogBox}" />
         <Image
-            x:Name="dna"
+            x:Name="Dna"
             Width="32"
             Height="32"
             Margin="769,79,0,0"
@@ -102,7 +102,7 @@
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation
-                                Storyboard.TargetName="dna"
+                                Storyboard.TargetName="Dna"
                                 Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
                                 From="0"
                                 To="360"

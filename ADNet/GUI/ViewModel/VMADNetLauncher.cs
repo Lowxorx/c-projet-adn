@@ -1,40 +1,30 @@
-﻿using ADNet.GUI.View;
-using ADNet.Network.Impl;
-using c_projet_adn.GUI.View;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Input;
+using ADNet.GUI.View;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using NodeView = ADNet.GUI.View.NodeView;
 
 namespace ADNet.GUI.ViewModel
 {
-    public class VMADNetLauncher : ViewModelBase
+    public class VmadNetLauncher : ViewModelBase
     {
         public ICommand WindowLoaded { get; set; }
         public ICommand IcommandBtnClick { get; set; }
         public ICommand IcommandRdbCliClick { get; set; }
         public ICommand IcommandRdbNodeClick { get; set; }
         public ICommand IcommandRdbServClick { get; set; }
-        public ICommand ICommandBtnClose { get; private set; }
+        public ICommand CommandBtnClose { get; set; }
 
-        private Boolean txtClientEnabled = false;
-        public Boolean TxtClientEnabledProp
-        {
-            get
-            {
-                return txtClientEnabled;
-            }
-        }
+        private bool txtClientEnabled;
+        public bool TxtClientEnabledProp => txtClientEnabled;
 
-        private Boolean nodeChecked = false;
-        public Boolean NodeChecked
+        private bool nodeChecked;
+        public bool NodeChecked
         {
-            get
-            {
-                return nodeChecked;
-            }
+            get => nodeChecked;
             set
             {
                 nodeChecked = value;
@@ -43,17 +33,14 @@ namespace ADNet.GUI.ViewModel
                     BtnEnabled = true;
                     BtnContent = "Lancer le node";
                 }
-                RaisePropertyChanged("NodeChecked");
+                RaisePropertyChanged();
             }
         }
 
-        private Boolean clientChecked = false;
-        public Boolean ClientChecked
+        private bool clientChecked;
+        public bool ClientChecked
         {
-            get
-            {
-                return clientChecked;
-            }
+            get => clientChecked;
             set
             {
                 clientChecked = value;
@@ -62,17 +49,14 @@ namespace ADNet.GUI.ViewModel
                     BtnEnabled = true;
                     BtnContent = "Lancer le client";
                 }
-                RaisePropertyChanged("ClientChecked");
+                RaisePropertyChanged();
             }
         }
 
-        private Boolean serverChecked = false;
-        public Boolean ServerChecked
+        private bool serverChecked;
+        public bool ServerChecked
         {
-            get
-            {
-                return serverChecked;
-            }
+            get => serverChecked;
             set
             {
                 serverChecked = value;
@@ -81,60 +65,51 @@ namespace ADNet.GUI.ViewModel
                     BtnEnabled = true;
                     BtnContent = "Lancer le serveur";
                 }
-                RaisePropertyChanged("ServerChecked");
+                RaisePropertyChanged();
             }
         }
         
-        private Boolean btnEnabled = false;
-        public Boolean BtnEnabled
+        private bool btnEnabled;
+        public bool BtnEnabled
         {
-            get
-            {
-                return btnEnabled;
-            }
+            get => btnEnabled;
             set
             {
                 btnEnabled = value;
-                RaisePropertyChanged("BtnEnabled");
+                RaisePropertyChanged();
             }
         }
-        private String btnContent;
-        public String BtnContent
+        private string btnContent;
+        public string BtnContent
         {
-            get
-            {
-                return btnContent;
-            }
+            get => btnContent;
             set
             {
                 btnContent = value;
-                RaisePropertyChanged("BtnContent");
+                RaisePropertyChanged();
             }
         }
 
-        private String txtIpProp;
-        public String TxtIpProp
+        private string txtIpProp;
+        public string TxtIpProp
         {
-            get
-            {
-                return txtIpProp;
-            }
+            get => txtIpProp;
             set
             {
                 txtIpProp = value;
-                RaisePropertyChanged("TxtIpProp");
+                RaisePropertyChanged();
             }
         }
 
-        public VMADNetLauncher()
+        public VmadNetLauncher()
         {
             WindowLoaded = new RelayCommand(OnLoad);
-            IcommandBtnClick = new RelayCommand(AppuiBTN);
+            IcommandBtnClick = new RelayCommand(AppuiBtn);
             IcommandRdbCliClick = new RelayCommand(ModeCliClick);
             IcommandRdbNodeClick = new RelayCommand(ModeNodeClick);
-            ICommandBtnClose = new RelayCommand(CloseWindow);
+            CommandBtnClose = new RelayCommand(CloseWindow);
             IcommandRdbServClick = new RelayCommand(ModeServClick);
-            TxtIpProp = GetLocalIPAddress();
+            TxtIpProp = GetLocalIpAddress();
             BtnContent = "-----";
             ServerChecked = false;
             ClientChecked = false;
@@ -142,7 +117,7 @@ namespace ADNet.GUI.ViewModel
             BtnEnabled = false;
         }
 
-        public static string GetLocalIPAddress()
+        public static string GetLocalIpAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
@@ -160,38 +135,38 @@ namespace ADNet.GUI.ViewModel
             CloseAction.Invoke();
         }
 
-        private void AppuiBTN()
+        private void AppuiBtn()
         {
             if (ClientChecked)
             {
-                Console.WriteLine("Launch Cli");
+                Console.WriteLine(@"Launch Cli");
                 ClientView clientView = new ClientView();
-                VMClientView vm = (VMClientView)clientView.DataContext;
+                VmClientView vm = (VmClientView)clientView.DataContext;
                 vm.Connectip = TxtIpProp;
                 clientView.Show();
                 CloseAction.Invoke();
             }
             else if (NodeChecked)
             {
-                Console.WriteLine("Launch Node");
+                Console.WriteLine(@"Launch Cli");
                 NodeView nodeView = new NodeView();
-                VMNodeView vm = (VMNodeView)nodeView.DataContext;
+                VmNodeView vm = (VmNodeView)nodeView.DataContext;
                 vm.TxtIp = TxtIpProp;
                 nodeView.Show();
                 CloseAction.Invoke();
             }
             else if (ServerChecked)
             {
-                Console.WriteLine("Launch Orch");
+                Console.WriteLine(@"Launch Cli");
                 OrchView orchView = new OrchView();
-                VMOrchView vm = (VMOrchView)orchView.DataContext;
+                VmOrchView vm = (VmOrchView)orchView.DataContext;
                 vm.TxtIp = TxtIpProp;
                 orchView.Show();
                 CloseAction.Invoke();
             }
             else
             {
-                Console.WriteLine("Aucun mode sélectionné");
+                Console.WriteLine(@"Launch Cli");
             }
 
         }
@@ -201,25 +176,25 @@ namespace ADNet.GUI.ViewModel
         public void OnLoad()
         {
             txtClientEnabled = false;
-            RaisePropertyChanged("TxtClientEnabledProp");
+            RaisePropertyChanged(()=> TxtClientEnabledProp);
         }
 
         public void ModeCliClick()
         {
             txtClientEnabled = true;
-            RaisePropertyChanged("TxtClientEnabledProp");
+            RaisePropertyChanged(() => TxtClientEnabledProp);
         }
 
         public void ModeNodeClick()
         {
             txtClientEnabled = true;
-            RaisePropertyChanged("TxtClientEnabledProp");
+            RaisePropertyChanged(() => TxtClientEnabledProp);
         }
 
         public void ModeServClick()
         {
             txtClientEnabled = true;
-            RaisePropertyChanged("TxtClientEnabledProp");
+            RaisePropertyChanged(() => TxtClientEnabledProp);
         }
 
         public Action CloseAction { get; set; }

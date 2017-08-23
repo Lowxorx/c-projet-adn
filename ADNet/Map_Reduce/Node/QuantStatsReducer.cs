@@ -9,26 +9,22 @@ namespace ADNet.Map_Reduce.Node
     public class QuantStatsReducer : IReducer
     {
 
-        public Object Reduce(ConcurrentBag<object> input)
+        public object Reduce(ConcurrentBag<object> input)
         {
 
             // input = List<Tuple<int, Tuple<Dictionary<string, int>, string, string>>>
 
-            Dictionary<String, Tuple<int, double>> concat = new Dictionary<String, Tuple<int, double>>();
-            string startSeq = string.Empty;
+            Dictionary<string, Tuple<int, double>> concat = new Dictionary<string, Tuple<int, double>>();
             string prevEndSeq = string.Empty;
-            string endSeq = string.Empty;
-            List<Tuple<int, Object>> orderedList = SortByTaskId(input);
+            List<Tuple<int, object>> orderedList = SortByTaskId(input);
 
             for (int i = 0; i < orderedList.Count; i++)
             {
                 if (i == 0)
                 {
-                    startSeq = ((Tuple<Dictionary<string,int>, string, string>)orderedList[i].Item2).Item2;
                 }
                 if (i == orderedList.Count - 1)
                 {
-                    endSeq = ((Tuple<Dictionary<string, int>, string, string>)orderedList[i].Item2).Item3;
                 }
                 if (i > 0)
                 {
@@ -37,7 +33,7 @@ namespace ADNet.Map_Reduce.Node
                 prevEndSeq = ((Tuple<Dictionary<string, int>, string, string>)orderedList[i].Item2).Item3;
             }
 
-            foreach (Tuple<int, Object> dico in orderedList)
+            foreach (Tuple<int, object> dico in orderedList)
             {
                 foreach (var entry in ((Tuple<Dictionary<string, int>, string, string>)dico.Item2).Item1)
                 {
@@ -84,10 +80,10 @@ namespace ADNet.Map_Reduce.Node
             return new QuantStatsReducer();
         }
 
-        public List<Tuple<int, Object>> SortByTaskId(ConcurrentBag<object> input)
+        public List<Tuple<int, object>> SortByTaskId(ConcurrentBag<object> input)
         {
-            List<Tuple<int, Object>> list = new List<Tuple<int, Object>>();
-            foreach (Tuple<int, Object> item in input)
+            List<Tuple<int, object>> list = new List<Tuple<int, object>>();
+            foreach (Tuple<int, object> item in input)
             {
                 list.Add(item);
             }

@@ -1,13 +1,12 @@
 ﻿using NodeNet.Map_Reduce;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ADNet.Map_Reduce.Node
 {
     public class QuantStatsMapper : IMapper
     {
-        public Object Map(Object input,int nbMap)
+        public object Map(object input,int nbMap)
         {
 
             List<Tuple<int, char[]>> result = new List<Tuple<int, char[]>>();
@@ -47,12 +46,12 @@ namespace ADNet.Map_Reduce.Node
             return result;
         }
 
-        public bool mapIsEnd()
+        public bool MapIsEnd()
         {
             throw new NotImplementedException();
         }
 
-        IMapper IMapper.reset()
+        IMapper IMapper.Reset()
         {
             return this;
         }

@@ -7,21 +7,21 @@ using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
 {
-    public class VMOrchView : ViewModelBase
+    public class VmOrchView : ViewModelBase
     {
         public ICommand WindowLoaded { get; set; }
-        public ICommand ICommandBtnClose { get; set; }
-        public VMLogBox VmLogBox { get; set; }
-        public VMOrchView()
+        public ICommand CommandBtnClose { get; set; }
+        public VmLogBox VmLogBox { get; set; }
+        public VmOrchView()
         {
-            ICommandBtnClose = new RelayCommand(CloseWindow);
+            CommandBtnClose = new RelayCommand(CloseWindow);
             WindowLoaded = new RelayCommand(OnLoad);
-            VmLogBox = NodeNet.GUI.ViewModel.ViewModelLocator.VMLLogBoxUcStatic;
+            VmLogBox = NodeNet.GUI.ViewModel.ViewModelLocator.VmlLogBoxUcStatic;
         }
 
         private void OnLoad()
         {
-            DNAOrchestra orch = new DNAOrchestra("Orchestrator", TxtIp, 3000);
+            DnaOrchestra orch = new DnaOrchestra("Orchestrator", TxtIp, 3000);
             orch.Listen();
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Serveur démarré, en écoute..." + Environment.NewLine;
         }
@@ -30,11 +30,11 @@ namespace ADNet.GUI.ViewModel
 
         public string TxtIp
         {
-            get { return txtIp; }
+            get => txtIp;
             set
             {
                 txtIp = value;
-                RaisePropertyChanged("TxtIp");
+                RaisePropertyChanged();
             }
         }
 

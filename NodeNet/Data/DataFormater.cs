@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -38,7 +37,7 @@ namespace NodeNet.Data
                 byte[] buffer = new byte[size];
                 using (MemoryStream memory = new MemoryStream())
                 {
-                    int count = 0;
+                    int count;
                     do
                     {
                         count = stream.Read(buffer, 0, size);
@@ -79,7 +78,7 @@ namespace NodeNet.Data
             }
             catch (SerializationException ex)
             {
-                Console.WriteLine("Serialize Error : " + ex);
+                Console.WriteLine(@"Serialize Error : " + ex);
                 return null;
             }
         }
@@ -89,7 +88,7 @@ namespace NodeNet.Data
         /// </summary>
         public static T Deserialize<T>(byte[] data)
         {
-            object obj = null;
+            object obj;
             byte[] partOfData = new byte[data.Length - 8];
             Array.Copy(data, 0, partOfData, 0, data.Length - 8);
             byte[] uncompressed = Decompress(partOfData);

@@ -7,23 +7,23 @@ using System.Windows.Input;
 
 namespace ADNet.GUI.ViewModel
 {
-    class VMNodeView : ViewModelBase
+    class VmNodeView : ViewModelBase
     {
         public ICommand WindowLoaded { get; set; }
-        public ICommand ICommandBtnClose { get; set; }
-        public VMLogBox VmLogBox { get; set; }
+        public ICommand CommandBtnClose { get; set; }
+        public VmLogBox VmLogBox { get; set; }
 
-        public VMNodeView()
+        public VmNodeView()
         {
-            ICommandBtnClose = new RelayCommand(CloseWindow);
+            CommandBtnClose = new RelayCommand(CloseWindow);
             WindowLoaded = new RelayCommand(OnLoad);
-            VmLogBox = NodeNet.GUI.ViewModel.ViewModelLocator.VMLLogBoxUcStatic;
+            VmLogBox = NodeNet.GUI.ViewModel.ViewModelLocator.VmlLogBoxUcStatic;
         }
 
         private void OnLoad()
         {
             // TODO : Implémenter l'attribution automatique des ports 
-            DNANode dnaNode = new DNANode("Node", "127.0.0.1", 3002);
+            DnaNode dnaNode = new DnaNode("Node", "127.0.0.1", 3002);
             dnaNode.Connect(TxtIp, 3000);
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Node démarré, en attente..." + Environment.NewLine;
         }
@@ -32,11 +32,11 @@ namespace ADNet.GUI.ViewModel
 
         public string TxtIp
         {
-            get { return txtIp; }
+            get => txtIp;
             set
             {
                 txtIp = value;
-                RaisePropertyChanged("TxtIp");
+                RaisePropertyChanged();
             }
         }
 

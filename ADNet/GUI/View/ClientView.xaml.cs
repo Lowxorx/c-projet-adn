@@ -1,6 +1,4 @@
 ﻿using ADNet.GUI.ViewModel;
-using System;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ADNet.GUI.View
@@ -8,15 +6,15 @@ namespace ADNet.GUI.View
     /// <summary>
     /// Logique d'interaction pour OrchView.xaml
     /// </summary>
-    public partial class ClientView : Window
+    public partial class ClientView
     {
         public ClientView()
         {
             InitializeComponent();
-            VMClientView vm = (VMClientView)DataContext;
+            VmClientView vm = (VmClientView)DataContext;
             if (vm.CloseAction == null)
             {
-                vm.CloseAction = new Action(() => Close());
+                vm.CloseAction = Close;
             }
             MouseDown += Window_MouseDown;
         }

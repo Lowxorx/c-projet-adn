@@ -1,14 +1,11 @@
-﻿using System;
-using NodeNet.Data;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
 namespace NodeNet.Tasks
 {
     public class TaskExecFactory 
     {
         private static TaskExecFactory instance;
-        private static ConcurrentDictionary<String,TaskExecutor> workers;
+        private static ConcurrentDictionary<string,TaskExecutor> workers;
 
         private TaskExecFactory(){}
 
@@ -22,12 +19,12 @@ namespace NodeNet.Tasks
             return instance;
         }
 
-        public void AddWorker(String methodName, TaskExecutor worker)
+        public void AddWorker(string methodName, TaskExecutor worker)
         { 
             workers.TryAdd(methodName, worker);
         }
         // TODO check if method name exists
-        public TaskExecutor GetWorker(String methodName)
+        public TaskExecutor GetWorker(string methodName)
         {
             return (TaskExecutor)workers[methodName].Clone() ;
         }
