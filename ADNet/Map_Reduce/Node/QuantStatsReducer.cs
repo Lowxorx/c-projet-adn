@@ -16,15 +16,19 @@ namespace ADNet.Map_Reduce.Node
 
             Dictionary<string, Tuple<int, double>> concat = new Dictionary<string, Tuple<int, double>>();
             string prevEndSeq = string.Empty;
+            string startSeq = string.Empty;
+            string endSeq = string.Empty;
             List<Tuple<int, object>> orderedList = SortByTaskId(input);
 
             for (int i = 0; i < orderedList.Count; i++)
             {
                 if (i == 0)
                 {
+                    startSeq = ((Tuple<Dictionary<string, int>, string, string>)orderedList[i].Item2).Item2;
                 }
                 if (i == orderedList.Count - 1)
                 {
+                    endSeq = ((Tuple<Dictionary<string, int>, string, string>)orderedList[i].Item2).Item3;
                 }
                 if (i > 0)
                 {
@@ -35,7 +39,7 @@ namespace ADNet.Map_Reduce.Node
 
             foreach (Tuple<int, object> dico in orderedList)
             {
-                foreach (var entry in ((Tuple<Dictionary<string, int>, string, string>)dico.Item2).Item1)
+                foreach (KeyValuePair<string, int> entry in ((Tuple<Dictionary<string, int>, string, string>)dico.Item2).Item1)
                 {
                     if (concat.TryGetValue(entry.Key, out var occur))
                     {
