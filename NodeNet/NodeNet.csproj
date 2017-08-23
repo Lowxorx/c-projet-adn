@@ -97,6 +97,7 @@
     <Compile Include="Tasks\TaskExecFactory.cs" />
     <Compile Include="Tasks\ITaskExecFactory.cs" />
     <Compile Include="Utilities\Logger.cs" />
+    <Compile Include="Utilities\TextboxHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\View\MonitoringUC.xaml.cs">

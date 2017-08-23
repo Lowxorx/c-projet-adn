@@ -1,13 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
-using NodeNet.Data;
-using NodeNet.Network.Nodes;
-using NodeNet.Network.States;
-using NodeNet.Tasks;
 using System;
-using System.Collections.ObjectModel;
 using System.Windows.Input;
+
 namespace NodeNet.GUI.ViewModel
 {
     public class VMLogBox : ViewModelBase
@@ -18,7 +14,6 @@ namespace NodeNet.GUI.ViewModel
         public VMLogBox()
         {
             LogboxLoaded = new RelayCommand(OnLoad);
-
         }
 
         public void OnLoad()

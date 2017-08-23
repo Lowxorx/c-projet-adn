@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-    xmlns:local="clr-namespace:NodeNet.GUI.View"
+    xmlns:local="clr-namespace:NodeNet.Utilities"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="300"
     d:DesignWidth="300"
@@ -15,12 +15,17 @@
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
     <Grid Margin="0,0,0,0">
-        <TextBox
-            Margin="0,0,0,0"
-            FontFamily="Consolas"
-            FontSize="16"
-            IsReadOnly="True"
-            Text="{Binding Path=LogBox}"
-            TextWrapping="Wrap" />
+        <ScrollViewer>
+            <intr:Interaction.Behaviors>
+                <local:TextboxHelper />
+            </intr:Interaction.Behaviors>
+            <TextBox
+                Margin="0,0,0,0"
+                FontFamily="Consolas"
+                FontSize="16"
+                IsReadOnly="True"
+                Text="{Binding Path=LogBox}"
+                TextWrapping="Wrap" />
+        </ScrollViewer>
     </Grid>
 </UserControl>
