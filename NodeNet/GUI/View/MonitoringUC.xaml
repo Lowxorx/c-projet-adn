@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="949.667"
+    Width="1020"
     Height="234"
     Margin="0"
     mc:Ignorable="d">
@@ -25,7 +25,7 @@
             Content="Liste des tâches" />
         <ListView
             x:Name="TasksList"
-            Width="335"
+            Width="400"
             Height="184"
             Margin="605,38,0,0"
             HorizontalAlignment="Left"
@@ -110,6 +110,10 @@
                         Width="70"
                         DisplayMemberBinding="{Binding Progression, StringFormat='{}{0} %'}"
                         Header="%" />
+                    <GridViewColumn
+                        Width="70"
+                        DisplayMemberBinding="{Binding Duration, StringFormat='{}{0:#.##}'}"
+                        Header="Durée (s)" />
                 </GridView>
             </ListView.View>
         </ListView>

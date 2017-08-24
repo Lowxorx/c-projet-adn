@@ -76,6 +76,7 @@ namespace NodeNet.GUI.ViewModel
             {
                 if (t.Id == taskId)
                 {
+                    t.Duration = (DateTime.Now - t.StartTime).TotalSeconds;
                     t.Progression = 100;
                     t.State = NodeState.Finish;
                 }
@@ -90,7 +91,7 @@ namespace NodeNet.GUI.ViewModel
             {
                 if(n.WorkingTask == input.TaskId)
                 {
-                    n.State = NodeState.Finish;
+                    n.State = NodeState.Wait;
                 }
                 newNodeList.Add(n);
             }
@@ -103,20 +104,16 @@ namespace NodeNet.GUI.ViewModel
             Console.WriteLine(@"Launch Cli");
         }
 
-        public void RefreshNodesState(DataInput input)
+        public void RefreshNodesState(string nodeGUID, NodeState state)
         {
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
             foreach (DefaultNode node in NodeList)
             {
-                if (node.NodeGuid != input.NodeGuid)
+                if (node.NodeGuid == nodeGUID)
                 {
-                    list.Add(node);
+                    node.State = state;
                 }
-                else
-                {
-                    node.State = ((Tuple<NodeState, double>)input.Data).Item1;
                     list.Add(node);
-                }
             }
             NodeList = null;
             NodeList = list;
