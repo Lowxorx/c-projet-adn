@@ -114,7 +114,7 @@
                         Margin="10,10,0,0"
                         FontFamily="Verdana"
                         FontSize="19">
-                        <Hyperlink Command="{Binding LinkAlex}"><Run Text="Alexandre Schwartz" /></Hyperlink>
+                        <Hyperlink Command="{Binding LinkAlex}"><Run Text="Alexandre Schwarze" /></Hyperlink>
                     </TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">

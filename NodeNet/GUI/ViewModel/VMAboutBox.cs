@@ -23,7 +23,7 @@ namespace NodeNet.GUI.ViewModel
         private BitmapImage imgSourceCesi;
         public BitmapImage ImgSourceCesi
         {
-            get { return imgSourceCesi; }
+            get => imgSourceCesi;
             set
             {
                 imgSourceCesi = value;
@@ -33,7 +33,7 @@ namespace NodeNet.GUI.ViewModel
         private BitmapImage imgSourceGit;
         public BitmapImage ImgSourceGit
         {
-            get { return imgSourceGit; }
+            get => imgSourceGit;
             set
             {
                 imgSourceGit = value;

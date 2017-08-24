@@ -7,7 +7,7 @@ using System.Text;
 
 namespace NodeNet.Data
 {
-    public class DataFormater
+    public static class DataFormater
     {
         /// <summary>
         /// Compresse un tableau d'octets vers un nouveau tableau d'octets.
