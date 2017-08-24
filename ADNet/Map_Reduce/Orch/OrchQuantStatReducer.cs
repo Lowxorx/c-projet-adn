@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Windows.Input;
 
 namespace ADNet.Map_Reduce.Orch
 {
@@ -49,15 +51,8 @@ namespace ADNet.Map_Reduce.Orch
             }
 
             //Sélectionne les clés de 4 caractères qui ne correspondent pas à une entrée du dictionaire dont le nombre d'occurences est maximal
-            List<string> keys = concat.Where(y => y.Key.Length == 4)
-                .Where(z => z.Value.Item1 != concat.Max(o => z.Value.Item1))
-                .Select(x => x.Key).ToList();
-            foreach (string key in keys)
-            {
-                concat.Remove(key);
-            }
-
-
+            concat.Where(y => y.Key.Length == 4 && y.Value.Item1 != concat.Where(k => k.Key.Length == 4).Max(o => o.Value.Item1)).ToList().ForEach(o => concat.Remove(o.Key));
+             
             double percent = (double)(decimal.Divide(concat["A"].Item1, totalbases)) * 100;
             concat["A"] = new Tuple<int, double>(concat["A"].Item1, percent);
             percent = (double)(decimal.Divide(concat["T"].Item1, totalbases)) * 100;

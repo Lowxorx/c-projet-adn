@@ -102,12 +102,6 @@ namespace ADNet.Network.Impl
                 }
             }
             dataAndMeta.Item2.Data = new Tuple<Dictionary<string, int>, string, string>(results, startSeq,endSeq);
-
-            foreach (KeyValuePair<string, int> v in results)
-            {
-                Logger.Write(string.Format("key : {0} - value : {1} - workerTaskID : {2} - nbChar : {3} - threadID : {4}", v.Key, v.Value, dataAndMeta.Item1, data.Item2.Length, Thread.CurrentThread.ManagedThreadId), false);
-            }
-
             e.Result = dataAndMeta;
         }
 
