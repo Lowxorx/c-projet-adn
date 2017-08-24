@@ -297,7 +297,7 @@ namespace NodeNet.Network.Orch
                         Method = TaskStatusMethod,
                         Data = data,
                         ClientGuid = input.ClientGuid,
-                        NodeGuid = NodeGuid,
+                        NodeGuid = input.NodeGuid,
                         MsgType = MessageType.Response,
                     };
                     // On envoit la progression de la tâche au client
@@ -544,7 +544,7 @@ namespace NodeNet.Network.Orch
                 {
                     if (node.Value.Tasks.TryGetValue(idNodeTask, out Task task) && task.State == NodeState.Finish)
                     {
-                        nbNodeWork++;
+                        nbNodeEnded++;
                     }
                 }
             }

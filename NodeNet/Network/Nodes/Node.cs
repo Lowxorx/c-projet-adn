@@ -128,7 +128,7 @@ namespace NodeNet.Network.Nodes
             Console.WriteLine(@"Launch Cli");
             try
             {
-                ServerSocket.BeginConnect(remoteEp, ConnectCallback, ServerSocket);
+                ServerSocket.BeginConnect(remoteEp, ConnectCallback, Orch);
                 ConnectDone.WaitOne();
             }
             catch (Exception e)
@@ -140,22 +140,23 @@ namespace NodeNet.Network.Nodes
 
         private void ConnectCallback(IAsyncResult ar)
         {
+            Node orch = (Node)ar.AsyncState;
             try
             {
-                // Retrieve the socket from the state object.
-                Socket client = (Socket)ar.AsyncState;
                 // Complete the connection.
-                client.EndConnect(ar);
-                Logger.Write($"Connection accepted : {client.RemoteEndPoint} ", true);
-                Console.WriteLine($@"Connection accepted : {client.RemoteEndPoint} ");
+                orch.NodeSocket.EndConnect(ar);
+                Logger.Write($"Connection accepted : { orch.NodeSocket.RemoteEndPoint} ", true);
+                Console.WriteLine($@"Connection accepted : { orch.NodeSocket.RemoteEndPoint} ");
                 // Signal that the connection has been made.
                 ConnectDone.Set();
                 Receive(Orch);
             }
             catch (SocketException e)
             {
-                Logger.Write(e, true);
-                Console.WriteLine(e.ToString());
+                ConnectDone.Set();
+                Logger.Write("Hote distant injoignable, nouvel essai dans 3 secondes ...  ", false);
+                Thread.Sleep(3000);
+                Connect(orch.Address, orch.Port);
             }
         }
 

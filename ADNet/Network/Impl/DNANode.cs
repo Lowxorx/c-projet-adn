@@ -22,6 +22,7 @@ namespace ADNet.Network.Impl
         }
         private object DnaQuantStarter(DataInput input)
         {
+            //Thread.Sleep(1000 * input.NodeTaskId);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             Console.WriteLine(@"In DnaQuantStater nb char received befor map : " + ((char[])input.Data).Length);
             List<Tuple<int,char[]>> list = (List<Tuple<int, char[]>>)executor.Mapper.Map(input.Data, Environment.ProcessorCount);
@@ -53,7 +54,6 @@ namespace ADNet.Network.Impl
             Dictionary<string, int> results = new Dictionary<string, int>();
             string startSeq = string.Empty;
             string endSeq = string.Empty;
-            Thread.Sleep(100 * dataAndMeta.Item1);
             for (int i = 0; i < data.Item2.Length; i++)
             {
                 if (bases.Contains(data.Item2[i]))
