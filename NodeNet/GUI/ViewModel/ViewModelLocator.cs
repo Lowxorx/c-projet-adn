@@ -25,6 +25,10 @@ namespace NodeNet.GUI.ViewModel
         public static VmLogBox VmlLogBoxUcStatic => vMlLogBoxUc ?? (vMlLogBoxUc = new VmLogBox());
         public VmLogBox VmlLogBoxUc => VmlLogBoxUcStatic;
 
+        private static VmAboutBox vMlAboutBox;
+        public static VmAboutBox VmlAboutBoxStatic => vMlAboutBox ?? (vMlAboutBox = new VmAboutBox());
+        public VmAboutBox VmlAboutBox => VmlAboutBoxStatic;
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

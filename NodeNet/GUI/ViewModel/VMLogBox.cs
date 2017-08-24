@@ -31,6 +31,5 @@ namespace NodeNet.GUI.ViewModel
                 RaisePropertyChanged();
             }
         }
-
     }
 }

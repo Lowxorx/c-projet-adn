@@ -82,7 +82,14 @@
     </Compile>
     <Compile Include="Data\DataFormater.cs" />
     <Compile Include="Data\DataInput.cs" />
+    <Compile Include="GUI\ViewModel\VMAboutBox.cs" />
     <Compile Include="GUI\ViewModel\VMLogBox.cs" />
+    <Compile Include="GUI\View\AboutAppBox.xaml.cs">
+      <DependentUpon>AboutAppBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\View\AdnCalc.xaml.cs">
+      <DependentUpon>AdnCalc.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUI\View\Logbox.xaml.cs">
       <DependentUpon>Logbox.xaml</DependentUpon>
     </Compile>
@@ -141,6 +148,14 @@
     <Folder Include="GUI\Model\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GUI\View\AboutAppBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\View\AdnCalc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="GUI\View\ListViewUserControlStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -153,6 +168,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="GUI\Resources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\cesi.png" />
+    <Resource Include="GUI\gitlogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

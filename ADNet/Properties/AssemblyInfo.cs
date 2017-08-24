@@ -5,11 +5,11 @@ using System.Windows;
 // Les informations générales relatives à un assembly dépendent de
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
-[assembly: AssemblyTitle("c-projet-adn")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ADNet")]
+[assembly: AssemblyDescription("Projet C# CESI Promotion RIL 2015-2017")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("c-projet-adn")]
+[assembly: AssemblyCompany("CESI")]
+[assembly: AssemblyProduct("ADNet")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -5,6 +5,8 @@ using System.Windows.Input;
 using ADNet.GUI.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using NodeNet.GUI.View;
+using NodeNet.GUI.ViewModel;
 using NodeView = ADNet.GUI.View.NodeView;
 
 namespace ADNet.GUI.ViewModel
@@ -17,6 +19,7 @@ namespace ADNet.GUI.ViewModel
         public ICommand IcommandRdbNodeClick { get; set; }
         public ICommand IcommandRdbServClick { get; set; }
         public ICommand CommandBtnClose { get; set; }
+        public ICommand OpenAboutBox { get; set;}
 
         private bool txtClientEnabled;
         public bool TxtClientEnabledProp => txtClientEnabled;
@@ -101,6 +104,7 @@ namespace ADNet.GUI.ViewModel
             }
         }
 
+        private VmAboutBox vm { get; set; }
         public VmadNetLauncher()
         {
             WindowLoaded = new RelayCommand(OnLoad);
@@ -109,6 +113,7 @@ namespace ADNet.GUI.ViewModel
             IcommandRdbNodeClick = new RelayCommand(ModeNodeClick);
             CommandBtnClose = new RelayCommand(CloseWindow);
             IcommandRdbServClick = new RelayCommand(ModeServClick);
+            OpenAboutBox = new RelayCommand(OpenAbout);
             TxtIpProp = GetLocalIpAddress();
             BtnContent = "-----";
             ServerChecked = false;
@@ -117,10 +122,10 @@ namespace ADNet.GUI.ViewModel
             BtnEnabled = false;
         }
 
-        public static string GetLocalIpAddress()
+        private static string GetLocalIpAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
@@ -135,11 +140,17 @@ namespace ADNet.GUI.ViewModel
             CloseAction.Invoke();
         }
 
+        private void OpenAbout()
+        {
+            vm = new VmAboutBox();
+            AboutAppBox about = new AboutAppBox(vm);
+            about.Show();
+        }
+
         private void AppuiBtn()
         {
             if (ClientChecked)
             {
-                Console.WriteLine(@"Launch Cli");
                 ClientView clientView = new ClientView();
                 VmClientView vm = (VmClientView)clientView.DataContext;
                 vm.Connectip = TxtIpProp;
@@ -148,7 +159,6 @@ namespace ADNet.GUI.ViewModel
             }
             else if (NodeChecked)
             {
-                Console.WriteLine(@"Launch Cli");
                 NodeView nodeView = new NodeView();
                 VmNodeView vm = (VmNodeView)nodeView.DataContext;
                 vm.TxtIp = TxtIpProp;
@@ -157,21 +167,13 @@ namespace ADNet.GUI.ViewModel
             }
             else if (ServerChecked)
             {
-                Console.WriteLine(@"Launch Cli");
                 OrchView orchView = new OrchView();
                 VmOrchView vm = (VmOrchView)orchView.DataContext;
                 vm.TxtIp = TxtIpProp;
                 orchView.Show();
                 CloseAction.Invoke();
             }
-            else
-            {
-                Console.WriteLine(@"Launch Cli");
-            }
-
         }
-
-
 
         public void OnLoad()
         {

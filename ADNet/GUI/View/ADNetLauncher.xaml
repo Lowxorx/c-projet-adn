@@ -58,6 +58,20 @@
                 FontWeight="Bold"
                 ForceCursor="True"
                 Foreground="White" />
+            <Button
+                Width="45"
+                Height="45"
+                Margin="0,0,45,-10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="#00DDDDDD"
+                BorderBrush="#00000000"
+                Command="{Binding OpenAboutBox}"
+                Content="?"
+                FontSize="21"
+                FontWeight="Bold"
+                ForceCursor="True"
+                Foreground="White" />
         </Grid>
         <Rectangle
             Width="458"
