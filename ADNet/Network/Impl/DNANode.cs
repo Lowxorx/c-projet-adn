@@ -54,7 +54,6 @@ namespace ADNet.Network.Impl
             Dictionary<string, int> results = new Dictionary<string, int>();
             string startSeq = string.Empty;
             string endSeq = string.Empty;
-            Thread.Sleep(100 * dataAndMeta.Item1);
             for (int i = 0; i < data.Item2.Length; i++)
             {
                 if (bases.Contains(data.Item2[i]))
