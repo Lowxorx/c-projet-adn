@@ -48,17 +48,11 @@ namespace NodeNet.Network.Nodes
         public ConcurrentDictionary<int, ConcurrentBag<object>> Results { get; set; }
 
         private int lastTaskId;
-        protected int LastTaskId
-        {
-            get { return lastTaskId += 1; }
-            set { new InvalidOperationException(); }
-        }
+        protected  int LastTaskId => lastTaskId += 1;
+
         private int lastSubTaskId;
-        protected int LastSubTaskId
-        {
-            get { return lastSubTaskId += 1; }
-            set { new InvalidOperationException(); }
-        }
+        protected int LastSubTaskId => lastSubTaskId += 1;
+
         private float CpuVal { get; set; }
         public float CpuValue { get => (float)(Math.Truncate(CpuVal * 100.0) / 100.0);
             set => CpuVal = value;

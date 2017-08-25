@@ -8,6 +8,7 @@ using NodeNet.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace NodeNet.GUI.ViewModel
@@ -46,7 +47,7 @@ namespace NodeNet.GUI.ViewModel
             TaskList = new ObservableCollection<Task>();
         }
 
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void RefreshNodesInfo(DataInput d)
         {
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
@@ -66,7 +67,6 @@ namespace NodeNet.GUI.ViewModel
             NodeList = null;
             NodeList = list;
         }
-
         public void RefreshStateFromTaskResult(DataInput input)
         {
             int taskId = input.TaskId;
@@ -103,7 +103,7 @@ namespace NodeNet.GUI.ViewModel
         {
             Console.WriteLine(@"Launch Cli");
         }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void RefreshNodesState(string nodeGuid, NodeState state)
         {
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
@@ -118,7 +118,7 @@ namespace NodeNet.GUI.ViewModel
             NodeList = null;
             NodeList = list;
         }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void RefreshTaskState(int taskId,double progression)
         {
             ObservableCollection<Task> newList = new ObservableCollection<Task>();
@@ -133,7 +133,7 @@ namespace NodeNet.GUI.ViewModel
             TaskList = null;
             TaskList = newList;
         }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void NodeIsWorkingOnTask(string nodeGuid, int taskId)
         {
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
@@ -166,7 +166,7 @@ namespace NodeNet.GUI.ViewModel
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() => ViewModelLocator.VmlMonitorUcStatic.TaskList.Add(task));
         }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void CancelTask(List<Task> tasks)
         {
             ObservableCollection<Task> newTaskList = new ObservableCollection<Task>();
@@ -185,7 +185,7 @@ namespace NodeNet.GUI.ViewModel
             TaskList = null;
             TaskList = newTaskList;
         }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void RefreshNodeState(List<string> nodeGuid, NodeState state,int taskId)
         {
             ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
@@ -205,7 +205,7 @@ namespace NodeNet.GUI.ViewModel
             }
             
         }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void NodeIsFailed(string nodeGuid)
         {
             ObservableCollection<DefaultNode> newNodeList = new ObservableCollection<DefaultNode>();
