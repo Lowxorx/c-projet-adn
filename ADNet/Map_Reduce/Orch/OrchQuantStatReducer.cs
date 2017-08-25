@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Windows.Input;
 
 namespace ADNet.Map_Reduce.Orch
 {

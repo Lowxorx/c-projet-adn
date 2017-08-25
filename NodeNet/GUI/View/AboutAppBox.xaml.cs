@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using NodeNet.GUI.ViewModel;
 
 namespace NodeNet.GUI.View
@@ -7,7 +6,7 @@ namespace NodeNet.GUI.View
     /// <summary>
     /// Logique d'interaction pour AboutAppBox.xaml
     /// </summary>
-    public partial class AboutAppBox : Window
+    public partial class AboutAppBox
     {
         public AboutAppBox(VmAboutBox vm)
         {
