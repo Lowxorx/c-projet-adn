@@ -20,13 +20,21 @@ namespace NodeNet.Network.Nodes
     /// </summary>
     public class StateObject
     {
-        // Client socket.
+        /// <summary>
+        /// Noeud définit
+        /// </summary>
         public Node Node;
-        // Size of receive buffer.
+        /// <summary>
+        /// Taille maximale du buffer
+        /// </summary>
         public const int BufferSize = 4096;
-        // Receive buffer.
+        /// <summary>
+        /// Buffer de réception
+        /// </summary>
         public byte[] Buffer = new byte[BufferSize];
-        // Received data
+        /// <summary>
+        /// Données reçues
+        /// </summary>
         public List<byte[]> Data = new List<byte[]>();
     }
     /// <summary>

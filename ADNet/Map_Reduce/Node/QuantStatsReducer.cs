@@ -6,9 +6,16 @@ using System.Linq;
 
 namespace ADNet.Map_Reduce.Node
 {
+    /// <summary>
+    /// Classe de Reducer implémentant la classe Abstraite AbstractReducer pour le Module 1
+    /// </summary>
     public class QuantStatsReducer : AbstractReducer
     {
-
+        /// <summary>
+        /// Méthode permettant de réduire les résultats des traitements après le découpage
+        /// </summary>
+        /// <param name="input">Liste de résultats</param>
+        /// <returns>résultats regroupés</returns>
         public override object Reduce(ConcurrentBag<object> input)
         {
             Dictionary<string, int> concat = new Dictionary<string,int>();
@@ -52,6 +59,12 @@ namespace ADNet.Map_Reduce.Node
             return result;
         }
 
+        /// <summary>
+        /// Méthode permettant de recouper les caractères entre les découopages
+        /// </summary>
+        /// <param name="prevEndSeq">Caractères de fin de la séquence précédente</param>
+        /// <param name="startSeq">Caractères de début de la séquence suivante</param>
+        /// <param name="concat">Liste des résultats</param>
         private void UpdatePairsSeq(string prevEndSeq, string startSeq, Dictionary<string,int> concat)
         {
             List<string> joinSequences = new List<string>()

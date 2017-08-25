@@ -37,6 +37,11 @@ namespace ADNet.Network.Impl
             return null;
         }
 
+        /// <summary>
+        /// Méthode de comptage des caractères métiers, exécutée au sein de l'évennement RunWorkerAsync de chaque BackgroundWorker
+        /// </summary>
+        /// <param name="sender">Objet émetteur de l'évennement, le BackgroundWorker</param>
+        /// <param name="e">Argument de l'évennement conteant la donnée à traitrer</param>
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
             Logger.Write("DNAQuantProcess started", false);
