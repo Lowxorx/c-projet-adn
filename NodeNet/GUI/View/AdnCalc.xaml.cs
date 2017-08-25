@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace NodeNet.GUI.View
 {
-    public partial class AdnCalc : Window
+    public partial class AdnCalc
     {
         public AdnCalc()
         {

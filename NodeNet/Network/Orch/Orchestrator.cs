@@ -495,18 +495,6 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private string GetNodeGuidFromNodeTaskId(int subTaskId)
-        {
-            foreach (var node in Nodes)
-            {
-                if (node.Value.Tasks.TryGetValue(subTaskId, out Task _))
-                {
-                    return node.Value.NodeGuid;
-                }
-            }
-            throw new Exception("Aucun nodeGUID trouvé pour cet id de Nodetask");
-        }
-
         private double GetProgressionForTask(Tuple<ConcurrentBag<int>, bool> taskDist)
         {
             int nbNodeWork = taskDist.Item1.Count();
@@ -631,14 +619,16 @@ namespace NodeNet.Network.Orch
         {
             //TODO check Enumerator Thread safe
             List<List<string>> monitoringValues = new List<List<string>>();
-            IEnumerator<KeyValuePair<string, Node>> en = Nodes.GetEnumerator();
-            while (en.MoveNext())
+            using (IEnumerator<KeyValuePair<string, Node>> en = Nodes.GetEnumerator())
             {
-                KeyValuePair<string, Node> node = en.Current;
-                List<string> l = GetMonitoringInfos(node.Value);
-                if (l != null)
+                while (en.MoveNext())
                 {
-                    monitoringValues.Add(l);
+                    KeyValuePair<string, Node> node = en.Current;
+                    List<string> l = GetMonitoringInfos(node.Value);
+                    if (l != null)
+                    {
+                        monitoringValues.Add(l);
+                    }
                 }
             }
 
@@ -654,19 +644,6 @@ namespace NodeNet.Network.Orch
                 };
                 SendData(client, di);
             }
-        }
-
-        private Node GetNodeBySubTaskId(int subtaskId)
-        {
-            foreach (var node in Nodes)
-            {
-                Task task;
-                if (node.Value.Tasks.TryGetValue(subtaskId, out task))
-                {
-                    return node.Value;
-                }
-            }
-            throw new Exception("Aucune node associé à cette subTask n'a été trouvé");
         }
 
         private NodeState GetTaskState(int taskId)
