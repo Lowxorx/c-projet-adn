@@ -18,7 +18,7 @@ namespace NodeNet.GUI.ViewModel
 
         public void OnLoad()
         {
-            Console.WriteLine(@"Launch Cli");
+            //Console.WriteLine(@"Launch Cli");
         }
 
         private string logBox;

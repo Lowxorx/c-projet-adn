@@ -78,7 +78,7 @@ namespace NodeNet.Data
             }
             catch (SerializationException ex)
             {
-                Console.WriteLine(@"Serialize Error : " + ex);
+                //Console.WriteLine(@"Serialize Error : " + ex);
                 return null;
             }
         }

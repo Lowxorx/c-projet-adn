@@ -70,7 +70,7 @@ namespace NodeNet.GUI.ViewModel
         public void RefreshStateFromTaskResult(DataInput input)
         {
             int taskId = input.TaskId;
-            Console.WriteLine(@"Launch Cli");
+            //Console.WriteLine(@"Launch Cli");
             ObservableCollection<Task> newTaskList = new ObservableCollection<Task>();
             foreach (Task t in TaskList)
             {
@@ -101,7 +101,7 @@ namespace NodeNet.GUI.ViewModel
 
         public void OnLoad()
         {
-            Console.WriteLine(@"Launch Cli");
+            //Console.WriteLine(@"Launch Cli");
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void RefreshNodesState(string nodeGuid, NodeState state)

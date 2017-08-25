@@ -104,7 +104,7 @@ namespace ADNet.Network.Impl
             string seq = string.Concat(buffer);
             if (seq == "AT")
             {
-                Console.WriteLine(@"Launch Cli");
+                //Console.WriteLine(@"Launch Cli");
             }
             if (results.TryGetValue(seq, out int occur))
             {

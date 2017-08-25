@@ -116,7 +116,7 @@ namespace NodeNet.Network.Nodes
             IPEndPoint remoteEp = new IPEndPoint(IPAddress.Parse(address), port);
             ServerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             Orch = new DefaultNode("Orch", address, port, ServerSocket);
-            Console.WriteLine(@"Launch Cli");
+            //Console.WriteLine(@"Launch Cli");
             try
             {
                 ServerSocket.BeginConnect(remoteEp, ConnectCallback, Orch);
@@ -125,7 +125,7 @@ namespace NodeNet.Network.Nodes
             catch (Exception e)
             {
                 Logger.Write(e);
-                Console.WriteLine(e.ToString());
+                //Console.WriteLine(e.ToString());
             }
         }
 
@@ -164,7 +164,7 @@ namespace NodeNet.Network.Nodes
                 {
                     Logger.Write(e);
                     Logger.Write($"Client {node.NodeSocket.RemoteEndPoint} disconnected");
-                    Console.WriteLine(@"Client " + node.NodeSocket.RemoteEndPoint + @" Disconnected");
+                    //Console.WriteLine(@"Client " + node.NodeSocket.RemoteEndPoint + @" Disconnected");
                     RemoveDeadNode(node);
                 }
             }
@@ -185,7 +185,7 @@ namespace NodeNet.Network.Nodes
             catch (Exception e)
             {
                 Logger.Write(e);
-                Console.WriteLine(e.ToString());
+                //Console.WriteLine(e.ToString());
             }
         }
 
@@ -200,7 +200,7 @@ namespace NodeNet.Network.Nodes
             catch (Exception e)
             {
                 Logger.Write(e);
-                Console.WriteLine(e.ToString());
+                //Console.WriteLine(e.ToString());
             }
         }
 
@@ -260,7 +260,7 @@ namespace NodeNet.Network.Nodes
             catch (Exception e)
             {
                 Logger.Write(e);
-                Console.WriteLine(e.ToString());
+                //Console.WriteLine(e.ToString());
             }
         }
 
@@ -299,7 +299,7 @@ namespace NodeNet.Network.Nodes
 
         protected void UpdateResult(object input, int taskId, int subTaskId)
         {
-            Console.WriteLine(@"Launch Cli");
+            //Console.WriteLine(@"Launch Cli");
             if (Results.TryGetValue(taskId, out ConcurrentBag<object> result))
             {
                 result.Add(new Tuple<int, object>(subTaskId, input));

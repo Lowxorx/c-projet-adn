@@ -43,7 +43,7 @@ namespace NodeNet.Network.Nodes
             catch (Exception e)
             {
                 Logger.Write(e);
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
             }
         }
 

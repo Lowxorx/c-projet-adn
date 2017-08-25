@@ -8,7 +8,6 @@ namespace NodeNet.Network.Nodes
         void Connect(string address, int port);
         void SendData(Node node, DataInput obj);
         void Receive(Node node);
-        void Stop();
         void RegisterOrch(Orchestrator orch);
     }
 }

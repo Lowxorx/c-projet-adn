@@ -89,7 +89,7 @@ namespace ADNet.Network.Impl
                         if (bases.Contains(c))
                         {
                             pairsList.Add(c);
-                            Console.Write(c);
+                            //Console.Write(c);
                         }
                     }
                 }
