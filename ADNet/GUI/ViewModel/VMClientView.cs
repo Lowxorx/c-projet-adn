@@ -2,9 +2,12 @@
 using GalaSoft.MvvmLight.Command;
 using NodeNet.GUI.ViewModel;
 using System;
+using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Input;
 using ADNet.Network.Impl;
+using NodeNet.Data;
 
 namespace ADNet.GUI.ViewModel
 {
@@ -145,8 +148,13 @@ namespace ADNet.GUI.ViewModel
         }
         private void QuantSendFile()
         {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (o, a) =>
+            {
+                client.DnaQuantStat(client.DnaParseData(loadfile.FileName));
+            };
+            bw.RunWorkerAsync();
             VmLogBox.LogBox += DateTime.Now.ToLongTimeString() + " - Lancement du traitement DNA_QUANT " + Environment.NewLine;
-            client.DnaQuantStat(client.DnaParseData(loadfile.FileName));
         }
         private void ProbLoadFile()
         {

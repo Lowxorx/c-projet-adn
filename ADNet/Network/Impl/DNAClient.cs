@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ADNet.GUI.ViewModel;
 using NodeNet.Data;
 using NodeNet.Network;
@@ -79,10 +80,6 @@ namespace ADNet.Network.Impl
         {
             List<char> pairsList = new List<char>();
             char[] bases = { 'A', 'G', 'T', 'C', '-' };
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            Console.WriteLine($@"read file : {sw.Elapsed.TotalSeconds}");
             foreach (string line in File.ReadAllLines(sourceFile))
             {
                 if (!line.StartsWith("#"))
