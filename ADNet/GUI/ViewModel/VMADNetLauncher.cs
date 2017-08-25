@@ -104,7 +104,7 @@ namespace ADNet.GUI.ViewModel
             }
         }
 
-        private VmAboutBox vm { get; set; }
+        private VmAboutBox Vm { get; set; }
         public VmadNetLauncher()
         {
             WindowLoaded = new RelayCommand(OnLoad);
@@ -142,8 +142,8 @@ namespace ADNet.GUI.ViewModel
 
         private void OpenAbout()
         {
-            vm = new VmAboutBox();
-            AboutAppBox about = new AboutAppBox(vm);
+            Vm = new VmAboutBox();
+            AboutAppBox about = new AboutAppBox(Vm);
             about.Show();
         }
 
@@ -152,24 +152,24 @@ namespace ADNet.GUI.ViewModel
             if (ClientChecked)
             {
                 ClientView clientView = new ClientView();
-                VmClientView vm = (VmClientView)clientView.DataContext;
-                vm.Connectip = TxtIpProp;
+                VmClientView vmClient = (VmClientView)clientView.DataContext;
+                vmClient.Connectip = TxtIpProp;
                 clientView.Show();
                 CloseAction.Invoke();
             }
             else if (NodeChecked)
             {
                 NodeView nodeView = new NodeView();
-                VmNodeView vm = (VmNodeView)nodeView.DataContext;
-                vm.TxtIp = TxtIpProp;
+                VmNodeView vmNode = (VmNodeView)nodeView.DataContext;
+                vmNode.TxtIp = TxtIpProp;
                 nodeView.Show();
                 CloseAction.Invoke();
             }
             else if (ServerChecked)
             {
                 OrchView orchView = new OrchView();
-                VmOrchView vm = (VmOrchView)orchView.DataContext;
-                vm.TxtIp = TxtIpProp;
+                VmOrchView vmOrch = (VmOrchView)orchView.DataContext;
+                vmOrch.TxtIp = TxtIpProp;
                 orchView.Show();
                 CloseAction.Invoke();
             }

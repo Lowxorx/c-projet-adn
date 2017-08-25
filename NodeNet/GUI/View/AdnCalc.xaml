@@ -68,7 +68,7 @@
         </Button>
 
         <TextBox
-            Name="tb"
+            Name="Tb"
             Width="389"
             Height="38"
             Margin="17,61,0,0"

@@ -104,12 +104,12 @@ namespace NodeNet.GUI.ViewModel
             Console.WriteLine(@"Launch Cli");
         }
 
-        public void RefreshNodesState(string nodeGUID, NodeState state)
+        public void RefreshNodesState(string nodeGuid, NodeState state)
         {
             ObservableCollection<DefaultNode> list = new ObservableCollection<DefaultNode>();
             foreach (DefaultNode node in NodeList)
             {
-                if (node.NodeGuid == nodeGUID)
+                if (node.NodeGuid == nodeGuid)
                 {
                     node.State = state;
                 }

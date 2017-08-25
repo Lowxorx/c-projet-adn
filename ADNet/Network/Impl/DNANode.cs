@@ -13,7 +13,7 @@ namespace ADNet.Network.Impl
     public class DnaNode : DefaultNode
     {
         private const string DnaQuantMethod = "DNA_QUANT";
-        public DnaNode(string name, string address, int port) : base(name, address, port)
+        public DnaNode(string name, string address, int port) : base(name, address, port, true)
         {
             WorkerFactory.AddWorker(DnaQuantMethod, new TaskExecutor(this, DnaQuantStarter, new QuantStatsMapper(), new QuantStatsReducer()));
             Name = name;
@@ -22,17 +22,13 @@ namespace ADNet.Network.Impl
         }
         private object DnaQuantStarter(DataInput input)
         {
+            Logger.Write(@"Démarrage de la fonction DNAQuantProcess.");
             //Thread.Sleep(1000 * input.NodeTaskId);
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            Console.WriteLine(@"In DnaQuantStater nb char received befor map : " + ((char[])input.Data).Length);
             List<Tuple<int,char[]>> list = (List<Tuple<int, char[]>>)executor.Mapper.Map(input.Data, Environment.ProcessorCount);
-            Console.WriteLine(@"In DnaQuantStater list size after mapping : " + list.Count);
-            Logger.Write("DnaQuantStater list size after mapping : " + list.Count, false);
 
             foreach (Tuple<int,char[]> t in list)
             {
-                Console.WriteLine(@"Launch Cli");
-                Logger.Write("Backgroundworker for DNAQuantProcess started", false);
                 LaunchBgForWork(DnaQuantProcess, PrepareData(input, t), list.Count);
             }
             return null;
@@ -40,7 +36,6 @@ namespace ADNet.Network.Impl
 
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
-            Logger.Write("DNAQuantProcess started", false);
             Tuple<int, DataInput, int> dataAndMeta = (Tuple<int, DataInput, int>)e.Argument;
             // On averti l'orchestrateur que l'on commence a process
             Tuple<int, char[]> data = (Tuple<int, char[]>)dataAndMeta.Item2.Data;

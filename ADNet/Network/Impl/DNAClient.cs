@@ -97,8 +97,6 @@ namespace ADNet.Network.Impl
                     }
                 }
             }
-            Console.WriteLine(@"In DNA CLient sequence size : " + pairsList.Count);
-            Logger.Write("In DNA Client sequence size : " + pairsList.Count, true);
             return pairsList.ToArray();
         }
     }

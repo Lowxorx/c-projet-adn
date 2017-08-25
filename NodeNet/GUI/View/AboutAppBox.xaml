@@ -96,7 +96,7 @@
                         Width="50"
                         Height="50"
                         Margin="0,0,0,0"
-                        Source="{StaticResource gitlogo}" />
+                        Source="{StaticResource Gitlogo}" />
                     <TextBlock
                         Margin="10,10,0,0"
                         FontFamily="Verdana"
@@ -109,7 +109,7 @@
                         Width="50"
                         Height="50"
                         Margin="0,0,0,0"
-                        Source="{StaticResource gitlogo}" />
+                        Source="{StaticResource Gitlogo}" />
                     <TextBlock
                         Margin="10,10,0,0"
                         FontFamily="Verdana"
@@ -122,7 +122,7 @@
                         Width="50"
                         Height="50"
                         Margin="0,0,0,0"
-                        Source="{StaticResource gitlogo}" />
+                        Source="{StaticResource Gitlogo}" />
                     <TextBlock
                         Margin="10,10,0,0"
                         FontFamily="Verdana"
@@ -164,7 +164,7 @@
                         Width="50"
                         Height="50"
                         Margin="0,0,0,0"
-                        Source="{StaticResource gitlogo}" />
+                        Source="{StaticResource Gitlogo}" />
                     <TextBlock
                         Margin="10,10,0,0"
                         FontFamily="Verdana"
@@ -177,7 +177,7 @@
                         Width="45"
                         Height="45"
                         Margin="5,0,0,0"
-                        Source="{StaticResource cesilogo}" />
+                        Source="{StaticResource Cesilogo}" />
                     <TextBlock
                         Margin="10,10,0,0"
                         FontFamily="Verdana"

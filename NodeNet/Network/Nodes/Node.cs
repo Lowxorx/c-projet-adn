@@ -83,7 +83,6 @@ namespace NodeNet.Network.Nodes
         #endregion
 
         #region Ctor
-
         protected Node(string name, string adress, int port)
         {
             WorkerFactory = TaskExecFactory.GetInstance();
@@ -94,7 +93,6 @@ namespace NodeNet.Network.Nodes
             Tasks = new ConcurrentDictionary<int, Task>();
             State = NodeState.Wait;
             Results = new ConcurrentDictionary<int, ConcurrentBag<object>>();
-            Logger = new Logger();
         }
 
         protected Node(string name, string adress, int port, Socket sock)
@@ -105,7 +103,6 @@ namespace NodeNet.Network.Nodes
             NodeSocket = sock;
             Tasks = new ConcurrentDictionary<int, Task>();
             State = NodeState.Wait;
-            Logger = new Logger();
         }
         #endregion
 
@@ -133,7 +130,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
-                Logger.Write(e, true);
+                Logger.Write(e);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -145,16 +142,15 @@ namespace NodeNet.Network.Nodes
             {
                 // Complete the connection.
                 orch.NodeSocket.EndConnect(ar);
-                Logger.Write($"Connection accepted : { orch.NodeSocket.RemoteEndPoint} ", true);
-                Console.WriteLine($@"Connection accepted : { orch.NodeSocket.RemoteEndPoint} ");
+                Logger.Write($"Connecté à l'orchestrateur : { orch.NodeSocket.RemoteEndPoint} ");
                 // Signal that the connection has been made.
                 ConnectDone.Set();
                 Receive(Orch);
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 ConnectDone.Set();
-                Logger.Write("Hote distant injoignable, nouvel essai dans 3 secondes ...  ", false);
+                Logger.Write("Hote distant injoignable, nouvel essai dans 3 secondes ...  ");
                 Thread.Sleep(3000);
                 Connect(orch.Address, orch.Port);
             }
@@ -163,14 +159,8 @@ namespace NodeNet.Network.Nodes
         public void SendData(Node node, DataInput obj)
         {
             byte[] data = DataFormater.Serialize(obj);
-            // TODO TCP.Connected
             try
             {
-                if (obj.Method != GetCpuMethod)
-                {
-                    Logger.Write($"Send data : {obj} to {node}", true);
-                    Console.WriteLine(@"Send data : " + obj + @" to : " + node);
-                }
                 node.NodeSocket.BeginSend(data, 0, data.Length, 0,SendCallback, node);
             }
             catch (SocketException e)
@@ -178,8 +168,8 @@ namespace NodeNet.Network.Nodes
                 // Client Down 
                 if (!node.NodeSocket.Connected)
                 {
-                    Logger.Write(e, true);
-                    Logger.Write($"Client {node.NodeSocket.RemoteEndPoint} disconnected", true);
+                    Logger.Write(e);
+                    Logger.Write($"Client {node.NodeSocket.RemoteEndPoint} disconnected");
                     Console.WriteLine(@"Client " + node.NodeSocket.RemoteEndPoint + @" Disconnected");
                     RemoveDeadNode(node);
                 }
@@ -200,7 +190,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
-                Logger.Write(e, true);
+                Logger.Write(e);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -215,7 +205,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
-                Logger.Write(e, true);
+                Logger.Write(e);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -269,13 +259,13 @@ namespace NodeNet.Network.Nodes
                 }
                 catch (SocketException e)
                 {
-                    Logger.Write(e, true);
+                    Logger.Write(e);
                     RemoveDeadNode(node);
                 }
             }
             catch (Exception e)
             {
-                Logger.Write(e, true);
+                Logger.Write(e);
                 Console.WriteLine(e.ToString());
             }
         }

@@ -12,6 +12,7 @@ using System.Management;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows.Forms;
+using NodeNet.Utilities;
 
 namespace NodeNet.Network.Nodes
 {
@@ -24,11 +25,14 @@ namespace NodeNet.Network.Nodes
         // int -> id de la worker task, int -> id de la task, NodeStatus -> Status de la WorkerTask
         public ConcurrentDictionary<int, Tuple<int, NodeState>> WorkerTaskStatus { get; set; }
 
-        bool monitoringEnable = true;
+        bool monitoringEnable = false;
         #endregion
 
-        public DefaultNode(string name, string adress, int port) : base(name, adress, port)
+        public DefaultNode(string name, string adress, int port, bool enabled) : base(name, adress, port)
         {
+
+            Logger = new Logger(enabled);
+
             WorkerTaskStatus = new ConcurrentDictionary<int, Tuple<int, NodeState>>();
             WorkerFactory = TaskExecFactory.GetInstance();
             try
@@ -38,7 +42,7 @@ namespace NodeNet.Network.Nodes
             }
             catch (Exception e)
             {
-                Logger.Write(e, true);
+                Logger.Write(e);
                 Console.WriteLine(e.Message);
             }
         }
@@ -47,8 +51,7 @@ namespace NodeNet.Network.Nodes
 
         public override void ProcessInput(DataInput input, Node node)
         {
-            Logger.Write($"Process input for {input.Method}", true);
-            Console.WriteLine(@"ProcessInput for " + input.Method);
+            Logger.Write($"Traitement en cours pour : {input.Method}.");
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             if (!input.Method.Equals(IdentMethod) && !input.Method.Equals(GetCpuMethod))
             {
@@ -163,8 +166,8 @@ namespace NodeNet.Network.Nodes
             UpdateResult(resp.Data, data.Item2.NodeTaskId, data.Item1);
             if (TaskIsCompleted(resp.NodeTaskId))
             {
-                Console.WriteLine(@"Launch Cli");
-                Logger.Write("Task is completed", false);
+                Logger.Write($"Traitement terminé pour {data.Item2.Method}.");
+                Logger.Write(@"Résultat envoyé à l'orchestrateur.");
                 IReducer reducer = WorkerFactory.GetWorker(resp.Method).Reducer;
                 object result = reducer.Reduce(GetResultFromTaskId(resp.NodeTaskId));
                 resp.Data = result;
@@ -172,31 +175,29 @@ namespace NodeNet.Network.Nodes
             }
             else
             {
-                //double progression = 0;
-                //progression = getWorkersProgression(data.Item2.NodeTaskId, data.Item3);
-                //Console.WriteLine("SendProgession to Orch : " + progression);
-                //DataInput status = new DataInput()
-                //{
-                //    ClientGUID = data.Item2.ClientGUID,
-                //    NodeGUID = NodeGUID,
-                //    MsgType = MessageType.CALL,
-                //    Method = TASK_STATUS_METHOD,
-                //    TaskId = data.Item2.TaskId,
-                //    NodeTaskId = data.Item2.NodeTaskId,
-                //    Data = new Tuple<NodeState, Object>(NodeState.WORK, progression)
-                //};
-                //SendData(Orch, status);
+                double progression = GetWorkersProgression(data.Item2.NodeTaskId, data.Item3);
+                DataInput status = new DataInput()
+                {
+                    ClientGuid = data.Item2.ClientGuid,
+                    NodeGuid = NodeGuid,
+                    MsgType = MessageType.Call,
+                    Method = TaskStatusMethod,
+                    TaskId = data.Item2.TaskId,
+                    NodeTaskId = data.Item2.NodeTaskId,
+                    Data = new Tuple<NodeState, object>(NodeState.Work, progression)
+                };
+                SendData(Orch, status);
             }
         }
 
         #endregion
 
         #region Utilitary Methods
-        /* 
-       * Mise à jour de la task dans la liste Tasks (ajout d'un nouveau WorkerTaskID)
-       * si elle existe ou création d'une nouvelle.
-       * @return retourne l'id de la workerTask crée
-       */
+        /// <summary>
+        /// Mise à jour de la task dans la liste Tasks (ajout d'un nouveau WorkerTaskID) si elle existe ou création d'une nouvelle.
+        /// </summary>
+        /// <param name="taskId">L'ID de la tâche</param>
+        /// <returns>l'id de la workerTask crée</returns>
         private int CreateWorkerTask(int taskId)
         {
             int lastWorkerTaskId = LastSubTaskId;
@@ -214,11 +215,8 @@ namespace NodeNet.Network.Nodes
 
         private void UpdateWorkerTaskStatus(int workerTaskId, int nodeTaskId, NodeState status)
         {
-            Console.WriteLine(@"Update Worker status : " + status);
-            Logger.Write($"Update worker status {status}", true);
-            Tuple<int, NodeState> workerTask;
             Tuple<int, NodeState> updatedWorkerTask = new Tuple<int, NodeState>(nodeTaskId, status);
-            if (WorkerTaskStatus.TryGetValue(workerTaskId, out workerTask))
+            if (WorkerTaskStatus.TryGetValue(workerTaskId, out Tuple<int, NodeState> workerTask))
             {
                 WorkerTaskStatus.TryUpdate(workerTaskId, updatedWorkerTask, workerTask);
             }
@@ -237,21 +235,6 @@ namespace NodeNet.Network.Nodes
                 Data = data
             };
             return duplicate;
-        }
-
-        private bool IsFirstToStart(int taskId)
-        {
-            int nbWorking = 0;
-
-            foreach (var item in WorkerTaskStatus)
-            {
-                if (item.Value.Item1 == taskId)
-                {
-                    nbWorking = item.Value.Item2 == NodeState.Work ? nbWorking + 1 : nbWorking;
-                }
-            }
-
-            return nbWorking == 1;
         }
 
         private bool TaskIsCompleted(int taskId)

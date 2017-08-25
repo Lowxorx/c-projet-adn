@@ -36,12 +36,11 @@ namespace NodeNet.Network.Orch
         /* Liste des noeuds connectés */
         public ConcurrentDictionary<int, Tuple<ConcurrentBag<int>, bool>> TaskDistrib { get; set; }
 
-        private Logger Log { get; }
-
         #endregion
 
         protected Orchestrator(string name, string address, int port) : base(name, address, port)
         {
+            Logger = new Logger(true);
             unidentifiedNodes = new List<Tuple<int, Node>>();
             Nodes = new ConcurrentObservableDictionary<string, Node>();
             Clients = new ConcurrentDictionary<string, Node>();
@@ -49,7 +48,6 @@ namespace NodeNet.Network.Orch
             WorkerFactory.AddWorker(IdentMethod, new TaskExecutor(this, IdentNode, null, null));
             WorkerFactory.AddWorker(GetCpuMethod, new TaskExecutor(this, ProcessCpuStateOrder, null, null));
             WorkerFactory.AddWorker(TaskStatusMethod, new TaskExecutor(this, RefreshTaskState, null, null));
-            Log = new Logger();
         }
 
         #region Inherited methods
@@ -58,15 +56,13 @@ namespace NodeNet.Network.Orch
         {
             TcpListener listener = new TcpListener(IPAddress.Parse(Address), Port);
             listener.Start();
-            Log.Write("Server is listening on port : " + Port, true);
-            Console.WriteLine(@"Server is listening on port : " + Port);
+            Logger.Write($"Serveur en écoute sur le port {Port}");
             while (true)
             {
                 Socket sock = await listener.AcceptSocketAsync();
                 DefaultNode connectedNode = new DefaultNode("", ((IPEndPoint)sock.RemoteEndPoint).Address + "", ((IPEndPoint)sock.RemoteEndPoint).Port, sock);
                 nbNodes++;
-                Log.Write($"Client Connection accepted from {sock.RemoteEndPoint}", true);
-                Console.WriteLine($@"Client Connection accepted from {sock.RemoteEndPoint}");
+                Logger.Write($"Connexion acceptée depuis l'adresse {sock.RemoteEndPoint}");
                 GetIdentityOfNode(connectedNode);
                 Receive(connectedNode);
             }
@@ -87,11 +83,6 @@ namespace NodeNet.Network.Orch
                 MsgType = MessageType.Ident
             };
             SendData(connectedNode, input);
-        }
-
-        public new void Stop()
-        {
-            throw new NotImplementedException();
         }
 
         public void SendDataToAllNodes(DataInput input)
@@ -154,7 +145,6 @@ namespace NodeNet.Network.Orch
                         node.Item2.NodeGuid = data.ClientGuid;
                         Console.WriteLine(@"Add Client to list : " + node);
                         Clients.TryAdd(data.ClientGuid, node.Item2);
-                        // TODO activer le monitoring pour ce client
                         SendNodesToClient(node.Item2);
                         StartMonitoringForClient(node.Item2);
                     }
@@ -210,17 +200,16 @@ namespace NodeNet.Network.Orch
                     int newTaskId = LastTaskId;
                     monitorTask = new Tuple<int, NodeState>(newTaskId, NodeState.Work);
                 }
-                GetClientFromGuid(input.ClientGuid).Tasks.TryAdd(monitorTask.Item1, new Task(monitorTask.Item1, NodeState.Work));
+                GetClientFromGuid(input.ClientGuid).Tasks.TryAdd(monitorTask.Item1, new Task(monitorTask.Item1, NodeState.Work, "MONITOR_TASK"));
                 input.NodeGuid = NodeGuid;
                 input.TaskId = monitorTask.Item1;
                 SendDataToAllNodes(input);
             }
             else if (input.MsgType == MessageType.Response && monitorTask != null)
             {
-                foreach (var client in Clients)
+                foreach (KeyValuePair<string, Node> client in Clients)
                 {
-                    Task monitoringTask;
-                    if (client.Value.Tasks.TryGetValue(monitorTask.Item1, out monitoringTask))
+                    if (client.Value.Tasks.TryGetValue(monitorTask.Item1, out Task _))
                     {
                         SendData(client.Value, input);
                     }
@@ -231,7 +220,6 @@ namespace NodeNet.Network.Orch
 
         private object RefreshTaskState(DataInput input)
         {
-            Console.WriteLine(@"Launch Cli");
             // On fait transiter l'info au client
             SendData(GetClientFromGuid(input.ClientGuid), input);
             // Et on ne renvoit rien au Node
@@ -243,8 +231,8 @@ namespace NodeNet.Network.Orch
         #region Map Reduce
         protected object ProcessMapReduce(DataInput input)
         {
+            Logger.Write($"Traitement en cours pour la méthode {input.Method}");
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
-            Console.WriteLine(@"Launch Cli");
             switch (input.MsgType)
             {
                 case MessageType.Call:
@@ -270,9 +258,8 @@ namespace NodeNet.Network.Orch
                 ConcurrentBag<object> result = GetResultFromTaskId(input.TaskId);
                 if (TaskIsCompleted(input.TaskId))
                 {
-                    Console.WriteLine(@"Launch Cli");
+                    Logger.Write(@"Réduction des résultats des nodes.");
                     object reduceRes = executor.Reducer.Reduce(result);
-                    // TODO check si tous les nodes ont finis
                     DataInput response = new DataInput()
                     {
                         TaskId = input.TaskId,
@@ -287,6 +274,7 @@ namespace NodeNet.Network.Orch
                 // Si la tâche n'est pas terminé on envoi sa progession
                 else
                 {
+                    Logger.Write(@"Envoi de la progression au client.");
                     // A condition que le mapping soit terminé, sinon on ne pourra pas savoir combien de noeuds travaillent 
                     if (!TaskDistrib.TryGetValue(input.TaskId, out var taskDist) || !taskDist.Item2) return;
                     double progression = GetProgressionForTask(taskDist);
@@ -306,6 +294,7 @@ namespace NodeNet.Network.Orch
             }
             else
             {
+                Logger.Write($"Erreur : Abandon du traitement de la tâche {input.Method} avec l'id {input.TaskId}");
                 if (!IsTaskReceiveAllRes(input.TaskId)) return;
                 RemoveTask(input.TaskId);
                 RemoveResultForTask(input.TaskId);
@@ -350,7 +339,7 @@ namespace NodeNet.Network.Orch
                 {
                     bool allNodeWork = true;
                     // On itère sur la liste des Nodes pour leur distribuer du travail
-                    foreach (var node in Nodes)
+                    foreach (KeyValuePair<string, Node> node in Nodes)
                     {
                         // Si au moins un node de la liste est en train d'attendre 
                         // on lui envoit du travail
@@ -362,8 +351,10 @@ namespace NodeNet.Network.Orch
                             SendNodeIsWorkingToClient(node.Value,newTaskId, newNodeTaskId, input);
                             // On passe son état à WORK
                             node.Value.State = NodeState.Work;
+                            Logger.Write($"Envoi d'une partie du traitement vers le node {node.Value.NodeGuid}");
                             if (mapper.MapIsEnd())
                             {
+                                Logger.Write($"Mapping terminé pour la tâche {input.Method} avec l'id {newTaskId}");
                                 // endMap vaudra true si on a déjà tout mapper
                                 endMap = true;
                                 // Si on a tout mapper on l'indique dans le tableau de distribution des NodeTask
@@ -374,7 +365,9 @@ namespace NodeNet.Network.Orch
                         }
                     }
                     if (allNodeWork)
+                    {
                         busy.Reset();
+                    }
                 }
             };
 
@@ -384,7 +377,7 @@ namespace NodeNet.Network.Orch
                 bool unlockThread = false;
                 if (e.NewItems != null)
                 {
-                    foreach (var node in e.NewItems)
+                    foreach (object node in e.NewItems)
                     {
                         if (((KeyValuePair<string, Node>)node).Value.State == NodeState.Wait)
                         {
@@ -436,7 +429,7 @@ namespace NodeNet.Network.Orch
             }
             else
             {
-                throw new Exception("Aucune Task avec cet id ");
+                throw new Exception("Aucune Task avec cet id.");
             }
         }
 
@@ -502,16 +495,6 @@ namespace NodeNet.Network.Orch
             }
         }
 
-        private List<string> GetNodeGuidFromNodeTaskIDs(List<int> list)
-        {
-            List<string> nodeGuids = new List<string>();
-            foreach (int subTaskId in list)
-            {
-                nodeGuids.Add(GetNodeGuidFromNodeTaskId(subTaskId));
-            }
-            return nodeGuids;
-        }
-
         private string GetNodeGuidFromNodeTaskId(int subTaskId)
         {
             foreach (var node in Nodes)
@@ -522,16 +505,6 @@ namespace NodeNet.Network.Orch
                 }
             }
             throw new Exception("Aucun nodeGUID trouvé pour cet id de Nodetask");
-        }
-
-        private Task GetClientTask(int taskId, string clientGuid)
-        {
-            Node client = GetClientFromGuid(clientGuid);
-            if (client.Tasks.TryGetValue(taskId, out Task task))
-            {
-                return task;
-            }
-            throw new Exception("Aucune task trouvé pour ce client et cet id");
         }
 
         private double GetProgressionForTask(Tuple<ConcurrentBag<int>, bool> taskDist)
@@ -799,7 +772,14 @@ namespace NodeNet.Network.Orch
             {
                 SetNodeTaskToError(node, true);
                 // On supprime le node
-                Clients.TryRemove(node.NodeGuid,out var _);
+                if (!Clients.TryRemove(node.NodeGuid, out var _))
+                {
+                    Logger.Write("Impossible de supprimer le client de la liste des clients.");
+                }
+                else
+                {
+                    Logger.Write("Client supprimé de la liste des clients après déconnexion.");
+                }
             }
 
         }
@@ -827,6 +807,7 @@ namespace NodeNet.Network.Orch
             foreach (int id in tasks)
             {
                 // On stoppe le mapping pour toutes les tasks
+                if (id == monitorTask.Item1) continue;
                 SetTaskIsMapped(id);
                 errorTasks.Add(UpdateTaskStatus(id, NodeState.Error));
             }
@@ -839,7 +820,7 @@ namespace NodeNet.Network.Orch
             List<int> nodeTaskId = new List<int>();
             foreach(int id in taskIds)
             {
-                foreach (var taskDist in TaskDistrib)
+                foreach (KeyValuePair<int, Tuple<ConcurrentBag<int>, bool>> taskDist in TaskDistrib)
                 {
                     if(taskDist.Key == id)
                     {

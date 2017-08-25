@@ -9,14 +9,32 @@ namespace NodeNet.Utilities
     public class Logger
     {
         private static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static readonly string LogPath = AppPath + @"\dnaLog.txt";
+        private string LogPath;
         private static readonly VmLogBox Vmlog = ViewModelLocator.VmlLogBoxUcStatic;
+        private bool isDebug;
+        private bool isActive;
 
-        public void Write(string value, bool toFile)
+        public Logger(bool active)
         {
-            Vmlog.LogBox += DateTime.Now.ToLongTimeString() + " - " + value + Environment.NewLine;
+            isActive = active;
+            if (!isActive) return;
+#if DEBUG
+            Guid id = Guid.NewGuid();
+            LogPath = AppPath + @"\logs\" + id + @".log";
+            Write("Logger Instance ID : " + id);
+            if (!Directory.Exists(AppPath + @"\logs"))
+            {
+                Directory.CreateDirectory(AppPath + @"\logs");
+            }
+            isDebug = true;
+#endif
+        }
 
-            if (!toFile) return;
+        public void Write(string value)
+        {
+            if (!isActive) return;
+            Vmlog.LogBox += DateTime.Now.ToLongTimeString() + " - " + value + Environment.NewLine;
+            if (!isDebug) return;
             try
             {
                 FileMode mode = File.Exists(LogPath) ? FileMode.Append : FileMode.Create;
@@ -32,9 +50,11 @@ namespace NodeNet.Utilities
             }
         }
 
-        public void Write(Exception e, bool toFile)
+        public void Write(Exception e)
         {
-            if (!toFile) return;
+            if (!isActive) return;
+            Vmlog.LogBox += DateTime.Now.ToLongTimeString() + " - Erreur : " + e.Message + Environment.NewLine;
+            if (!isDebug) return;
             try
             {
                 FileMode mode = File.Exists(LogPath) ? FileMode.Append : FileMode.Create;
