@@ -102,10 +102,6 @@ namespace ADNet.Network.Impl
         private void Updateres(Dictionary<string, int> results, char a, List<char> buffer, List<string> listpairesbases)
         {
             string seq = string.Concat(buffer);
-            if (seq == "AT")
-            {
-                //Console.WriteLine(@"Launch Cli");
-            }
             if (results.TryGetValue(seq, out int occur))
             {
                 results[seq] = occur + 1;
@@ -115,17 +111,18 @@ namespace ADNet.Network.Impl
                 results.Add(seq, 1);
             }
 
-            if (buffer.Count == 2)
+            switch (buffer.Count)
             {
-                buffer[0] = buffer[1];
-                buffer[1] = a;
-            }
-            else if (buffer.Count == 4)
-            {
-                buffer[0] = buffer[1];
-                buffer[1] = buffer[2];
-                buffer[2] = buffer[3];
-                buffer[3] = a;
+                case 2:
+                    buffer[0] = buffer[1];
+                    buffer[1] = a;
+                    break;
+                case 4:
+                    buffer[0] = buffer[1];
+                    buffer[1] = buffer[2];
+                    buffer[2] = buffer[3];
+                    buffer[3] = a;
+                    break;
             }
         }
     }

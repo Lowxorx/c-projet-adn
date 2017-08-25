@@ -88,7 +88,6 @@ namespace NodeNet.Network.Orch
         public void SendDataToAllNodes(DataInput input)
         {
             DataFormater.Serialize(input);
-            //Console.WriteLine(@"Send Data to " + Nodes.Count + @" Node in orch Nodes list");
             /* Multi Client */
             foreach (var node in Nodes)
             {
@@ -99,7 +98,6 @@ namespace NodeNet.Network.Orch
         private void SendDataToAllClients(DataInput input)
         {
             DataFormater.Serialize(input);
-            //Console.WriteLine(@"Send Data to " + Nodes.Count + @" Node in orch Nodes list");
             /* Multi Client */
             foreach (var node in Clients)
             {
@@ -110,10 +108,6 @@ namespace NodeNet.Network.Orch
 
         public override void ProcessInput(DataInput input, Node node)
         {
-            if (input.Method != GetCpuMethod)
-            {
-                //Console.WriteLine(@"Process input for : " + input.Method + @" at : " + DateTime.Now.ToLongTimeString());
-            }
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
             object res = executor.DoWork(input);
             if (res == null) return;
@@ -135,7 +129,6 @@ namespace NodeNet.Network.Orch
 
         public object IdentNode(DataInput data)
         {
-            //Console.WriteLine(@"Launch Cli");
             foreach (Tuple<int, Node> node in unidentifiedNodes)
             {
                 if (node.Item1 == data.TaskId)
@@ -143,7 +136,6 @@ namespace NodeNet.Network.Orch
                     if (data.ClientGuid != null)
                     {
                         node.Item2.NodeGuid = data.ClientGuid;
-                        //Console.WriteLine(@"Add Client to list : " + node);
                         Clients.TryAdd(data.ClientGuid, node.Item2);
                         SendNodesToClient(node.Item2);
                         StartMonitoringForClient(node.Item2);
@@ -155,7 +147,6 @@ namespace NodeNet.Network.Orch
                         {
                             StartMonitoringForNode(data, node.Item2);
                         }
-                        //Console.WriteLine(@"Add Node to list : " + node);
                         Nodes.TryAdd(data.NodeGuid, node.Item2);
                         SendNodeToClients(node.Item2);
                     }
@@ -435,7 +426,6 @@ namespace NodeNet.Network.Orch
 
         private int SendSubTaskToNode(Node node, int newTaskId, DataInput input, object data)
         {
-            //Console.WriteLine(@"Launch Cli");
             int newNodeTaskId = LastSubTaskId;
             CreateNodeTasks(node, newTaskId, newNodeTaskId);
             DataInput res = new DataInput()
@@ -484,8 +474,7 @@ namespace NodeNet.Network.Orch
             node.Tasks.TryAdd(newSubTaskId, new Task(newSubTaskId, NodeState.Wait));
             // Ajout de la node task à la ligne de la task dans le tableau de distribution des nodetask
 
-            Tuple<ConcurrentBag<int>, bool> task;
-            if (TaskDistrib.TryGetValue(newTaskId, out task))
+            if (TaskDistrib.TryGetValue(newTaskId, out Tuple<ConcurrentBag<int>, bool> task))
             {
                 task.Item1.Add(newSubTaskId);
             }
@@ -499,7 +488,7 @@ namespace NodeNet.Network.Orch
         {
             int nbNodeWork = taskDist.Item1.Count();
             int nbNodeEnded = 0;
-            foreach (var node in Nodes)
+            foreach (KeyValuePair<string, Node> node in Nodes)
             {
                 foreach (int idNodeTask in taskDist.Item1)
                 {
@@ -514,12 +503,11 @@ namespace NodeNet.Network.Orch
 
         private Task UpdateTaskStatus(int id, NodeState status)
         {
-            foreach (var client in Clients)
+            foreach (KeyValuePair<string, Node> client in Clients)
             {
-                Task task;
-                if (client.Value.Tasks.TryGetValue(id, out task))
+                if (client.Value.Tasks.TryGetValue(id, out Task task))
                 {
-                    Task newTask = new Task(id, status) {StartTime = task.StartTime};
+                    Task newTask = new Task(id, status) { StartTime = task.StartTime };
                     if (status == NodeState.Error)
                     {
                         // On signifie à la tâche qu'elle est terminée
@@ -562,9 +550,7 @@ namespace NodeNet.Network.Orch
 
         private void UpdateNodeStatus(NodeState status, string nodeGuid)
         {
-            //Console.WriteLine(@"Set status of node : " + nodeGuid + @" to : " + status);
-            Node node;
-            if (Nodes.TryGetValue(nodeGuid, out node))
+            if (Nodes.TryGetValue(nodeGuid, out Node node))
             {
                 node.State = status;
             }
@@ -678,19 +664,16 @@ namespace NodeNet.Network.Orch
         {
             bool completed = true;
 
-            Tuple<ConcurrentBag<int>, bool> task;
-            if (TaskDistrib.TryGetValue(taskId, out task))
+            if (TaskDistrib.TryGetValue(taskId, out Tuple<ConcurrentBag<int>, bool> task))
             {
                 // Si le booleen vaut true c'est que le mapping est terminé 
                 // donc on peut vérifier si toutes les subtask ont été process
-                //Console.WriteLine(@"Task is mapped : " + task.Item2);
                 if (task.Item2)
                 {
                     // On itère sur toute la liste des subtask de cette task
                     foreach (int subTask in task.Item1)
                     {
                         NodeState state = GetSubTaskState(subTask);
-                        //Console.WriteLine(@"InTaskComplete state of subTask : " + subTask + @" : " + state);
                         // Ici on vérifie qsue toutes les subtask soient en état FINISH à part celle que l'on vient de recevoir
                         if (state != NodeState.Finish)
                         {
@@ -708,7 +691,6 @@ namespace NodeNet.Network.Orch
             {
                 throw new Exception("Aucune Task avec cet id ");
             }
-            //Console.WriteLine(@"In TaskIsComplete -> complete : " + completed + @" Thread : " + Thread.CurrentThread.ManagedThreadId);
             return completed;
         }
 

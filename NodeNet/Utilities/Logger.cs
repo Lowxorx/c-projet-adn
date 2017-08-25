@@ -46,7 +46,6 @@ namespace NodeNet.Utilities
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(ex);
             }
         }
 
@@ -77,7 +76,6 @@ namespace NodeNet.Utilities
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(ex);
             }
         }
 

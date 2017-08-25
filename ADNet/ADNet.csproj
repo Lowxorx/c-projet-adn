@@ -168,5 +168,8 @@
   <ItemGroup>
     <Resource Include="dna.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dna.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

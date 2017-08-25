@@ -28,7 +28,6 @@ namespace ADNet.Map_Reduce.Orch
             if (firstMap)
             {
                 totalNbChar = sequence.Length;
-                //Console.WriteLine(@"In Orch mapping sequence size : " + sequence.Length);
                 nbCharByChunk = totalNbChar / NbrChunk;
                 rest = totalNbChar % NbrChunk;
                 result = rest < nbCharByChunk / 2 ? new char[rest + nbCharByChunk] : new char[rest];
@@ -49,7 +48,6 @@ namespace ADNet.Map_Reduce.Orch
             {
                 thisIsTheEnd = true;
             }
-            //Console.WriteLine(@"In Orch mapping result size : " + result.Length);
             return result;
         }
 
