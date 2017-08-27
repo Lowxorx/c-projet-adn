@@ -15,18 +15,36 @@ using System.Windows.Forms;
 
 namespace NodeNet.Network.Nodes
 {
+    /// <summary>
+    /// Classe définissant le comportement par des défaut des noeurds de l'architecture
+    /// </summary>
     public class DefaultNode : Node
     {
         #region Properties
 
+        /// <summary>
+        /// Liste de l'état des tâches en cours de traitement
+        /// </summary>
         public List<Tuple<int, int, NodeState>> ProcessingTask { get; set; }
 
         // int -> id de la worker task, int -> id de la task, NodeStatus -> Status de la WorkerTask
+        /// <summary>
+        /// Liste de l'état des tâches et de l'état des workers éxécutant ces tâches
+        /// </summary>
         public ConcurrentDictionary<int, Tuple<int, NodeState>> WorkerTaskStatus { get; set; }
 
+        /// <summary>
+        /// Active le monitoring des tâches
+        /// </summary>
         bool monitoringEnable = true;
         #endregion
 
+        /// <summary>
+        /// Constructeur initialisant l'adresse IP, le port et le nom du noeud ainsi que les worker infrastructure IDENT et GET_CPU
+        /// </summary>
+        /// <param name="name">Nom du noeud</param>
+        /// <param name="adress">Adresse IP du noeud</param>
+        /// <param name="port">Port d'écoute</param>
         public DefaultNode(string name, string adress, int port) : base(name, adress, port)
         {
             WorkerTaskStatus = new ConcurrentDictionary<int, Tuple<int, NodeState>>();
@@ -43,8 +61,20 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Constructeur par défaut
+        /// </summary>
+        /// <param name="name">Nom du noeud</param>
+        /// <param name="adress">Adresse IP du noeud</param>
+        /// <param name="port">Port d'écoute</param>
+        /// <param name="sock">Socket d'écoute</param>
         public DefaultNode(string name, string adress, int port, Socket sock) : base(name, adress, port, sock) { }
 
+        /// <summary>
+        /// Méthode de réception des objets de transfert de données permettant d'initialiser un TaskExecutor avec le nom de la méthode reçue dans l'objet de transfert
+        /// </summary>
+        /// <param name="input">Objet de transfert contenant la méthode</param>
+        /// <param name="node">Noeud emetteur</param>
         public override void ProcessInput(DataInput input, Node node)
         {
             Logger.Write($"Process input for {input.Method}", true);
@@ -75,6 +105,11 @@ namespace NodeNet.Network.Nodes
    
         #region Worker method
 
+        /// <summary>
+        /// Méthode d'identification à l'orchestrateur et de réponse à la réquête d'identification
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
         private DataInput ProcessIndent(DataInput d)
         {
             Tuple<string, int> orchIDentifiers = (Tuple<string, int>)d.Data;
@@ -91,7 +126,11 @@ namespace NodeNet.Network.Nodes
             };
             return resp;
         }
-
+        /// <summary>
+        /// Méthode de démarrage du monitoring des performances machine
+        /// </summary>
+        /// <param name="input">objet de trasnfert à réinitialiser avbec les informations du noeud</param>
+        /// <returns>informations de monitorng contenues dans l'objetde transfert</returns>
         private object StartMonitoring(DataInput input)
         {
 
@@ -136,6 +175,12 @@ namespace NodeNet.Network.Nodes
             return null;
         }
 
+        /// <summary>
+        /// Méthode exécutant le traitement demandé dans l'objet de transfert au travers de gestionnaire de thread indépendant
+        /// </summary>
+        /// <param name="processFunction">Méthode à exécutant la fonction apssé&e en paramètre de l'objet de transfert </param>
+        /// <param name="taskData">Objet dfe trasnfert contenant les données à traiter </param>
+        /// <param name="totalNbWorker"> Nombre de gestionbnaires de thread à exécuter</param>
         protected void LaunchBgForWork(Action<object, DoWorkEventArgs> processFunction, DataInput taskData, int totalNbWorker)
         {
             BackgroundWorker bw = new BackgroundWorker();
@@ -148,12 +193,23 @@ namespace NodeNet.Network.Nodes
             bw.RunWorkerAsync(dataAndMeta);
         }
 
+        /// <summary>
+        /// Méthode retournant le pourcentage de progression d'une tâche en cours 
+        /// </summary>
+        /// <param name="nodeTaskId">ID de la tâche en cours de ce noeud</param>
+        /// <param name="totalNbWorker">Nombre total de BackgroundWorkers de ce noeud</param>
+        /// <returns></returns>
         private double GetWorkersProgression(int nodeTaskId, int totalNbWorker)
         {
             int nbWorkerEnd = WorkerTaskStatus.Count(item => item.Value.Item1 == nodeTaskId && item.Value.Item2 == NodeState.Finish);
             return nbWorkerEnd * 100 / totalNbWorker;
         }
 
+        /// <summary>
+        /// Méthode d'écoute de fin d'exécution des BackgroundWorkers
+        /// </summary>
+        /// <param name="sender">BackgroundWorker emetteur</param>
+        /// <param name="e">résultat de fin de traitement</param>
         protected void WorkerEndProcess(object sender, RunWorkerCompletedEventArgs e)
         {
             // Manage if e.Error != null
@@ -197,6 +253,11 @@ namespace NodeNet.Network.Nodes
        * si elle existe ou création d'une nouvelle.
        * @return retourne l'id de la workerTask crée
        */
+       /// <summary>
+       /// Méthode de mise à jour d'une tâche dans la liste des tâches
+       /// </summary>
+       /// <param name="taskId">ID de la tâche à mettre à jour</param>
+       /// <returns></returns>
         private int CreateWorkerTask(int taskId)
         {
             int lastWorkerTaskId = LastSubTaskId;
@@ -212,6 +273,12 @@ namespace NodeNet.Network.Nodes
 
         }
 
+        /// <summary>
+        /// Méthode de mise à jour du statut d'une tâche au sein de ce noeud
+        /// </summary>
+        /// <param name="workerTaskId">ID de la tâche exécutée par le TaskExecutor</param>
+        /// <param name="nodeTaskId">ID de la tâche reçue par le noeud</param>
+        /// <param name="status">Statut du noeud</param>
         private void UpdateWorkerTaskStatus(int workerTaskId, int nodeTaskId, NodeState status)
         {
             Console.WriteLine(@"Update Worker status : " + status);
@@ -224,6 +291,12 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode d'encapsulation de donnée à trasnfgérer dans un objet de transfert
+        /// </summary>
+        /// <param name="input">Objet de transfert destiné à contenir la donnée</param>
+        /// <param name="data">Donnée</param>
+        /// <returns>Objet de transfert contenant la donnée</returns>
         public DataInput PrepareData(DataInput input, object data)
         {
             DataInput duplicate = new DataInput()
@@ -239,6 +312,11 @@ namespace NodeNet.Network.Nodes
             return duplicate;
         }
 
+        /// <summary>
+        /// Méthode indiquant si une tâche est la première à être lancée
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <returns>première à être lancée</returns>
         private bool IsFirstToStart(int taskId)
         {
             int nbWorking = 0;
@@ -254,6 +332,11 @@ namespace NodeNet.Network.Nodes
             return nbWorking == 1;
         }
 
+        /// <summary>
+        /// Méthode indiquant la complétion d'une tâche
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <returns>complétion de la tâche</returns>
         private bool TaskIsCompleted(int taskId)
         {
             bool completed = true;
@@ -267,6 +350,10 @@ namespace NodeNet.Network.Nodes
             return completed;
         }
 
+        /// <summary>
+        /// Méthode d'affichage du message de fermeture de l'application 
+        /// </summary>
+        /// <param name="node">Noeud en arrêt</param>
         public override void RemoveDeadNode(Node node)
         {
             MessageBox.Show(@"Erreur sur l'orchestrateur. Fermeture de l'application...");
