@@ -10,9 +10,22 @@ using System.Threading;
 
 namespace ADNet.Network.Impl
 {
+    /// <summary>
+    /// Implémentation de la classe DefaultNode
+    /// </summary>
     public class DnaNode : DefaultNode
     {
+        /// <summary>
+        /// Nom de la méthode métier pour le Module 1 
+        /// </summary>
         private const string DnaQuantMethod = "DNA_QUANT";
+
+        /// <summary>
+        /// Constructeur ajoutant un TastExecutor métier à la WorkerFactory
+        /// </summary>
+        /// <param name="name">Nom de cet orchestrateur</param>
+        /// <param name="address">Adresse IP</param>
+        /// <param name="port">Port d'écoute</param>
         public DnaNode(string name, string address, int port) : base(name, address, port)
         {
             WorkerFactory.AddWorker(DnaQuantMethod, new TaskExecutor(this, DnaQuantStarter, new QuantStatsMapper(), new QuantStatsReducer()));
@@ -20,6 +33,12 @@ namespace ADNet.Network.Impl
             Address = address;
             Port = port;
         }
+
+        /// <summary>
+        /// Méthode de démarrage du traitement métier par l'attribution de la méthode demandé à un TaskExecutor
+        /// </summary>
+        /// <param name="input">Objet de transfert contenant la méthode et la donnée</param>
+        /// <returns></returns>
         private object DnaQuantStarter(DataInput input)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
@@ -41,7 +60,7 @@ namespace ADNet.Network.Impl
         /// Méthode de comptage des caractères métiers, exécutée au sein de l'évennement RunWorkerAsync de chaque BackgroundWorker
         /// </summary>
         /// <param name="sender">Objet émetteur de l'évennement, le BackgroundWorker</param>
-        /// <param name="e">Argument de l'évennement conteant la donnée à traitrer</param>
+        /// <param name="e">Argument de l'évennement contenant la donnée à traitrer</param>
         public void DnaQuantProcess(object sender, DoWorkEventArgs e)
         {
             Logger.Write("DNAQuantProcess started", false);
@@ -116,6 +135,13 @@ namespace ADNet.Network.Impl
             e.Result = dataAndMeta;
         }
 
+        /// <summary>
+        /// Méthode de mise à jour des résultats avec un caractère 
+        /// </summary>
+        /// <param name="results">résultats à mettre à jour</param>
+        /// <param name="a">caractère</param>
+        /// <param name="buffer">buffer contenant la chaine actuelle</param>
+        /// <param name="listpairesbases">Liste des paires destinée à comparaison</param>
         private void Updateres(Dictionary<string, int> results, char a, List<char> buffer, List<string> listpairesbases)
         {
             string seq = string.Concat(buffer);
