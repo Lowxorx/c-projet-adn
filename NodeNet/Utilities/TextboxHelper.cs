@@ -4,7 +4,9 @@ using System.Windows.Interactivity;
 
 namespace NodeNet.Utilities
 {
-
+    /// <summary>
+    ///  Objet permettant de déclencher l'autoscroll de la textbox en mode MVVM
+    /// </summary>
     public class TextboxHelper : Behavior<ScrollViewer>
     {
         private double height;

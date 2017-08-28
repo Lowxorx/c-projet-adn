@@ -6,6 +6,9 @@ using System.Text;
 
 namespace NodeNet.Utilities
 {
+    /// <summary>
+    /// Objet permettant d'écrire les logs dans une TextBox
+    /// </summary>
     public class Logger
     {
         private static readonly string AppPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
