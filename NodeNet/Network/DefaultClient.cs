@@ -11,8 +11,17 @@ using System.Windows;
 
 namespace NodeNet.Network
 {
+    /// <summary>
+    /// Objet définnissant le comportement du Client
+    /// </summary>
     public abstract class DefaultClient : Node
     {
+        /// <summary>
+        /// Constructeur initialisant le nom l'adresse IP et le port d'écoute ainsi que les TaskExecutor associés aux méthodes infrastructures
+        /// </summary>
+        /// <param name="name">nom du client</param>
+        /// <param name="adress">adresse IP</param>
+        /// <param name="port">port d'écoute</param>
         protected DefaultClient(string name, string adress, int port) : base(name,adress,port)
         {
             WorkerFactory.AddWorker(GetCpuMethod, new TaskExecutor(this,RefreshCpuState,null,null));
@@ -22,6 +31,11 @@ namespace NodeNet.Network
 
         protected DefaultClient(string name, string adress, int port, Socket sock) : base(name,adress,port, sock){}
 
+        /// <summary>
+        /// Gère la reception des demandes contenues dans l'objet de transfert depuis un noeud
+        /// </summary>
+        /// <param name="input">objet de transfert</param>
+        /// <param name="node">noeud emetteur</param>
         public override void ProcessInput(DataInput input,Node node)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
@@ -45,13 +59,20 @@ namespace NodeNet.Network
             }
         }
 
-        /* Multi Client */
+        /// <summary>
+        /// Rafraichit la vue avec les informations de l'objet de transfert
+        /// </summary>
+        /// <param name="input">objet de transfert</param>
+        /// <returns>null</returns>
         public object RefreshCpuState(DataInput input)
         {
             ViewModelLocator.VmlMonitorUcStatic.RefreshNodesInfo(input);
             return null;
         }
 
+        /// <summary>
+        /// Lance la requête de monitoring des ressources matérielles des noeuds à travers un objeet de transfert
+        /// </summary>
         public void StartMonitorNodes()
         {
             Console.WriteLine(@"Launch Cli");
@@ -67,6 +88,10 @@ namespace NodeNet.Network
             SendData(Orch, input);
         }
 
+        /// <summary>
+        /// Ajoute les informations des noeuds à la liste des informations de monitoring des noeuds
+        /// </summary>
+        /// <param name="monitoringValues">Liste des informations de monitoring des noeuds</param>
         public void AddNodeToList(List<List<string>> monitoringValues)
         {
             foreach (List<string> nodeinfo in monitoringValues)
@@ -76,6 +101,11 @@ namespace NodeNet.Network
             }
         }
 
+        /// <summary>
+        /// Gère une requête d'identification depuis un objet de transfert
+        /// </summary>
+        /// <param name="input">objet de transfert</param>
+        /// <returns></returns>
         public object ProcessIdent(DataInput input)
         {
             if (input.MsgType == MessageType.NodeIdent)
@@ -94,6 +124,11 @@ namespace NodeNet.Network
             return null;
         }
 
+        /// <summary>
+        /// Rafraichit visuellement l'état d'une tâche depuis les informations contenues dans un objet de transfert
+        /// </summary>
+        /// <param name="input">objet de transfert</param>
+        /// <returns>null</returns>
         private object RefreshTaskState(DataInput input)
         {
            Tuple<NodeState,object> state = (Tuple<NodeState,object>)input.Data;
@@ -116,6 +151,10 @@ namespace NodeNet.Network
             return null;
         }
 
+        /// <summary>
+        /// Supprime un noeud arrêté sur la vue
+        /// </summary>
+        /// <param name="node">noeud arrêté</param>
         public override void RemoveDeadNode(Node node)
         {
             MessageBox.Show("Erreur sur l'orchestrateur. Fermeture de l'application...");
