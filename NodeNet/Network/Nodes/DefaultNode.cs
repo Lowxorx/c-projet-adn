@@ -46,7 +46,7 @@ namespace NodeNet.Network.Nodes
         /// <param name="name">Nom du noeud</param>
         /// <param name="adress">Adresse IP du noeud</param>
         /// <param name="port">Port d'écoute</param>
-        public DefaultNode(string name, string adress, int port) : base(name, adress, port)
+        public DefaultNode(string name, string adress, int port, bool enabled) : base(name, adress, port)
         {
 
             Logger = new Logger(enabled);

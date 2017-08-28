@@ -25,7 +25,7 @@ namespace ADNet.Network.Impl
         /// <param name="name">Nom de cet orchestrateur</param>
         /// <param name="address">Adresse IP</param>
         /// <param name="port">Port d'écoute</param>
-        public DnaNode(string name, string address, int port) : base(name, address, port)
+        public DnaNode(string name, string address, int port) : base(name, address, port, true)
         {
             WorkerFactory.AddWorker(DnaQuantMethod, new TaskExecutor(this, DnaQuantStarter, new QuantStatsMapper(), new QuantStatsReducer()));
             Name = name;

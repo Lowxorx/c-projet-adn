@@ -781,8 +781,8 @@ namespace NodeNet.Network.Orch
                 };
                 SendData(client, di);
             }
-        
 
+        }
         /// <summary>
         /// Récupère l'état d'une tâche
         /// </summary>
