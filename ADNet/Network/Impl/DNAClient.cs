@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Sockets;
 using ADNet.GUI.ViewModel;
 using NodeNet.Data;
 using NodeNet.Network;
@@ -12,14 +12,33 @@ using NodeNet.Tasks;
 
 namespace ADNet.Network.Impl
 {
+    /// <summary>
+    /// Implémentation de la classe DefaultClient
+    /// </summary>
     public class DnaClient : DefaultClient
     {
+        /// <summary>
+        /// Nom de la méthode métier pour le Module 1 
+        /// </summary>
         private const string DnaQuantMethod = "DNA_QUANT";
+
+        /// <summary>
+        /// Constructeur initialisant un TaskExecutor avec la méthode de traitement métier pour le Module 1
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="adress"></param>
+        /// <param name="port"></param>
         public DnaClient(string name, string adress, int port) : base(name,adress,port)
         {
             WorkerFactory.AddWorker(DnaQuantMethod, new TaskExecutor(this, DnaQuantStatDisplay, null, null));
         }
 
+
+
+        /// <summary>
+        /// Définit l'objet de transfert chargé de transmettre la requête de traitement pour le Module 1
+        /// </summary>
+        /// <param name="genomicData">Données à traiter</param>
         public void DnaQuantStat(char[] genomicData)
         {
             
@@ -33,6 +52,11 @@ namespace ADNet.Network.Impl
             SendData(Orch, data);
         }
 
+        /// <summary>
+        /// Affiche les résultats sur la vue à partir d'un objet de transfert contenant les données
+        /// </summary>
+        /// <param name="input">objet de transfert</param>
+        /// <returns></returns>
         private object DnaQuantStatDisplay(DataInput input)
         {
             string display = "";
@@ -76,6 +100,11 @@ namespace ADNet.Network.Impl
             return null;
         }
 
+        /// <summary>
+        /// Sélectionne les caractères correspondant aux bases au sein du fichier
+        /// </summary>
+        /// <param name="sourceFile">Chaîne représentant le contenu du fichier</param>
+        /// <returns>tableau de caractères contenant les bases</returns>
         public char[] DnaParseData(string sourceFile)
         {
             List<char> pairsList = new List<char>();

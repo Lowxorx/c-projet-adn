@@ -15,68 +15,167 @@ using System.Threading;
 
 namespace NodeNet.Network.Nodes
 {
+    /// <summary>
+    /// Objet rerésentant l'état d'une connexion par Socket
+    /// </summary>
     public class StateObject
     {
-        // Client socket.
+        /// <summary>
+        /// Noeud définit
+        /// </summary>
         public Node Node;
-        // Size of receive buffer.
+        /// <summary>
+        /// Taille maximale du buffer
+        /// </summary>
         public const int BufferSize = 4096;
-        // Receive buffer.
+        /// <summary>
+        /// Buffer de réception
+        /// </summary>
         public byte[] Buffer = new byte[BufferSize];
-        // Received data
+        /// <summary>
+        /// Données reçues
+        /// </summary>
         public List<byte[]> Data = new List<byte[]>();
     }
+    /// <summary>
+    /// Objet représentant le noeud au sein d'une architecture clusterisée
+    /// </summary>
     public abstract class Node : INode
     {
         #region Properties
+        /// <summary>
+        /// ID du Noeud
+        /// </summary>
         public string NodeGuid;
-
+        /// <summary>
+        /// Noeud Orchestrateur auquel ce noeud est connecté
+        /// </summary>
         public Node Orch { get; set; }
+        /// <summary>
+        /// Objet de log
+        /// </summary>
         public Logger Logger { get; set; }
+        /// <summary>
+        /// Adresse ip de ce noeud
+        /// </summary>
         public string Address { get; set; }
+        /// <summary>
+        /// Port d'écoute
+        /// </summary>
         public int Port { get; set; }
+        /// <summary>
+        /// Nom de ce noeud
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Socket d'écoute de ce noeud
+        /// </summary>
         public Socket NodeSocket { get; set; }
+        /// <summary>
+        /// Socket de destination
+        /// </summary>
         public Socket ServerSocket { get; set; }
+        /// <summary>
+        /// Taille maximale du buffer
+        /// </summary>
         public static int BufferSize = 4096;
+        /// <summary>
+        /// Compteur des performances des coeurs processeur
+        /// </summary>
         public PerformanceCounter PerfCpu { get; set; }
+        /// <summary>
+        /// Compteur des performances de la mémoire vive
+        /// </summary>
         public PerformanceCounter PerfRam { get; set; }
+        /// <summary>
+        /// Etat du noeud
+        /// </summary>
         public NodeState State { get; set; }
+        /// <summary>
+        /// Liste des tâches reçues par ce noeud
+        /// </summary>
         public ConcurrentDictionary<int, Task> Tasks { get; set; }
-
-        /* Stockage des résultats réduits par Task */
+        /// <summary>
+        /// Liste des résultats réduits pour chaque tâche
+        /// </summary>
         public ConcurrentDictionary<int, ConcurrentBag<object>> Results { get; set; }
-
+        /// <summary>
+        /// ID de la dernière tâche attribuée à ce noeud
+        /// </summary>
         private int lastTaskId;
-        protected  int LastTaskId => lastTaskId += 1;
+        protected int LastTaskId => lastTaskId += 1;
 
+        /// <summary>
+        /// ID de la dernière sous tâche de la tâche attribuée
+        /// </summary>
         private int lastSubTaskId;
         protected int LastSubTaskId => lastSubTaskId += 1;
 
+        /// <summary>
+        /// Valeur d'utilisation du processeur
+        /// </summary>
         private float CpuVal { get; set; }
         public float CpuValue { get => (float)(Math.Truncate(CpuVal * 100.0) / 100.0);
             set => CpuVal = value;
         }
+        /// <summary>
+        /// Valeur d'utilisation de la mémoire vive
+        /// </summary>
         private double RamVal { get; set; }
         public double RamValue { get => (Math.Truncate(RamVal * 100.0) / 100.0);
             set => RamVal = value;
         }
-
+        /// <summary>
+        /// Tâche actuelle en traitement
+        /// </summary>
         public int WorkingTask { get; set; }
 
+        /// <summary>
+        /// % de progression du traitement actuel
+        /// </summary>
         public double Progression { get; set; }
 
+        /// <summary>
+        /// WorkerFactory permettant de produire les TaskExecutor
+        /// </summary>
         public TaskExecFactory WorkerFactory { get; set; }
+        /// <summary>
+        /// Trame de transfert
+        /// </summary>
         protected List<byte[]> BytearrayList { get; set; }
+        /// <summary>
+        /// Evennement de gestion des connexions Socket asynchrones permettant de définir l'arrêt d'un envoi asynchrone
+        /// </summary>
         protected static ManualResetEvent SendDone = new ManualResetEvent(false);
+        /// <summary>
+        /// Evennement de gestion des connexions Socket asynchrones permettant de définir l'arrêt d'une réception asynchrone
+        /// </summary>
         protected static ManualResetEvent ReceiveDone = new ManualResetEvent(false);
+        /// <summary>
+        /// Evennement de gestion des connexions Socket asynchrones permettant de définir l'arrêt d'une connexion asynchrone
+        /// </summary>
         protected static ManualResetEvent ConnectDone = new ManualResetEvent(false);
+        /// <summary>
+        /// Constante définissant le nom de la méthode dynamique GET_CPU
+        /// </summary>
         protected const string GetCpuMethod = "GET_CPU";
+        /// <summary>
+        /// Constante définissant le nom de la méthode dynamique IDENT
+        /// </summary>
         protected const string IdentMethod = "IDENT";
+        /// <summary>
+        /// Constante définissant le nom de la méthode dynamique TASK_STATE
+        /// </summary>
         protected const string TaskStatusMethod = "TASK_STATE";
         #endregion
 
         #region Ctor
+        /// <summary>
+        /// Constructeur initialisant les tâches et la liste de résultats
+        /// </summary>
+        /// <param name="name">Nom du noeud</param>
+        /// <param name="adress">adresse IP du noeud</param>
+        /// <param name="port">port d'écoute du noeud</param>
         protected Node(string name, string adress, int port)
         {
             WorkerFactory = TaskExecFactory.GetInstance();
@@ -89,6 +188,12 @@ namespace NodeNet.Network.Nodes
             Results = new ConcurrentDictionary<int, ConcurrentBag<object>>();
         }
 
+        /// <summary>
+        /// Constructeur permettant de définir le socket d'écoute du noeud
+        /// </summary>
+        /// <param name="name">Nom du noeud</param>
+        /// <param name="adress">adresse IP du noeud</param>
+        /// <param name="port">port d'écoute du noeud</param>
         protected Node(string name, string adress, int port, Socket sock)
         {
             Name = name;
@@ -101,16 +206,28 @@ namespace NodeNet.Network.Nodes
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Méthode d'arrêt du noeud
+        /// </summary>
         public void Stop()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Méthode définissant l'orchestrateur auquel ce noeud est connecté
+        /// </summary>
+        /// <param name="node"></param>
         public void RegisterOrch(Orchestrator node)
         {
             Orch = node;
         }
 
+        /// <summary>
+        /// Méthode de connexion asynchrone à un serveur distant
+        /// </summary>
+        /// <param name="address">adresse IP serveur distant</param>
+        /// <param name="port">port d'écoute du serveur distant</param>
         public void Connect(string address, int port)
         {
             IPEndPoint remoteEp = new IPEndPoint(IPAddress.Parse(address), port);
@@ -127,6 +244,10 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode d'écoute du retour de la connexion asynchrone
+        /// </summary>
+        /// <param name="ar">résultat de l'évennement de retour</param>
         private void ConnectCallback(IAsyncResult ar)
         {
             Node orch = (Node)ar.AsyncState;
@@ -148,6 +269,11 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode d'envoi de données à un hôte distant en mode asynchrone
+        /// </summary>
+        /// <param name="node">Noeud distant</param>
+        /// <param name="obj">Objet de transfert de la donnée</param>
         public void SendData(Node node, DataInput obj)
         {
             byte[] data = DataFormater.Serialize(obj);
@@ -167,6 +293,10 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode d'écoute du retour de l'envoi asynchrone
+        /// </summary>
+        /// <param name="ar">Résultat de l'envoi asynchrone</param>
         public void SendCallback(IAsyncResult ar)
         {
             try
@@ -185,6 +315,10 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode de réception de données asynchrone depuis un hôte distant
+        /// </summary>
+        /// <param name="node">hôte distant émetteur</param>
         public void Receive(Node node)
         {
             try
@@ -199,6 +333,11 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode permettant de connaître les détails d'un noeud à partir de son NodeGuid
+        /// </summary>
+        /// <param name="n">Noeud dont on nécessite les informations</param>
+        /// <returns>Liste des informations du noeud</returns>
         public List<string> GetMonitoringInfos(Node n)
         {
             try
@@ -218,6 +357,10 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode d'écoute de la réception de données asynchrone depuis un hôte distant
+        /// </summary>
+        /// <param name="ar">Résultat de la réception asynchrone</param>
         public void ReceiveCallback(IAsyncResult ar)
         {
             try
@@ -258,6 +401,11 @@ namespace NodeNet.Network.Nodes
             }
         }
 
+        /// <summary>
+        /// Méthode de concaténation d'une liste de tableaux d'octets
+        /// </summary>
+        /// <param name="data">liste de tableaux d'octets à concaténer</param>
+        /// <returns>tableaux d'octets contenant tous les tableaux concaténés de la liste</returns>
         private byte[] ConcatByteArray(List<byte[]> data)
         {
             List<byte> byteStorage = new List<byte>();
@@ -271,6 +419,12 @@ namespace NodeNet.Network.Nodes
             return byteStorage.ToArray();
         }
 
+        /// <summary>
+        /// Méthode permettant de déterminer si toutes les trames composant un message ont été reçues
+        /// </summary>
+        /// <param name="buffer">buffer actuel</param>
+        /// <param name="byteRead">nombre d'octets lus</param>
+        /// <returns>indique fin du message ou non</returns>
         private bool IsEndOfMessage(byte[] buffer, int byteRead)
         {
             byte[] endSequence = Encoding.ASCII.GetBytes("CAFEBABE");
@@ -279,18 +433,31 @@ namespace NodeNet.Network.Nodes
             return endSequence.SequenceEqual(endOfBuffer);
         }
 
+        /// <summary>
+        /// Méthode héritée de gestion de la réception d'un objet de transfert de données
+        /// </summary>
+        /// <param name="input">objet de transfert de données</param>
+        /// <param name="node">hôte distant émetteur</param>
         public abstract void ProcessInput(DataInput input, Node node);
 
         public override string ToString()
         {
             return "Node -> Address : " + Address + " Port : " + Port + " NodeGuid : " + NodeGuid;
         }
-
+        /// <summary>
+        /// Méthode de concaténation de la valeur du NodeGuid
+        /// </summary>
         protected void GenGuid()
         {
             NodeGuid = Name + ":" + Address + ":" + Port;
         }
 
+        /// <summary>
+        /// Méthode mettant à jour les résultats d'une tâche donnée
+        /// </summary>
+        /// <param name="input">objet de transfert de données</param>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <param name="subTaskId">ID de la sous tâche</param>
         protected void UpdateResult(object input, int taskId, int subTaskId)
         {
             if (Results.TryGetValue(taskId, out ConcurrentBag<object> result))
@@ -302,6 +469,11 @@ namespace NodeNet.Network.Nodes
                 throw new Exception("Aucune Task avec cet id ");
             }
         }
+        /// <summary>
+        /// Méthode récupérant les résultats d'une tâche donnée
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <returns>Liste des résultats de la tâche</returns>
         protected ConcurrentBag<object> GetResultFromTaskId(int taskId)
         {
             ConcurrentBag<object> result;
@@ -312,8 +484,17 @@ namespace NodeNet.Network.Nodes
             throw new Exception("Aucune ligne de résultat ne correspond à cette tâche");
         }
 
+        /// <summary>
+        /// Méthode héritée supprimant un noeud déconnecté à ce noeud
+        /// </summary>
+        /// <param name="node">Noeud déconnecté</param>
         public abstract void RemoveDeadNode(Node node);
 
+        /// <summary>
+        /// Méthode déterminant si une méthode dynamique demandée fait partie des méthodes dynamiques d'infrastructure
+        /// </summary>
+        /// <param name="method">nom de la méthode dynamique</param>
+        /// <returns>fait partie de l'infrastructure ou non</returns>
         protected bool MethodIsNotInfra(string method)
         {
             return method != GetCpuMethod && method != IdentMethod && method != TaskStatusMethod;

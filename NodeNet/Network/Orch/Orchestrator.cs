@@ -17,27 +17,49 @@ using System.Threading;
 
 namespace NodeNet.Network.Orch
 {
+    /// <summary>
+    /// Classe Orchestrateur chargée de transmettre les tâches demandées par le client aux différents noeuds, d'identifier 
+    /// et de se connecter aux noeuds
+    /// </summary>
     public abstract class Orchestrator : Node, IOrchestrator
     {
         #region Properties
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly List<Tuple<int, Node>> unidentifiedNodes;
-        /* Nombre de noeuds connectés */
+        /// <summary>
+        /// Nombre de noeuds connectés 
+        /// </summary>
         private int nbNodes;
 
-        // Task monitoring nodes */
+        /// <summary>
+        /// ID de la tâche de monitoring des noeuds
+        /// </summary>
         Tuple<int, NodeState> monitorTask;
 
-        /* Liste des noeuds connectés */
+        /// <summary>
+        /// Liste des noeuds connectés à cet orchestrateur
+        /// </summary>
         public ConcurrentObservableDictionary<string, Node> Nodes { get; set; }
 
-        /* Liste des clients connectés */
+        /// <summary>
+        /// Liste des clients connectés à cet orchestrateur
+        /// </summary>
         public ConcurrentDictionary<string, Node> Clients { get; set; }
 
-        /* Liste des noeuds connectés */
+        /// <summary>
+        /// Liste des associations des tâches
+        /// </summary>
         public ConcurrentDictionary<int, Tuple<ConcurrentBag<int>, bool>> TaskDistrib { get; set; }
 
         #endregion
-
+        /// <summary>
+        /// Constructeur initialisant les listes de noeuds et clients et générant les TaskExecutor infrastructure
+        /// </summary>
+        /// <param name="name">Nom Orchestrateur</param>
+        /// <param name="address">Adresse IP de l'orchestrateur</param>
+        /// <param name="port">Port d'écoute</param>
         protected Orchestrator(string name, string address, int port) : base(name, address, port)
         {
             Logger = new Logger(true);
@@ -52,6 +74,9 @@ namespace NodeNet.Network.Orch
 
         #region Inherited methods
 
+        /// <summary>
+        /// Méthode d'écoute par Socket asynchrone 
+        /// </summary>
         public async void Listen()
         {
             TcpListener listener = new TcpListener(IPAddress.Parse(Address), Port);
@@ -68,6 +93,10 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Méthode d'identification de noeud lors d'une connexion entrante
+        /// </summary>
+        /// <param name="connectedNode"></param>
         private void GetIdentityOfNode(DefaultNode connectedNode)
         {
             int tId = LastTaskId;
@@ -85,6 +114,12 @@ namespace NodeNet.Network.Orch
             SendData(connectedNode, input);
         }
 
+
+
+        /// <summary>
+        /// Métode appelant l'envoi de données à tous les noeuds connectés
+        /// </summary>
+        /// <param name="input">Objet de trasnfert contenant les données</param>
         public void SendDataToAllNodes(DataInput input)
         {
             DataFormater.Serialize(input);
@@ -95,6 +130,10 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Méthode appelant l'envoi de résultats à tous les clients connectés
+        /// </summary>
+        /// <param name="input">Objet de trasnfert contenant les résultats</param>
         private void SendDataToAllClients(DataInput input)
         {
             DataFormater.Serialize(input);
@@ -105,7 +144,11 @@ namespace NodeNet.Network.Orch
             }
         }
 
-
+        /// <summary>
+        /// Méthode d'exécution d'un TaskExecutor avec la méthode reçue dans l'objet de transfert
+        /// </summary>
+        /// <param name="input">Objet de transfert contenant la méthode</param>
+        /// <param name="node">Noeud emetteur</param>
         public override void ProcessInput(DataInput input, Node node)
         {
             TaskExecutor executor = WorkerFactory.GetWorker(input.Method);
@@ -126,7 +169,11 @@ namespace NodeNet.Network.Orch
         #endregion
 
         #region TaskExecutor method
-
+        /// <summary>
+        /// Méthode d'identification d'une connexioon entrante d'un noeud
+        /// </summary>
+        /// <param name="data">Objet de transfert contenant les informations du noeud emetteur</param>
+        /// <returns></returns>
         public object IdentNode(DataInput data)
         {
             foreach (Tuple<int, Node> node in unidentifiedNodes)
@@ -155,6 +202,10 @@ namespace NodeNet.Network.Orch
             return null;
         }
 
+        /// <summary>
+        /// Méthode déclencheant l'envoi d'informations de monitoring au client
+        /// </summary>
+        /// <param name="client">Client cible</param>
         private void StartMonitoringForClient(Node client)
         {
             DataInput input = new DataInput()
@@ -168,6 +219,11 @@ namespace NodeNet.Network.Orch
             ProcessCpuStateOrder(input);
         }
 
+        /// <summary>
+        /// Méthode envoyant _une requête de monitoring à un noeud
+        /// </summary>
+        /// <param name="d">Objet de trasnfert contenant la requête</param>
+        /// <param name="n">Noeud cible</param>
         private void StartMonitoringForNode(DataInput d, Node n)
         {
             DataInput input = new DataInput()
@@ -182,6 +238,11 @@ namespace NodeNet.Network.Orch
             SendData(n, input);
         }
 
+        /// <summary>
+        /// Méthode de réception des requêtes de monitoring émises par un client
+        /// </summary>
+        /// <param name="input">objet de transfert contenant la requête</param>
+        /// <returns></returns>
         private object ProcessCpuStateOrder(DataInput input)
         {
             if (input.MsgType == MessageType.Call)
@@ -209,17 +270,26 @@ namespace NodeNet.Network.Orch
             return null;
         }
 
+        /// <summary>
+        /// Méthode de remontée d'informations au client
+        /// </summary>
+        /// <param name="input">Objet de transfert</param>
+        /// <returns></returns>
         private object RefreshTaskState(DataInput input)
         {
             // On fait transiter l'info au client
             SendData(GetClientFromGuid(input.ClientGuid), input);
-            // Et on ne renvoit rien au Node
             return null;
         }
 
         #endregion
 
         #region Map Reduce
+        /// <summary>
+        /// Méthode de gestion des traitements envoyés et reçus avec MapReduce
+        /// </summary>
+        /// <param name="input">Objet de transfert</param>
+        /// <returns></returns>
         protected object ProcessMapReduce(DataInput input)
         {
             Logger.Write($"Traitement en cours pour la méthode {input.Method}");
@@ -236,6 +306,11 @@ namespace NodeNet.Network.Orch
             return null;
         }
 
+        /// <summary>
+        /// Méthode permettant d'appeler le Reducer sur une liste de résultats par le biais d'un TaskExecutor
+        /// </summary>
+        /// <param name="input">Objet de transfert contenant un résultat</param>
+        /// <param name="executor">TaskExecutor chargé d'exécuter le Reducer</param>
         private void PrepareReduce(DataInput input, TaskExecutor executor)
         {
             if (TaskIsOk(input.TaskId))
@@ -293,7 +368,10 @@ namespace NodeNet.Network.Orch
         }
 
 
-
+        /// <summary>
+        /// Méthode chargée de transmettre un traitement à un mapper par le biais d'un TaskExecutor 
+        /// </summary>
+        /// <param name="input">Objet de transfert contenant la donnée</param>
         private void LazyNodeTranfert(DataInput input)
         {
             int newTaskId = LastTaskId;
@@ -388,6 +466,13 @@ namespace NodeNet.Network.Orch
             bw.RunWorkerAsync();
         }
 
+        /// <summary>
+        /// Méthode de mise à jour du statut d'un noeud au client
+        /// </summary>
+        /// <param name="node">Noeud contenant le statut désiré</param>
+        /// <param name="newTaskId">Id de la tâche</param>
+        /// <param name="newNodeTaskId">Id de la tâche gérée par le noeud</param>
+        /// <param name="input">objet de transfert contenant les informations du noeud</param>
         private void SendNodeIsWorkingToClient(Node node, int newTaskId,int newNodeTaskId, DataInput input)
         {
             Tuple<NodeState, object> data = new Tuple<NodeState, object>(NodeState.NodeIsWorking, node.NodeGuid);
@@ -407,6 +492,10 @@ namespace NodeNet.Network.Orch
         #endregion
 
         #region Task Management
+        /// <summary>
+        /// Méthode mettant à jour le statut d'une tâche si elle est mappée
+        /// </summary>
+        /// <param name="newTaskId">ID de la tâche mappée </param>
         private void SetTaskIsMapped(int newTaskId)
         {
             Tuple<ConcurrentBag<int>, bool> task;
@@ -424,6 +513,14 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Méthode permettant de découper une tâche demandée par le client pour les différents noeuds recepteur
+        /// </summary>
+        /// <param name="node">Noeud emetteur</param>
+        /// <param name="newTaskId">Id de la tâche à dédcouper</param>
+        /// <param name="input">Objet de transfert</param>
+        /// <param name="data">Données à associer à cette tâche</param>
+        /// <returns></returns>
         private int SendSubTaskToNode(Node node, int newTaskId, DataInput input, object data)
         {
             int newNodeTaskId = LastSubTaskId;
@@ -442,6 +539,11 @@ namespace NodeNet.Network.Orch
             return newNodeTaskId;
         }
 
+        /// <summary>
+        /// Méthode permettant d'associer une tâche reçue à un client
+        /// </summary>
+        /// <param name="input">Objet de transfert contenant la méthode à associer à la tâche</param>
+        /// <param name="newTaskId">ID de la tâche</param>
         private void CreateClientTask(DataInput input, int newTaskId)
         {
             Task task = new Task(newTaskId, NodeState.JobStart)
@@ -468,6 +570,12 @@ namespace NodeNet.Network.Orch
             task.State = NodeState.Work;
         }
 
+        /// <summary>
+        /// Méthode permettant d'associer une tâche reçue à un noeud
+        /// </summary>
+        /// <param name="node">Noeud cible</param>
+        /// <param name="newTaskId">ID de la tâche à associer aux noeuds</param>
+        /// <param name="newSubTaskId">Id de la sous-tâche à associer à chaque noeud</param>
         private void CreateNodeTasks(Node node, int newTaskId, int newSubTaskId)
         {
             // On ajoute la subtask au node 
@@ -484,6 +592,12 @@ namespace NodeNet.Network.Orch
             }
         }
 
+
+        /// <summary>
+        /// Récupère le pourcentage de progression d'une tpache
+        /// </summary>
+        /// <param name="taskDist">Liste des ID des résultats terminés ou non</param>
+        /// <returns>valeur de pourcentage</returns>
         private double GetProgressionForTask(Tuple<ConcurrentBag<int>, bool> taskDist)
         {
             int nbNodeWork = taskDist.Item1.Count();
@@ -500,7 +614,12 @@ namespace NodeNet.Network.Orch
             }
             return nbNodeEnded * 100 / nbNodeWork;
         }
-
+        /// <summary>
+        /// Met à jour l'état d'une tâche 
+        /// </summary>
+        /// <param name="id">ID de la tâche</param>
+        /// <param name="status">Etat</param>
+        /// <returns>Tâche mise à jour</returns>
         private Task UpdateTaskStatus(int id, NodeState status)
         {
             foreach (KeyValuePair<string, Node> client in Clients)
@@ -522,7 +641,12 @@ namespace NodeNet.Network.Orch
             throw new Exception("Aucune tâche n'a pu etre mise à jour");
         }
 
-
+        /// <summary>
+        /// Met à jour l'état d'une tâche attribuée à une noeud
+        /// </summary>
+        /// <param name="nodeTaskId">Id de la tâche du npoeud</param>
+        /// <param name="status">Etat</param>
+        /// <param name="nodeGuid">Id du noeud</param>
         private void UpdateNodeTaskStatus(int nodeTaskId, NodeState status, string nodeGuid)
         {
             Node node;
@@ -548,6 +672,11 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Met à jour l'état d'un noeud
+        /// </summary>
+        /// <param name="status">Etat</param>
+        /// <param name="nodeGuid">ID du noeud</param>
         private void UpdateNodeStatus(NodeState status, string nodeGuid)
         {
             if (Nodes.TryGetValue(nodeGuid, out Node node))
@@ -560,6 +689,11 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Vérifie si une tâche attribuée à un noeud n'est pas en erreur ou arrêtée
+        /// </summary>
+        /// <param name="taskId">ID d'une tâche</param>
+        /// <returns></returns>
         private bool TaskIsOk(int taskId)
         {
             Node client = GetClientFromTaskId(taskId);
@@ -569,6 +703,10 @@ namespace NodeNet.Network.Orch
         #endregion
 
         #region Utilitary methods
+        /// <summary>
+        /// Identifie un noeud connecté auprès du client
+        /// </summary>
+        /// <param name="n">Noeud</param>
         private void SendNodeToClients(Node n)
         {
             List<List<string>> monitoringValues = new List<List<string>>
@@ -590,17 +728,30 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Récupère un noeud par son ID
+        /// </summary>
+        /// <param name="guid">ID</param>
+        /// <returns>Noeud associé</returns>
         protected Node GetNodeFromGuid(string guid)
         {
             return Nodes.TryGetValue(guid, out Node node) ? node : null;
         }
 
-
+        /// <summary>
+        /// récupère un client par son ID
+        /// </summary>
+        /// <param name="guid">ID</param>
+        /// <returns>CLient associé</returns>
         protected Node GetClientFromGuid(string guid)
         {
             return (from client in Clients where client.Value.NodeGuid.Equals(guid) select client.Value).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Envoie les informations des noeuds à un client
+        /// </summary>
+        /// <param name="client">Client cible</param>
         public void SendNodesToClient(Node client)
         {
             //TODO check Enumerator Thread safe
@@ -630,8 +781,13 @@ namespace NodeNet.Network.Orch
                 };
                 SendData(client, di);
             }
-        }
+        
 
+        /// <summary>
+        /// Récupère l'état d'une tâche
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <returns>Etat</returns>
         private NodeState GetTaskState(int taskId)
         {
             foreach (var client in Clients)
@@ -645,6 +801,11 @@ namespace NodeNet.Network.Orch
             throw new Exception("Aucune Task avec cet ID n'a été trouvée");
         }
 
+        /// <summary>
+        /// Récupère l'état d'une sous-tâche
+        /// </summary>
+        /// <param name="taskId">ID de la sous-tâche</param>
+        /// <returns>Etat</returns>
         private NodeState GetSubTaskState(int subtaskId)
         {
             foreach (var node in Nodes)
@@ -658,7 +819,11 @@ namespace NodeNet.Network.Orch
             throw new Exception("Aucune task trouvé pour cette subTask");
         }
 
-        // Checker si toutes les nodes correspondant à cette task sont en etat FINISH
+        /// <summary>
+        /// Vérifie si tous les noeuds associés à une tâche sont en état FINISH
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <returns>oui ou non</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool TaskIsCompleted(int taskId)
         {
@@ -694,6 +859,10 @@ namespace NodeNet.Network.Orch
             return completed;
         }
 
+        /// <summary>
+        /// Supprime les résultats traités d'une tâche
+        /// </summary>
+        /// <param name="taskId">Id de la tâche</param>
         private void RemoveResultForTask(int taskId)
         {
             if (!Results.TryRemove(taskId, out ConcurrentBag<object> _))
@@ -702,9 +871,9 @@ namespace NodeNet.Network.Orch
             }
         }
         /// <summary>
-        /// 
+        /// Supprime un noeud déconnecté
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="node">Noeud</param>
         public override void RemoveDeadNode(Node node)
         {
             // On passe le noeud à l'état DEAD
@@ -743,6 +912,12 @@ namespace NodeNet.Network.Orch
 
         }
 
+        /// <summary>
+        /// Informe qu'une tâche associée à un noeud est en état d'erreur
+        /// </summary>
+        /// <param name="node">Noeud</param>
+        /// <param name="isClient">si le noeud était renseigné à un client</param>
+        /// <returns></returns>
         public List<Task> SetNodeTaskToError(Node node,bool isClient)
         {
             List<Task> errorTasks = new List<Task>();
@@ -773,7 +948,11 @@ namespace NodeNet.Network.Orch
             return errorTasks;
         }
 
-
+        /// <summary>
+        /// Retourne toutes les ID des tâches actuelles
+        /// </summary>
+        /// <param name="taskIds">Liste des ID des tâches</param>
+        /// <returns>Liste d'ID</returns>
         private List<int> GetAllNodeTaskIdForClient(List<int> taskIds)
         {
             List<int> nodeTaskId = new List<int>();
@@ -791,6 +970,11 @@ namespace NodeNet.Network.Orch
             return nodeTaskId;
         }
 
+        /// <summary>
+        /// Récupère les ID des tâches émise par le client depuis les noeuds
+        /// </summary>
+        /// <param name="node">Noeud</param>
+        /// <returns>Liste d'ID</returns>
         private List<int> GetAllClientTaskIdFromNode(Node node)
         {
             List<int> tasks = new List<int>();
@@ -805,6 +989,11 @@ namespace NodeNet.Network.Orch
             return tasks;
         }
 
+        /// <summary>
+        /// Récupère un client depuis une ID de tâche
+        /// </summary>
+        /// <param name="taskId">ID d'une tâche</param>
+        /// <returns>Client</returns>
         private Node GetClientFromTaskId(int taskId)
         {
             foreach(var client in Clients)
@@ -817,6 +1006,10 @@ namespace NodeNet.Network.Orch
             throw new Exception("Aucun Client trouvé pour ce task id");
         }
 
+        /// <summary>
+        /// Supprime une tâche depuis son ID
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
         private void RemoveTask(int taskId)
         {
             // On supprime la ligne dans le tableau de distribution des Task et NodeTask TaskDistrib
@@ -842,6 +1035,11 @@ namespace NodeNet.Network.Orch
             }
         }
 
+        /// <summary>
+        /// Vérifie si une tâche a récupéré tous ses résultats
+        /// </summary>
+        /// <param name="taskId">ID de la tâche</param>
+        /// <returns>oui ou non</returns>
         private bool IsTaskReceiveAllRes(int taskId)
         {
             bool allResReceived = true;

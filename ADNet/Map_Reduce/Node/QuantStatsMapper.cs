@@ -4,8 +4,17 @@ using System.Collections.Generic;
 
 namespace ADNet.Map_Reduce.Node
 {
+    /// <summary>
+    /// Classe Mapper côté Node pour le mapping du Module 1
+    /// </summary>
     public class QuantStatsMapper : IMapper
     {
+        /// <summary>
+        /// Méthode de découpage de la donnée par nombre de caractères selon le nombre reçu
+        /// </summary>
+        /// <param name="input">objet de transfert contenant la donnée à découper</param>
+        /// <param name="nbMap">Nombre de découpage</param>
+        /// <returns>Liste de découpages</returns>
         public object Map(object input,int nbMap)
         {
 
@@ -42,6 +51,7 @@ namespace ADNet.Map_Reduce.Node
             }
             return result;
         }
+
 
         public bool MapIsEnd()
         {
