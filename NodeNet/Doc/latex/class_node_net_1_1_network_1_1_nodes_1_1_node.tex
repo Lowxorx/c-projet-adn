@@ -1,0 +1,693 @@
+\hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node}{}\section{Node\+Net.\+Network.\+Nodes.\+Node Class Reference}
+\label{class_node_net_1_1_network_1_1_nodes_1_1_node}\index{Node\+Net.\+Network.\+Nodes.\+Node@{Node\+Net.\+Network.\+Nodes.\+Node}}
+
+
+Objet représentant le noeud au sein d\textquotesingle{}une architecture clusterisée  
+
+
+Inheritance diagram for Node\+Net.\+Network.\+Nodes.\+Node\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.204578cm]{class_node_net_1_1_network_1_1_nodes_1_1_node}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a7238e906549594e340d72f99e4575660}{Stop} ()
+\begin{DoxyCompactList}\small\item\em Méthode d\textquotesingle{}arrêt du noeud \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a38ab7f4f4f8e67f4319f87d4fe51e2f7}{Register\+Orch} (\hyperlink{class_node_net_1_1_network_1_1_orch_1_1_orchestrator}{Orchestrator} node)
+\begin{DoxyCompactList}\small\item\em Méthode définissant l\textquotesingle{}orchestrateur auquel ce noeud est connecté \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a649afad8e215121029809cc46c31e258}{Connect} (string address, int port)
+\begin{DoxyCompactList}\small\item\em Méthode de connexion asynchrone à un serveur distant \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a208a1c10ae68109762205f3cbcb9665a}{Send\+Data} (\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} node, \hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input} obj)
+\begin{DoxyCompactList}\small\item\em Méthode d\textquotesingle{}envoi de données à un hôte distant en mode asynchrone \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ab9094f08013b985dc96b429007b32333}{Send\+Callback} (I\+Async\+Result ar)
+\begin{DoxyCompactList}\small\item\em Méthode d\textquotesingle{}écoute du retour de l\textquotesingle{}envoi asynchrone \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_abbeae4cb15af4c3a2608f71c317cb701}{Receive} (\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} node)
+\begin{DoxyCompactList}\small\item\em Méthode de réception de données asynchrone depuis un hôte distant \end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a9d07bf5dae221854d15c1d6fc33cbb9c}{Get\+Monitoring\+Infos} (\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} n)
+\begin{DoxyCompactList}\small\item\em Méthode permettant de connaître les détails d\textquotesingle{}un noeud à partir de son Node\+Guid \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ae0c6ccdbbcc7dbc30b4a30b63e878365}{Receive\+Callback} (I\+Async\+Result ar)
+\begin{DoxyCompactList}\small\item\em Méthode d\textquotesingle{}écoute de la réception de données asynchrone depuis un hôte distant \end{DoxyCompactList}\item 
+abstract void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a953dce3f4779355cd3bf542ac6d1d3d8}{Process\+Input} (\hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input} input, \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} node)
+\begin{DoxyCompactList}\small\item\em Méthode héritée de gestion de la réception d\textquotesingle{}un objet de transfert de données \end{DoxyCompactList}\item 
+override string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ad290fbf0c7caa852c585e526e86ad86f}{To\+String} ()
+\item 
+abstract void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a790d3239a1f0f8442450c060c015f9f3}{Remove\+Dead\+Node} (\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} node)
+\begin{DoxyCompactList}\small\item\em Méthode héritée supprimant un noeud déconnecté à ce noeud \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a5bc8c3022d70a566cb208b8c99790023}{Node\+Guid}
+\begin{DoxyCompactList}\small\item\em ID du Noeud \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static int \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a32ac26d575d8bc1d0cb7a5aea9c0118c}{Buffer\+Size} = 4096
+\begin{DoxyCompactList}\small\item\em Taille maximale du buffer \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a45631b11e4cc24c9467c966d317ae44a}{Node} (string name, string adress, int port)
+\begin{DoxyCompactList}\small\item\em Constructeur initialisant les tâches et la liste de résultats \end{DoxyCompactList}\item 
+\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a67231be4d4cd246c9034ebb4d9085d18}{Node} (string name, string adress, int port, Socket sock)
+\begin{DoxyCompactList}\small\item\em Constructeur permettant de définir le socket d\textquotesingle{}écoute du noeud \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_aefc346ee9ebf697f8f7c346deee276d7}{Gen\+Guid} ()
+\begin{DoxyCompactList}\small\item\em Méthode de concaténation de la valeur du Node\+Guid \end{DoxyCompactList}\item 
+void \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ada06ebbb68d6c3661903f154d4c09949}{Update\+Result} (object input, int task\+Id, int sub\+Task\+Id)
+\begin{DoxyCompactList}\small\item\em Méthode mettant à jour les résultats d\textquotesingle{}une tâche donnée \end{DoxyCompactList}\item 
+Concurrent\+Bag$<$ object $>$ \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_afce378baeedbf4875673f4f3e124eb91}{Get\+Result\+From\+Task\+Id} (int task\+Id)
+\begin{DoxyCompactList}\small\item\em Méthode récupérant les résultats d\textquotesingle{}une tâche donnée \end{DoxyCompactList}\item 
+bool \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a63e45bca1811b06988d6158965205daf}{Method\+Is\+Not\+Infra} (string method)
+\begin{DoxyCompactList}\small\item\em Méthode déterminant si une méthode dynamique demandée fait partie des méthodes dynamiques d\textquotesingle{}infrastructure \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a9cf33be57e8a56ddc74c0b0de273b0fd}{Last\+Task\+Id} =$>$ last\+Task\+Id += 1
+\item 
+int \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a561c7a0f3007f3756bba7287acfdaa29}{Last\+Sub\+Task\+Id} =$>$ last\+Sub\+Task\+Id += 1
+\item 
+const string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a2a85fc9362ff97017a87f69a80bbcba7}{Get\+Cpu\+Method} = \char`\"{}G\+E\+T\+\_\+\+C\+PU\char`\"{}
+\begin{DoxyCompactList}\small\item\em Constante définissant le nom de la méthode dynamique G\+E\+T\+\_\+\+C\+PU \end{DoxyCompactList}\item 
+const string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a27653c0191f2917a6b3ca40713d609db}{Ident\+Method} = \char`\"{}I\+D\+E\+NT\char`\"{}
+\begin{DoxyCompactList}\small\item\em Constante définissant le nom de la méthode dynamique I\+D\+E\+NT \end{DoxyCompactList}\item 
+const string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a5c5ce25d72d61f0a1631461cb04cf004}{Task\+Status\+Method} = \char`\"{}T\+A\+S\+K\+\_\+\+S\+T\+A\+TE\char`\"{}
+\begin{DoxyCompactList}\small\item\em Constante définissant le nom de la méthode dynamique T\+A\+S\+K\+\_\+\+S\+T\+A\+TE \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static Manual\+Reset\+Event \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a5995108151b216b553cf5810f64dc5f2}{Send\+Done} = new Manual\+Reset\+Event(false)
+\begin{DoxyCompactList}\small\item\em Evennement de gestion des connexions Socket asynchrones permettant de définir l\textquotesingle{}arrêt d\textquotesingle{}un envoi asynchrone \end{DoxyCompactList}\item 
+static Manual\+Reset\+Event \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a0d1ad8b0224cc196cb71ae364ba6866e}{Receive\+Done} = new Manual\+Reset\+Event(false)
+\begin{DoxyCompactList}\small\item\em Evennement de gestion des connexions Socket asynchrones permettant de définir l\textquotesingle{}arrêt d\textquotesingle{}une réception asynchrone \end{DoxyCompactList}\item 
+static Manual\+Reset\+Event \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_acff9587256712b84d7b8f7173b346550}{Connect\+Done} = new Manual\+Reset\+Event(false)
+\begin{DoxyCompactList}\small\item\em Evennement de gestion des connexions Socket asynchrones permettant de définir l\textquotesingle{}arrêt d\textquotesingle{}une connexion asynchrone \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ad9b9f16efa608d2507dd69c8e1c71f8e}{Orch}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Noeud Orchestrateur auquel ce noeud est connecté \end{DoxyCompactList}\item 
+Logger \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ae6b6909cb4188712c35457ba7e32567a}{Logger}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Objet de log \end{DoxyCompactList}\item 
+string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a5930d056ff2b900b3189ce91c156fbf3}{Address}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Adresse ip de ce noeud \end{DoxyCompactList}\item 
+int \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_af7cf2568cb0d31b5ce7fb94d79a01e0d}{Port}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Port d\textquotesingle{}écoute \end{DoxyCompactList}\item 
+string \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a6e4f23cf8706563042d0683add4c7cea}{Name}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Nom de ce noeud \end{DoxyCompactList}\item 
+Socket \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a1a44ae3e6f0c93467b64142f22aa6083}{Node\+Socket}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Socket d\textquotesingle{}écoute de ce noeud \end{DoxyCompactList}\item 
+Socket \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a1175e4cdf705317671abeeea31fd1108}{Server\+Socket}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Socket de destination \end{DoxyCompactList}\item 
+Performance\+Counter \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a3d4435d72b766a712e4b321e050eef45}{Perf\+Cpu}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Compteur des performances des coeurs processeur \end{DoxyCompactList}\item 
+Performance\+Counter \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a96f682af2888dbd7c8ce38a40503c247}{Perf\+Ram}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Compteur des performances de la mémoire vive \end{DoxyCompactList}\item 
+\hyperlink{namespace_node_net_1_1_network_1_1_states_a0c130cd0043f8c509dddba2cf1fd2f36}{Node\+State} \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a7578110f73eacb630e4d63376991f51c}{State}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Etat du noeud \end{DoxyCompactList}\item 
+Concurrent\+Dictionary$<$ int, \hyperlink{class_node_net_1_1_tasks_1_1_task}{Task} $>$ \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a20e18f64c8b3291b0670dabb1b03464f}{Tasks}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Liste des tâches reçues par ce noeud \end{DoxyCompactList}\item 
+Concurrent\+Dictionary$<$ int, Concurrent\+Bag$<$ object $>$ $>$ \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a27c9abae66af40b58d906eb3dca72646}{Results}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Liste des résultats réduits pour chaque tâche \end{DoxyCompactList}\item 
+float \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ae9361f5398f580558130321351f60769}{Cpu\+Value}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+double \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a2ffe8e246abf2e153a220ed96c15f4de}{Ram\+Value}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+int \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a3394c5d0091b37680c3dc3868e369a7a}{Working\+Task}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Tâche actuelle en traitement \end{DoxyCompactList}\item 
+double \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a215d9270752581ba186656703bfcd755}{Progression}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em \% de progression du traitement actuel \end{DoxyCompactList}\item 
+\hyperlink{class_node_net_1_1_tasks_1_1_task_exec_factory}{Task\+Exec\+Factory} \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_ab4815fbf678140a67bc54996fe8e6c0b}{Worker\+Factory}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Worker\+Factory permettant de produire les Task\+Executor \end{DoxyCompactList}\item 
+List$<$ byte\mbox{[}$\,$\mbox{]}$>$ \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node_a2492a4dacdd9b3e84eb7dbd4df35ae10}{Bytearray\+List}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Trame de transfert \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Objet représentant le noeud au sein d\textquotesingle{}une architecture clusterisée 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a45631b11e4cc24c9467c966d317ae44a}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a45631b11e4cc24c9467c966d317ae44a}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Node@{Node}}
+\index{Node@{Node}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Node()}{Node()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Node\+Net.\+Network.\+Nodes.\+Node.\+Node (\begin{DoxyParamCaption}\item[{string}]{name,  }\item[{string}]{adress,  }\item[{int}]{port }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Constructeur initialisant les tâches et la liste de résultats 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Nom du noeud\\
+\hline
+{\em adress} & adresse IP du noeud\\
+\hline
+{\em port} & port d\textquotesingle{}écoute du noeud\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a67231be4d4cd246c9034ebb4d9085d18}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a67231be4d4cd246c9034ebb4d9085d18}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Node@{Node}}
+\index{Node@{Node}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Node()}{Node()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Node\+Net.\+Network.\+Nodes.\+Node.\+Node (\begin{DoxyParamCaption}\item[{string}]{name,  }\item[{string}]{adress,  }\item[{int}]{port,  }\item[{Socket}]{sock }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Constructeur permettant de définir le socket d\textquotesingle{}écoute du noeud 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Nom du noeud\\
+\hline
+{\em adress} & adresse IP du noeud\\
+\hline
+{\em port} & port d\textquotesingle{}écoute du noeud\\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a649afad8e215121029809cc46c31e258}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a649afad8e215121029809cc46c31e258}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Connect@{Connect}}
+\index{Connect@{Connect}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Connect()}{Connect()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Connect (\begin{DoxyParamCaption}\item[{string}]{address,  }\item[{int}]{port }\end{DoxyParamCaption})}
+
+
+
+Méthode de connexion asynchrone à un serveur distant 
+
+
+\begin{DoxyParams}{Parameters}
+{\em address} & adresse IP serveur distant\\
+\hline
+{\em port} & port d\textquotesingle{}écoute du serveur distant\\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_node_net_1_1_network_1_1_nodes_1_1_i_node_a639c5f1dc82ca81b531ab7efb41ab404}{Node\+Net.\+Network.\+Nodes.\+I\+Node}.
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_aefc346ee9ebf697f8f7c346deee276d7}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_aefc346ee9ebf697f8f7c346deee276d7}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Gen\+Guid@{Gen\+Guid}}
+\index{Gen\+Guid@{Gen\+Guid}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Gen\+Guid()}{GenGuid()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Gen\+Guid (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Méthode de concaténation de la valeur du Node\+Guid 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a9d07bf5dae221854d15c1d6fc33cbb9c}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a9d07bf5dae221854d15c1d6fc33cbb9c}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Get\+Monitoring\+Infos@{Get\+Monitoring\+Infos}}
+\index{Get\+Monitoring\+Infos@{Get\+Monitoring\+Infos}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Get\+Monitoring\+Infos()}{GetMonitoringInfos()}}
+{\footnotesize\ttfamily List$<$string$>$ Node\+Net.\+Network.\+Nodes.\+Node.\+Get\+Monitoring\+Infos (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node}}]{n }\end{DoxyParamCaption})}
+
+
+
+Méthode permettant de connaître les détails d\textquotesingle{}un noeud à partir de son Node\+Guid 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & Noeud dont on nécessite les informations\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Liste des informations du noeud
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_afce378baeedbf4875673f4f3e124eb91}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_afce378baeedbf4875673f4f3e124eb91}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Get\+Result\+From\+Task\+Id@{Get\+Result\+From\+Task\+Id}}
+\index{Get\+Result\+From\+Task\+Id@{Get\+Result\+From\+Task\+Id}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Get\+Result\+From\+Task\+Id()}{GetResultFromTaskId()}}
+{\footnotesize\ttfamily Concurrent\+Bag$<$object$>$ Node\+Net.\+Network.\+Nodes.\+Node.\+Get\+Result\+From\+Task\+Id (\begin{DoxyParamCaption}\item[{int}]{task\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Méthode récupérant les résultats d\textquotesingle{}une tâche donnée 
+
+
+\begin{DoxyParams}{Parameters}
+{\em task\+Id} & ID de la tâche\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Liste des résultats de la tâche
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a63e45bca1811b06988d6158965205daf}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a63e45bca1811b06988d6158965205daf}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Method\+Is\+Not\+Infra@{Method\+Is\+Not\+Infra}}
+\index{Method\+Is\+Not\+Infra@{Method\+Is\+Not\+Infra}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Method\+Is\+Not\+Infra()}{MethodIsNotInfra()}}
+{\footnotesize\ttfamily bool Node\+Net.\+Network.\+Nodes.\+Node.\+Method\+Is\+Not\+Infra (\begin{DoxyParamCaption}\item[{string}]{method }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Méthode déterminant si une méthode dynamique demandée fait partie des méthodes dynamiques d\textquotesingle{}infrastructure 
+
+
+\begin{DoxyParams}{Parameters}
+{\em method} & nom de la méthode dynamique\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+fait partie de l\textquotesingle{}infrastructure ou non
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a953dce3f4779355cd3bf542ac6d1d3d8}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a953dce3f4779355cd3bf542ac6d1d3d8}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Process\+Input@{Process\+Input}}
+\index{Process\+Input@{Process\+Input}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Process\+Input()}{ProcessInput()}}
+{\footnotesize\ttfamily abstract void Node\+Net.\+Network.\+Nodes.\+Node.\+Process\+Input (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input}}]{input,  }\item[{\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node}}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Méthode héritée de gestion de la réception d\textquotesingle{}un objet de transfert de données 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & objet de transfert de données\\
+\hline
+{\em node} & hôte distant émetteur\\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_node_net_1_1_network_1_1_orch_1_1_orchestrator_a1868c3dad9eb8763a7aaae1ef15862ed}{Node\+Net.\+Network.\+Orch.\+Orchestrator}, \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_default_node_abfabd743e94b2a4eabd9ccd17562fb57}{Node\+Net.\+Network.\+Nodes.\+Default\+Node}, and \hyperlink{class_node_net_1_1_network_1_1_default_client_a2f6688da612c04b54a102a21401e4d5b}{Node\+Net.\+Network.\+Default\+Client}.
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_abbeae4cb15af4c3a2608f71c317cb701}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_abbeae4cb15af4c3a2608f71c317cb701}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Receive@{Receive}}
+\index{Receive@{Receive}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Receive()}{Receive()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Receive (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node}}]{node }\end{DoxyParamCaption})}
+
+
+
+Méthode de réception de données asynchrone depuis un hôte distant 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & hôte distant émetteur\\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_node_net_1_1_network_1_1_nodes_1_1_i_node_a8d325bc9a6e86d1cfd697692c603f7fb}{Node\+Net.\+Network.\+Nodes.\+I\+Node}.
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ae0c6ccdbbcc7dbc30b4a30b63e878365}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ae0c6ccdbbcc7dbc30b4a30b63e878365}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Receive\+Callback@{Receive\+Callback}}
+\index{Receive\+Callback@{Receive\+Callback}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Receive\+Callback()}{ReceiveCallback()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Receive\+Callback (\begin{DoxyParamCaption}\item[{I\+Async\+Result}]{ar }\end{DoxyParamCaption})}
+
+
+
+Méthode d\textquotesingle{}écoute de la réception de données asynchrone depuis un hôte distant 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ar} & Résultat de la réception asynchrone\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a38ab7f4f4f8e67f4319f87d4fe51e2f7}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a38ab7f4f4f8e67f4319f87d4fe51e2f7}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Register\+Orch@{Register\+Orch}}
+\index{Register\+Orch@{Register\+Orch}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Register\+Orch()}{RegisterOrch()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Register\+Orch (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_network_1_1_orch_1_1_orchestrator}{Orchestrator}}]{node }\end{DoxyParamCaption})}
+
+
+
+Méthode définissant l\textquotesingle{}orchestrateur auquel ce noeud est connecté 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a790d3239a1f0f8442450c060c015f9f3}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a790d3239a1f0f8442450c060c015f9f3}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Remove\+Dead\+Node@{Remove\+Dead\+Node}}
+\index{Remove\+Dead\+Node@{Remove\+Dead\+Node}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Remove\+Dead\+Node()}{RemoveDeadNode()}}
+{\footnotesize\ttfamily abstract void Node\+Net.\+Network.\+Nodes.\+Node.\+Remove\+Dead\+Node (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node}}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Méthode héritée supprimant un noeud déconnecté à ce noeud 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Noeud déconnecté\\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_node_net_1_1_network_1_1_orch_1_1_orchestrator_ae5ded9dbc1d4a515dfc69ac65391b51e}{Node\+Net.\+Network.\+Orch.\+Orchestrator}, \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_default_node_ab3951a37220f6ca8905727fa45a96fa3}{Node\+Net.\+Network.\+Nodes.\+Default\+Node}, and \hyperlink{class_node_net_1_1_network_1_1_default_client_a327f7dba7178df6b2adef200ef4b3113}{Node\+Net.\+Network.\+Default\+Client}.
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ab9094f08013b985dc96b429007b32333}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ab9094f08013b985dc96b429007b32333}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Send\+Callback@{Send\+Callback}}
+\index{Send\+Callback@{Send\+Callback}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Send\+Callback()}{SendCallback()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Send\+Callback (\begin{DoxyParamCaption}\item[{I\+Async\+Result}]{ar }\end{DoxyParamCaption})}
+
+
+
+Méthode d\textquotesingle{}écoute du retour de l\textquotesingle{}envoi asynchrone 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ar} & Résultat de l\textquotesingle{}envoi asynchrone\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a208a1c10ae68109762205f3cbcb9665a}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a208a1c10ae68109762205f3cbcb9665a}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Send\+Data@{Send\+Data}}
+\index{Send\+Data@{Send\+Data}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Send\+Data()}{SendData()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Send\+Data (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node}}]{node,  }\item[{\hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input}}]{obj }\end{DoxyParamCaption})}
+
+
+
+Méthode d\textquotesingle{}envoi de données à un hôte distant en mode asynchrone 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Noeud distant\\
+\hline
+{\em obj} & Objet de transfert de la donnée\\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_node_net_1_1_network_1_1_nodes_1_1_i_node_ad0fd6197c2be78c4b17d3d02bb9f9a0b}{Node\+Net.\+Network.\+Nodes.\+I\+Node}.
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a7238e906549594e340d72f99e4575660}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a7238e906549594e340d72f99e4575660}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Stop@{Stop}}
+\index{Stop@{Stop}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Stop()}{Stop()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Stop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Méthode d\textquotesingle{}arrêt du noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ad290fbf0c7caa852c585e526e86ad86f}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ad290fbf0c7caa852c585e526e86ad86f}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!To\+String@{To\+String}}
+\index{To\+String@{To\+String}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{To\+String()}{ToString()}}
+{\footnotesize\ttfamily override string Node\+Net.\+Network.\+Nodes.\+Node.\+To\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ada06ebbb68d6c3661903f154d4c09949}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ada06ebbb68d6c3661903f154d4c09949}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Update\+Result@{Update\+Result}}
+\index{Update\+Result@{Update\+Result}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Update\+Result()}{UpdateResult()}}
+{\footnotesize\ttfamily void Node\+Net.\+Network.\+Nodes.\+Node.\+Update\+Result (\begin{DoxyParamCaption}\item[{object}]{input,  }\item[{int}]{task\+Id,  }\item[{int}]{sub\+Task\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Méthode mettant à jour les résultats d\textquotesingle{}une tâche donnée 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & objet de transfert de données\\
+\hline
+{\em task\+Id} & ID de la tâche\\
+\hline
+{\em sub\+Task\+Id} & ID de la sous tâche\\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a32ac26d575d8bc1d0cb7a5aea9c0118c}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a32ac26d575d8bc1d0cb7a5aea9c0118c}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Buffer\+Size@{Buffer\+Size}}
+\index{Buffer\+Size@{Buffer\+Size}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Buffer\+Size}{BufferSize}}
+{\footnotesize\ttfamily int Node\+Net.\+Network.\+Nodes.\+Node.\+Buffer\+Size = 4096\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Taille maximale du buffer 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_acff9587256712b84d7b8f7173b346550}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_acff9587256712b84d7b8f7173b346550}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Connect\+Done@{Connect\+Done}}
+\index{Connect\+Done@{Connect\+Done}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Connect\+Done}{ConnectDone}}
+{\footnotesize\ttfamily Manual\+Reset\+Event Node\+Net.\+Network.\+Nodes.\+Node.\+Connect\+Done = new Manual\+Reset\+Event(false)\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+Evennement de gestion des connexions Socket asynchrones permettant de définir l\textquotesingle{}arrêt d\textquotesingle{}une connexion asynchrone 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a2a85fc9362ff97017a87f69a80bbcba7}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a2a85fc9362ff97017a87f69a80bbcba7}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Get\+Cpu\+Method@{Get\+Cpu\+Method}}
+\index{Get\+Cpu\+Method@{Get\+Cpu\+Method}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Get\+Cpu\+Method}{GetCpuMethod}}
+{\footnotesize\ttfamily const string Node\+Net.\+Network.\+Nodes.\+Node.\+Get\+Cpu\+Method = \char`\"{}G\+E\+T\+\_\+\+C\+PU\char`\"{}\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Constante définissant le nom de la méthode dynamique G\+E\+T\+\_\+\+C\+PU 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a27653c0191f2917a6b3ca40713d609db}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a27653c0191f2917a6b3ca40713d609db}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Ident\+Method@{Ident\+Method}}
+\index{Ident\+Method@{Ident\+Method}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Ident\+Method}{IdentMethod}}
+{\footnotesize\ttfamily const string Node\+Net.\+Network.\+Nodes.\+Node.\+Ident\+Method = \char`\"{}I\+D\+E\+NT\char`\"{}\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Constante définissant le nom de la méthode dynamique I\+D\+E\+NT 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a561c7a0f3007f3756bba7287acfdaa29}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a561c7a0f3007f3756bba7287acfdaa29}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Last\+Sub\+Task\+Id@{Last\+Sub\+Task\+Id}}
+\index{Last\+Sub\+Task\+Id@{Last\+Sub\+Task\+Id}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Last\+Sub\+Task\+Id}{LastSubTaskId}}
+{\footnotesize\ttfamily int Node\+Net.\+Network.\+Nodes.\+Node.\+Last\+Sub\+Task\+Id =$>$ last\+Sub\+Task\+Id += 1\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a9cf33be57e8a56ddc74c0b0de273b0fd}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a9cf33be57e8a56ddc74c0b0de273b0fd}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Last\+Task\+Id@{Last\+Task\+Id}}
+\index{Last\+Task\+Id@{Last\+Task\+Id}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Last\+Task\+Id}{LastTaskId}}
+{\footnotesize\ttfamily int Node\+Net.\+Network.\+Nodes.\+Node.\+Last\+Task\+Id =$>$ last\+Task\+Id += 1\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a5bc8c3022d70a566cb208b8c99790023}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a5bc8c3022d70a566cb208b8c99790023}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Node\+Guid@{Node\+Guid}}
+\index{Node\+Guid@{Node\+Guid}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Node\+Guid}{NodeGuid}}
+{\footnotesize\ttfamily string Node\+Net.\+Network.\+Nodes.\+Node.\+Node\+Guid}
+
+
+
+ID du Noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a0d1ad8b0224cc196cb71ae364ba6866e}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a0d1ad8b0224cc196cb71ae364ba6866e}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Receive\+Done@{Receive\+Done}}
+\index{Receive\+Done@{Receive\+Done}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Receive\+Done}{ReceiveDone}}
+{\footnotesize\ttfamily Manual\+Reset\+Event Node\+Net.\+Network.\+Nodes.\+Node.\+Receive\+Done = new Manual\+Reset\+Event(false)\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+Evennement de gestion des connexions Socket asynchrones permettant de définir l\textquotesingle{}arrêt d\textquotesingle{}une réception asynchrone 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a5995108151b216b553cf5810f64dc5f2}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a5995108151b216b553cf5810f64dc5f2}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Send\+Done@{Send\+Done}}
+\index{Send\+Done@{Send\+Done}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Send\+Done}{SendDone}}
+{\footnotesize\ttfamily Manual\+Reset\+Event Node\+Net.\+Network.\+Nodes.\+Node.\+Send\+Done = new Manual\+Reset\+Event(false)\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+Evennement de gestion des connexions Socket asynchrones permettant de définir l\textquotesingle{}arrêt d\textquotesingle{}un envoi asynchrone 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a5c5ce25d72d61f0a1631461cb04cf004}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a5c5ce25d72d61f0a1631461cb04cf004}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Task\+Status\+Method@{Task\+Status\+Method}}
+\index{Task\+Status\+Method@{Task\+Status\+Method}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Task\+Status\+Method}{TaskStatusMethod}}
+{\footnotesize\ttfamily const string Node\+Net.\+Network.\+Nodes.\+Node.\+Task\+Status\+Method = \char`\"{}T\+A\+S\+K\+\_\+\+S\+T\+A\+TE\char`\"{}\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Constante définissant le nom de la méthode dynamique T\+A\+S\+K\+\_\+\+S\+T\+A\+TE 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a5930d056ff2b900b3189ce91c156fbf3}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a5930d056ff2b900b3189ce91c156fbf3}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Address@{Address}}
+\index{Address@{Address}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Address}{Address}}
+{\footnotesize\ttfamily string Node\+Net.\+Network.\+Nodes.\+Node.\+Address\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Adresse ip de ce noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a2492a4dacdd9b3e84eb7dbd4df35ae10}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a2492a4dacdd9b3e84eb7dbd4df35ae10}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Bytearray\+List@{Bytearray\+List}}
+\index{Bytearray\+List@{Bytearray\+List}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Bytearray\+List}{BytearrayList}}
+{\footnotesize\ttfamily List$<$byte\mbox{[}$\,$\mbox{]}$>$ Node\+Net.\+Network.\+Nodes.\+Node.\+Bytearray\+List\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}, {\ttfamily [protected]}}
+
+
+
+Trame de transfert 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ae9361f5398f580558130321351f60769}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ae9361f5398f580558130321351f60769}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Cpu\+Value@{Cpu\+Value}}
+\index{Cpu\+Value@{Cpu\+Value}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Cpu\+Value}{CpuValue}}
+{\footnotesize\ttfamily float Node\+Net.\+Network.\+Nodes.\+Node.\+Cpu\+Value\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ae6b6909cb4188712c35457ba7e32567a}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ae6b6909cb4188712c35457ba7e32567a}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Logger@{Logger}}
+\index{Logger@{Logger}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Logger}{Logger}}
+{\footnotesize\ttfamily Logger Node\+Net.\+Network.\+Nodes.\+Node.\+Logger\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Objet de log 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a6e4f23cf8706563042d0683add4c7cea}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a6e4f23cf8706563042d0683add4c7cea}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Name@{Name}}
+\index{Name@{Name}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Name}{Name}}
+{\footnotesize\ttfamily string Node\+Net.\+Network.\+Nodes.\+Node.\+Name\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Nom de ce noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a1a44ae3e6f0c93467b64142f22aa6083}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a1a44ae3e6f0c93467b64142f22aa6083}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Node\+Socket@{Node\+Socket}}
+\index{Node\+Socket@{Node\+Socket}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Node\+Socket}{NodeSocket}}
+{\footnotesize\ttfamily Socket Node\+Net.\+Network.\+Nodes.\+Node.\+Node\+Socket\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Socket d\textquotesingle{}écoute de ce noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ad9b9f16efa608d2507dd69c8e1c71f8e}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ad9b9f16efa608d2507dd69c8e1c71f8e}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Orch@{Orch}}
+\index{Orch@{Orch}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Orch}{Orch}}
+{\footnotesize\ttfamily \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} Node\+Net.\+Network.\+Nodes.\+Node.\+Orch\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Noeud Orchestrateur auquel ce noeud est connecté 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a3d4435d72b766a712e4b321e050eef45}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a3d4435d72b766a712e4b321e050eef45}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Perf\+Cpu@{Perf\+Cpu}}
+\index{Perf\+Cpu@{Perf\+Cpu}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Perf\+Cpu}{PerfCpu}}
+{\footnotesize\ttfamily Performance\+Counter Node\+Net.\+Network.\+Nodes.\+Node.\+Perf\+Cpu\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Compteur des performances des coeurs processeur 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a96f682af2888dbd7c8ce38a40503c247}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a96f682af2888dbd7c8ce38a40503c247}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Perf\+Ram@{Perf\+Ram}}
+\index{Perf\+Ram@{Perf\+Ram}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Perf\+Ram}{PerfRam}}
+{\footnotesize\ttfamily Performance\+Counter Node\+Net.\+Network.\+Nodes.\+Node.\+Perf\+Ram\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Compteur des performances de la mémoire vive 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_af7cf2568cb0d31b5ce7fb94d79a01e0d}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_af7cf2568cb0d31b5ce7fb94d79a01e0d}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Port@{Port}}
+\index{Port@{Port}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Port}{Port}}
+{\footnotesize\ttfamily int Node\+Net.\+Network.\+Nodes.\+Node.\+Port\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Port d\textquotesingle{}écoute 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a215d9270752581ba186656703bfcd755}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a215d9270752581ba186656703bfcd755}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Progression@{Progression}}
+\index{Progression@{Progression}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Progression}{Progression}}
+{\footnotesize\ttfamily double Node\+Net.\+Network.\+Nodes.\+Node.\+Progression\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+\% de progression du traitement actuel 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a2ffe8e246abf2e153a220ed96c15f4de}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a2ffe8e246abf2e153a220ed96c15f4de}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Ram\+Value@{Ram\+Value}}
+\index{Ram\+Value@{Ram\+Value}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Ram\+Value}{RamValue}}
+{\footnotesize\ttfamily double Node\+Net.\+Network.\+Nodes.\+Node.\+Ram\+Value\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a27c9abae66af40b58d906eb3dca72646}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a27c9abae66af40b58d906eb3dca72646}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Results@{Results}}
+\index{Results@{Results}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Results}{Results}}
+{\footnotesize\ttfamily Concurrent\+Dictionary$<$int, Concurrent\+Bag$<$object$>$ $>$ Node\+Net.\+Network.\+Nodes.\+Node.\+Results\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Liste des résultats réduits pour chaque tâche 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a1175e4cdf705317671abeeea31fd1108}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a1175e4cdf705317671abeeea31fd1108}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Server\+Socket@{Server\+Socket}}
+\index{Server\+Socket@{Server\+Socket}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Server\+Socket}{ServerSocket}}
+{\footnotesize\ttfamily Socket Node\+Net.\+Network.\+Nodes.\+Node.\+Server\+Socket\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Socket de destination 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a7578110f73eacb630e4d63376991f51c}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a7578110f73eacb630e4d63376991f51c}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!State@{State}}
+\index{State@{State}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{State}{State}}
+{\footnotesize\ttfamily \hyperlink{namespace_node_net_1_1_network_1_1_states_a0c130cd0043f8c509dddba2cf1fd2f36}{Node\+State} Node\+Net.\+Network.\+Nodes.\+Node.\+State\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Etat du noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a20e18f64c8b3291b0670dabb1b03464f}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a20e18f64c8b3291b0670dabb1b03464f}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Tasks@{Tasks}}
+\index{Tasks@{Tasks}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Tasks}{Tasks}}
+{\footnotesize\ttfamily Concurrent\+Dictionary$<$int, \hyperlink{class_node_net_1_1_tasks_1_1_task}{Task}$>$ Node\+Net.\+Network.\+Nodes.\+Node.\+Tasks\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Liste des tâches reçues par ce noeud 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_ab4815fbf678140a67bc54996fe8e6c0b}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_ab4815fbf678140a67bc54996fe8e6c0b}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Worker\+Factory@{Worker\+Factory}}
+\index{Worker\+Factory@{Worker\+Factory}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Worker\+Factory}{WorkerFactory}}
+{\footnotesize\ttfamily \hyperlink{class_node_net_1_1_tasks_1_1_task_exec_factory}{Task\+Exec\+Factory} Node\+Net.\+Network.\+Nodes.\+Node.\+Worker\+Factory\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Worker\+Factory permettant de produire les Task\+Executor 
+
+\mbox{\Hypertarget{class_node_net_1_1_network_1_1_nodes_1_1_node_a3394c5d0091b37680c3dc3868e369a7a}\label{class_node_net_1_1_network_1_1_nodes_1_1_node_a3394c5d0091b37680c3dc3868e369a7a}} 
+\index{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}!Working\+Task@{Working\+Task}}
+\index{Working\+Task@{Working\+Task}!Node\+Net\+::\+Network\+::\+Nodes\+::\+Node@{Node\+Net\+::\+Network\+::\+Nodes\+::\+Node}}
+\subsubsection{\texorpdfstring{Working\+Task}{WorkingTask}}
+{\footnotesize\ttfamily int Node\+Net.\+Network.\+Nodes.\+Node.\+Working\+Task\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Tâche actuelle en traitement 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/lowxorx/\+Source/\+Repos/c-\/projet-\/adn/\+Node\+Net/\+Network/\+Nodes/\hyperlink{_node_8cs}{Node.\+cs}\end{DoxyCompactItemize}

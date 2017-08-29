@@ -1,0 +1,184 @@
+\hypertarget{class_node_net_1_1_tasks_1_1_task_executor}{}\section{Node\+Net.\+Tasks.\+Task\+Executor Class Reference}
+\label{class_node_net_1_1_tasks_1_1_task_executor}\index{Node\+Net.\+Tasks.\+Task\+Executor@{Node\+Net.\+Tasks.\+Task\+Executor}}
+
+
+Objet de traitement de méthodes métiers ou infrastructures  
+
+
+Inheritance diagram for Node\+Net.\+Tasks.\+Task\+Executor\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_node_net_1_1_tasks_1_1_task_executor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_node_net_1_1_tasks_1_1_task_executor_a30c5b0e9e3d5e6e6ec08889a43c9c9a2}{Task\+Executor} (\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} node, Func$<$ \hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input}, object $>$ function, \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_mapper}{I\+Mapper} mapper, \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer}{I\+Reducer} reducer)
+\begin{DoxyCompactList}\small\item\em Constructeur initialisant le Noeud parent, la méthode à exécuter, le mapper et le reducer à utiliser \end{DoxyCompactList}\item 
+object \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_ad42635f3fd256939000c4f77705d2d42}{Do\+Work} (\hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input} input)
+\begin{DoxyCompactList}\small\item\em Dirige l\textquotesingle{}objet de transfert reçu vers Process\+Action \end{DoxyCompactList}\item 
+object \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_a6ac461a0244f65664db2cbe1d8f8182c}{Clone} ()
+\begin{DoxyCompactList}\small\item\em Réplique cet objet \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Func$<$ \hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input}, object $>$ \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_ab2e733e72e161cbfcb6394d2f646903f}{Process\+Action}
+\begin{DoxyCompactList}\small\item\em Méthode à exécuter \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_a269ae65a85a59965fe02aef617c6ce44}{Nb\+Workers} = 0
+\begin{DoxyCompactList}\small\item\em Nombre de Task\+Executors \end{DoxyCompactList}\item 
+int \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_a81903df43be23bec69be758db8a66678}{Nb\+Workers\+Done} = 0
+\begin{DoxyCompactList}\small\item\em Nombre de Task\+Executors terminés \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_a0761c0955745e5f4d26d5342321599c8}{Executor}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Noeud possesseur \end{DoxyCompactList}\item 
+\hyperlink{interface_node_net_1_1_map___reduce_1_1_i_mapper}{I\+Mapper} \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_aa4f120494ffb855dfcd54d6db8e8e8a3}{Mapper}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Mapper utilisé \end{DoxyCompactList}\item 
+\hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer}{I\+Reducer} \hyperlink{class_node_net_1_1_tasks_1_1_task_executor_abf048f920835d49ef8333f7be7249de1}{Reducer}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Reducer utilisé \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Objet de traitement de méthodes métiers ou infrastructures 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_a30c5b0e9e3d5e6e6ec08889a43c9c9a2}\label{class_node_net_1_1_tasks_1_1_task_executor_a30c5b0e9e3d5e6e6ec08889a43c9c9a2}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Task\+Executor@{Task\+Executor}}
+\index{Task\+Executor@{Task\+Executor}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Task\+Executor()}{TaskExecutor()}}
+{\footnotesize\ttfamily Node\+Net.\+Tasks.\+Task\+Executor.\+Task\+Executor (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node}}]{node,  }\item[{Func$<$ \hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input}, object $>$}]{function,  }\item[{\hyperlink{interface_node_net_1_1_map___reduce_1_1_i_mapper}{I\+Mapper}}]{mapper,  }\item[{\hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer}{I\+Reducer}}]{reducer }\end{DoxyParamCaption})}
+
+
+
+Constructeur initialisant le Noeud parent, la méthode à exécuter, le mapper et le reducer à utiliser 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Noeud parent\\
+\hline
+{\em function} & méthode à exécuter\\
+\hline
+{\em mapper} & Mapper/param$>$ 
+\begin{DoxyParams}{Parameters}
+{\em reducer} & Reducer\\
+\hline
+\end{DoxyParams}
+\\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_a6ac461a0244f65664db2cbe1d8f8182c}\label{class_node_net_1_1_tasks_1_1_task_executor_a6ac461a0244f65664db2cbe1d8f8182c}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Clone@{Clone}}
+\index{Clone@{Clone}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Clone()}{Clone()}}
+{\footnotesize\ttfamily object Node\+Net.\+Tasks.\+Task\+Executor.\+Clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Réplique cet objet 
+
+\begin{DoxyReturn}{Returns}
+C\+Lone de cette instance
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_ad42635f3fd256939000c4f77705d2d42}\label{class_node_net_1_1_tasks_1_1_task_executor_ad42635f3fd256939000c4f77705d2d42}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Do\+Work@{Do\+Work}}
+\index{Do\+Work@{Do\+Work}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Do\+Work()}{DoWork()}}
+{\footnotesize\ttfamily object Node\+Net.\+Tasks.\+Task\+Executor.\+Do\+Work (\begin{DoxyParamCaption}\item[{\hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input}}]{input }\end{DoxyParamCaption})}
+
+
+
+Dirige l\textquotesingle{}objet de transfert reçu vers Process\+Action 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & Objet de transfert\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interface_node_net_1_1_tasks_1_1_i_task_executor_aa4abf3c0f5e8d8088be22e7977291f93}{Node\+Net.\+Tasks.\+I\+Task\+Executor}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_a269ae65a85a59965fe02aef617c6ce44}\label{class_node_net_1_1_tasks_1_1_task_executor_a269ae65a85a59965fe02aef617c6ce44}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Nb\+Workers@{Nb\+Workers}}
+\index{Nb\+Workers@{Nb\+Workers}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Nb\+Workers}{NbWorkers}}
+{\footnotesize\ttfamily int Node\+Net.\+Tasks.\+Task\+Executor.\+Nb\+Workers = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Nombre de Task\+Executors 
+
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_a81903df43be23bec69be758db8a66678}\label{class_node_net_1_1_tasks_1_1_task_executor_a81903df43be23bec69be758db8a66678}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Nb\+Workers\+Done@{Nb\+Workers\+Done}}
+\index{Nb\+Workers\+Done@{Nb\+Workers\+Done}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Nb\+Workers\+Done}{NbWorkersDone}}
+{\footnotesize\ttfamily int Node\+Net.\+Tasks.\+Task\+Executor.\+Nb\+Workers\+Done = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Nombre de Task\+Executors terminés 
+
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_ab2e733e72e161cbfcb6394d2f646903f}\label{class_node_net_1_1_tasks_1_1_task_executor_ab2e733e72e161cbfcb6394d2f646903f}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Process\+Action@{Process\+Action}}
+\index{Process\+Action@{Process\+Action}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Process\+Action}{ProcessAction}}
+{\footnotesize\ttfamily Func$<$\hyperlink{class_node_net_1_1_data_1_1_data_input}{Data\+Input},object$>$ Node\+Net.\+Tasks.\+Task\+Executor.\+Process\+Action}
+
+
+
+Méthode à exécuter 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_a0761c0955745e5f4d26d5342321599c8}\label{class_node_net_1_1_tasks_1_1_task_executor_a0761c0955745e5f4d26d5342321599c8}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Executor@{Executor}}
+\index{Executor@{Executor}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Executor}{Executor}}
+{\footnotesize\ttfamily \hyperlink{class_node_net_1_1_network_1_1_nodes_1_1_node}{Node} Node\+Net.\+Tasks.\+Task\+Executor.\+Executor\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}, {\ttfamily [protected]}}
+
+
+
+Noeud possesseur 
+
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_aa4f120494ffb855dfcd54d6db8e8e8a3}\label{class_node_net_1_1_tasks_1_1_task_executor_aa4f120494ffb855dfcd54d6db8e8e8a3}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Mapper@{Mapper}}
+\index{Mapper@{Mapper}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Mapper}{Mapper}}
+{\footnotesize\ttfamily \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_mapper}{I\+Mapper} Node\+Net.\+Tasks.\+Task\+Executor.\+Mapper\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Mapper utilisé 
+
+\mbox{\Hypertarget{class_node_net_1_1_tasks_1_1_task_executor_abf048f920835d49ef8333f7be7249de1}\label{class_node_net_1_1_tasks_1_1_task_executor_abf048f920835d49ef8333f7be7249de1}} 
+\index{Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}!Reducer@{Reducer}}
+\index{Reducer@{Reducer}!Node\+Net\+::\+Tasks\+::\+Task\+Executor@{Node\+Net\+::\+Tasks\+::\+Task\+Executor}}
+\subsubsection{\texorpdfstring{Reducer}{Reducer}}
+{\footnotesize\ttfamily \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer}{I\+Reducer} Node\+Net.\+Tasks.\+Task\+Executor.\+Reducer\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+Reducer utilisé 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/lowxorx/\+Source/\+Repos/c-\/projet-\/adn/\+Node\+Net/\+Tasks/\hyperlink{_task_executor_8cs}{Task\+Executor.\+cs}\end{DoxyCompactItemize}

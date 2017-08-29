@@ -1,0 +1,100 @@
+\hypertarget{class_node_net_1_1_map___reduce_1_1_abstract_reducer}{}\section{Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer Class Reference}
+\label{class_node_net_1_1_map___reduce_1_1_abstract_reducer}\index{Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer@{Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer}}
+
+
+Classe abstraite implémentant \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer}{I\+Reducer}  
+
+
+Inheritance diagram for Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.672131cm]{class_node_net_1_1_map___reduce_1_1_abstract_reducer}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract object \hyperlink{class_node_net_1_1_map___reduce_1_1_abstract_reducer_a396b11f8b5285710be1565fac432df69}{Clone} ()
+\begin{DoxyCompactList}\small\item\em Méthode de clone de l\textquotesingle{}objet reducer \end{DoxyCompactList}\item 
+abstract object \hyperlink{class_node_net_1_1_map___reduce_1_1_abstract_reducer_aad995166ff8f13b4c85338bc29d09e62}{Reduce} (Concurrent\+Bag$<$ object $>$ input)
+\begin{DoxyCompactList}\small\item\em Méthode réduisant les résultats traités après le map \end{DoxyCompactList}\item 
+List$<$ Tuple$<$ int, object $>$ $>$ \hyperlink{class_node_net_1_1_map___reduce_1_1_abstract_reducer_a123d5e2d6d5743fdb8ccabaf02a71958}{Sort\+By\+Task\+Id} (Concurrent\+Bag$<$ object $>$ input)
+\begin{DoxyCompactList}\small\item\em Méthode permettant de trier les résultats reçus dans l\textquotesingle{}ordre dans lequel ils ont été découpés \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Classe abstraite implémentant \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer}{I\+Reducer} 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_node_net_1_1_map___reduce_1_1_abstract_reducer_a396b11f8b5285710be1565fac432df69}\label{class_node_net_1_1_map___reduce_1_1_abstract_reducer_a396b11f8b5285710be1565fac432df69}} 
+\index{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer@{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer}!Clone@{Clone}}
+\index{Clone@{Clone}!Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer@{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer}}
+\subsubsection{\texorpdfstring{Clone()}{Clone()}}
+{\footnotesize\ttfamily abstract object Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer.\+Clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Méthode de clone de l\textquotesingle{}objet reducer 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer_a48dd811dab4aebe80a515bbaa4db8909}{Node\+Net.\+Map\+\_\+\+Reduce.\+I\+Reducer}.
+
+
+
+Implemented in \hyperlink{class_a_d_net_1_1_map___reduce_1_1_node_1_1_quant_stats_reducer_a3595f4275c71a2d373f12bd74e7f1da4}{A\+D\+Net.\+Map\+\_\+\+Reduce.\+Node.\+Quant\+Stats\+Reducer}, and \hyperlink{class_a_d_net_1_1_map___reduce_1_1_orch_1_1_orch_quant_stat_reducer_aa4e7f32de6293b9265797dbb668e7dc2}{A\+D\+Net.\+Map\+\_\+\+Reduce.\+Orch.\+Orch\+Quant\+Stat\+Reducer}.
+
+\mbox{\Hypertarget{class_node_net_1_1_map___reduce_1_1_abstract_reducer_aad995166ff8f13b4c85338bc29d09e62}\label{class_node_net_1_1_map___reduce_1_1_abstract_reducer_aad995166ff8f13b4c85338bc29d09e62}} 
+\index{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer@{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer}!Reduce@{Reduce}}
+\index{Reduce@{Reduce}!Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer@{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer}}
+\subsubsection{\texorpdfstring{Reduce()}{Reduce()}}
+{\footnotesize\ttfamily abstract object Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer.\+Reduce (\begin{DoxyParamCaption}\item[{Concurrent\+Bag$<$ object $>$}]{input }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Méthode réduisant les résultats traités après le map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & Liste d\textquotesingle{}objets concurrents traités\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interface_node_net_1_1_map___reduce_1_1_i_reducer_a55b6605b1dda3d4fb9cdd361bec9a5cc}{Node\+Net.\+Map\+\_\+\+Reduce.\+I\+Reducer}.
+
+
+
+Implemented in \hyperlink{class_a_d_net_1_1_map___reduce_1_1_node_1_1_quant_stats_reducer_a315cd41c2ab48fbf409d16389977c679}{A\+D\+Net.\+Map\+\_\+\+Reduce.\+Node.\+Quant\+Stats\+Reducer}, and \hyperlink{class_a_d_net_1_1_map___reduce_1_1_orch_1_1_orch_quant_stat_reducer_a8fbc2655df6b1f0e8943107f195a01b0}{A\+D\+Net.\+Map\+\_\+\+Reduce.\+Orch.\+Orch\+Quant\+Stat\+Reducer}.
+
+\mbox{\Hypertarget{class_node_net_1_1_map___reduce_1_1_abstract_reducer_a123d5e2d6d5743fdb8ccabaf02a71958}\label{class_node_net_1_1_map___reduce_1_1_abstract_reducer_a123d5e2d6d5743fdb8ccabaf02a71958}} 
+\index{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer@{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer}!Sort\+By\+Task\+Id@{Sort\+By\+Task\+Id}}
+\index{Sort\+By\+Task\+Id@{Sort\+By\+Task\+Id}!Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer@{Node\+Net\+::\+Map\+\_\+\+Reduce\+::\+Abstract\+Reducer}}
+\subsubsection{\texorpdfstring{Sort\+By\+Task\+Id()}{SortByTaskId()}}
+{\footnotesize\ttfamily List$<$Tuple$<$int, object$>$ $>$ Node\+Net.\+Map\+\_\+\+Reduce.\+Abstract\+Reducer.\+Sort\+By\+Task\+Id (\begin{DoxyParamCaption}\item[{Concurrent\+Bag$<$ object $>$}]{input }\end{DoxyParamCaption})}
+
+
+
+Méthode permettant de trier les résultats reçus dans l\textquotesingle{}ordre dans lequel ils ont été découpés 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input} & Liste de résultats\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Liste ordonnée
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/lowxorx/\+Source/\+Repos/c-\/projet-\/adn/\+Node\+Net/\+Map\+\_\+\+Reduce/\hyperlink{_abstract_reducer_8cs}{Abstract\+Reducer.\+cs}\end{DoxyCompactItemize}
