@@ -1,4 +1,0 @@
-var dir_d522931ffa1371640980b621734a4381 =
-[
-    [ "lowxorx", "dir_218780739785ba0b9e6ee0e0905cc7c7.html", "dir_218780739785ba0b9e6ee0e0905cc7c7" ]
-];

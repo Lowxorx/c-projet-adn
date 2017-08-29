@@ -1,9 +1,0 @@
-var searchData=
-[
-  ['aboutappbox',['AboutAppBox',['../class_node_net_1_1_g_u_i_1_1_view_1_1_about_app_box.html#a915ecebc1621a72c817d8b4d114c1176',1,'NodeNet::GUI::View::AboutAppBox']]],
-  ['addeventhandler',['AddEventHandler',['../class_xaml_generated_namespace_1_1_generated_internal_type_helper.html#a73471f4a6d1ca4c4fceec9ad8610f0c8',1,'XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo eventInfo, object target, System.Delegate handler)'],['../class_xaml_generated_namespace_1_1_generated_internal_type_helper.html#a73471f4a6d1ca4c4fceec9ad8610f0c8',1,'XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo eventInfo, object target, System.Delegate handler)'],['../class_xaml_generated_namespace_1_1_generated_internal_type_helper.html#a73471f4a6d1ca4c4fceec9ad8610f0c8',1,'XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo eventInfo, object target, System.Delegate handler)']]],
-  ['addnodetolist',['AddNodeToList',['../class_node_net_1_1_network_1_1_default_client.html#a6ab3627eaeaddf3be78556bcbbe6ec09',1,'NodeNet::Network::DefaultClient']]],
-  ['addworker',['AddWorker',['../interface_node_net_1_1_tasks_1_1_i_task_exec_factory.html#a68c7e7504eb0001548c05a77843ab8c4',1,'NodeNet.Tasks.ITaskExecFactory.AddWorker()'],['../class_node_net_1_1_tasks_1_1_task_exec_factory.html#aa10759fa06564eae7d160da8f7ad3755',1,'NodeNet.Tasks.TaskExecFactory.AddWorker()']]],
-  ['adncalc',['AdnCalc',['../class_node_net_1_1_g_u_i_1_1_view_1_1_adn_calc.html#ad44a0368f9e6d2cad0d739935a7748a1',1,'NodeNet::GUI::View::AdnCalc']]],
-  ['adnetlauncher',['AdNetLauncher',['../class_a_d_net_1_1_g_u_i_1_1_view_1_1_ad_net_launcher.html#aeb53c28fabd9c60a448b8e3880ff927b',1,'ADNet::GUI::View::AdNetLauncher']]]
-];
