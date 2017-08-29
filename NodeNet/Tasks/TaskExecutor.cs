@@ -8,7 +8,7 @@ namespace NodeNet.Tasks
     /// <summary>
     /// Objet de traitement de méthodes métiers ou infrastructures
     /// </summary>
-    public class TaskExecutor : ITaskExecutor
+    public class TaskExecutor : ICloneable
     {
         /// <summary>
         /// Noeud possesseur

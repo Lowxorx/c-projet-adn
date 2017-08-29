@@ -1,5 +1,4 @@
 ﻿using NodeNet.Data;
-using NodeNet.Network.Orch;
 
 namespace NodeNet.Network.Nodes
 {

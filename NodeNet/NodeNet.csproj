@@ -104,7 +104,6 @@
     <Compile Include="Tasks\Task.cs" />
     <Compile Include="Tasks\TaskExecutor.cs" />
     <Compile Include="Tasks\TaskExecFactory.cs" />
-    <Compile Include="Tasks\ITaskExecFactory.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\TextboxHelper.cs" />
   </ItemGroup>
@@ -115,7 +114,6 @@
     <Compile Include="GUI\ViewModel\VMMonitoringUC.cs" />
     <Compile Include="Network\Nodes\INode.cs" />
     <Compile Include="Network\Orch\IOrchestrator.cs" />
-    <Compile Include="Tasks\ITaskExecutor.cs" />
     <Compile Include="Network\Orch\Orchestrator.cs" />
     <Compile Include="Network\Nodes\Node.cs" />
     <Compile Include="Network\States\NodeState.cs" />

@@ -56,7 +56,7 @@ namespace NodeNet.Network.Nodes
             WorkerFactory = TaskExecFactory.GetInstance();
             try
             {
-                WorkerFactory.AddWorker(IdentMethod, new TaskExecutor(this, ProcessIndent, null, null));
+                WorkerFactory.AddWorker(IdentMethod, new TaskExecutor(this, ProcessIdent, null, null));
                 WorkerFactory.AddWorker(GetCpuMethod, new TaskExecutor(this, StartMonitoring, null, null));
             }
             catch (Exception e)
@@ -113,7 +113,7 @@ namespace NodeNet.Network.Nodes
         /// </summary>
         /// <param name="d"></param>
         /// <returns></returns>
-        private DataInput ProcessIndent(DataInput d)
+        private DataInput ProcessIdent(DataInput d)
         {
             Tuple<string, int> orchIDentifiers = (Tuple<string, int>)d.Data;
             Name = Name + orchIDentifiers.Item1;

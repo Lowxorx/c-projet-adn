@@ -5,7 +5,7 @@ namespace NodeNet.Tasks
     /// <summary>
     /// Usine à TaskExecutor
     /// </summary>
-    public class TaskExecFactory : ITaskExecFactory
+    public class TaskExecFactory
     {
         /// <summary>
         /// Instance singleton de la classe
