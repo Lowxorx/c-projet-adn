@@ -498,8 +498,7 @@ namespace NodeNet.Network.Orch
         /// <param name="newTaskId">ID de la tâche mappée </param>
         private void SetTaskIsMapped(int newTaskId)
         {
-            Tuple<ConcurrentBag<int>, bool> task;
-            if (TaskDistrib.TryGetValue(newTaskId, out task))
+            if (TaskDistrib.TryGetValue(newTaskId, out Tuple<ConcurrentBag<int>, bool> task))
             {
                 Tuple<ConcurrentBag<int>, bool> newTask = new Tuple<ConcurrentBag<int>, bool>(task.Item1, true);
                 if (!TaskDistrib.TryUpdate(newTaskId, newTask, task))
@@ -649,13 +648,11 @@ namespace NodeNet.Network.Orch
         /// <param name="nodeGuid">Id du noeud</param>
         private void UpdateNodeTaskStatus(int nodeTaskId, NodeState status, string nodeGuid)
         {
-            Node node;
-            if (Nodes.TryGetValue(nodeGuid, out node))
+            if (Nodes.TryGetValue(nodeGuid, out Node node))
             {
-                Task task;
-                if (node.Tasks.TryGetValue(nodeTaskId, out task))
+                if (node.Tasks.TryGetValue(nodeTaskId, out Task task))
                 {
-                    Task newTask = new Task(task.Id, status) {TaskName = task.TaskName};
+                    Task newTask = new Task(task.Id, status) { TaskName = task.TaskName };
                     if (!node.Tasks.TryUpdate(nodeTaskId, newTask, task))
                     {
                         throw new Exception("Impossible de mettre à jour la tâche pour signifier quelle est mappée.");
@@ -792,8 +789,7 @@ namespace NodeNet.Network.Orch
         {
             foreach (var client in Clients)
             {
-                Task task;
-                if (client.Value.Tasks.TryGetValue(taskId, out task))
+                if (client.Value.Tasks.TryGetValue(taskId, out Task task))
                 {
                     return task.State;
                 }
@@ -804,14 +800,13 @@ namespace NodeNet.Network.Orch
         /// <summary>
         /// Récupère l'état d'une sous-tâche
         /// </summary>
-        /// <param name="taskId">ID de la sous-tâche</param>
+        /// <param name="subtaskId">ID de la sous-tâche</param>
         /// <returns>Etat</returns>
         private NodeState GetSubTaskState(int subtaskId)
         {
             foreach (var node in Nodes)
             {
-                Task task;
-                if (node.Value.Tasks.TryGetValue(subtaskId, out task))
+                if (node.Value.Tasks.TryGetValue(subtaskId, out Task task))
                 {
                     return task.State;
                 }
@@ -1043,8 +1038,7 @@ namespace NodeNet.Network.Orch
         private bool IsTaskReceiveAllRes(int taskId)
         {
             bool allResReceived = true;
-            Tuple<ConcurrentBag<int>, bool> subTasks;
-            if (TaskDistrib.TryGetValue(taskId, out subTasks))
+            if (TaskDistrib.TryGetValue(taskId, out Tuple<ConcurrentBag<int>, bool> subTasks))
             {
                 foreach (int subId in subTasks.Item1)
                 {

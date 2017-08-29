@@ -43,7 +43,7 @@ namespace NodeNet.Tasks
         /// </summary>
         /// <param name="node">Noeud parent</param>
         /// <param name="function">méthode à exécuter</param>
-        /// <param name="mapper">Mapper/param>
+        /// <param name="mapper">Mapper</param>
         /// <param name="reducer">Reducer</param>
         public TaskExecutor(Node node, Func<DataInput, object> function,IMapper mapper,IReducer reducer)
         {

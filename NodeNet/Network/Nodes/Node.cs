@@ -194,6 +194,8 @@ namespace NodeNet.Network.Nodes
         /// <param name="name">Nom du noeud</param>
         /// <param name="adress">adresse IP du noeud</param>
         /// <param name="port">port d'écoute du noeud</param>
+        /// <param name="sock">Socket</param>
+
         protected Node(string name, string adress, int port, Socket sock)
         {
             Name = name;
@@ -476,8 +478,7 @@ namespace NodeNet.Network.Nodes
         /// <returns>Liste des résultats de la tâche</returns>
         protected ConcurrentBag<object> GetResultFromTaskId(int taskId)
         {
-            ConcurrentBag<object> result;
-            if (Results.TryGetValue(taskId, out result))
+            if (Results.TryGetValue(taskId, out ConcurrentBag<object> result))
             {
                 return result;
             }

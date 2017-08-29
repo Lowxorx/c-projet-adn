@@ -101,6 +101,7 @@ namespace NodeNet.Tasks
         /// </summary>
         /// <param name="id">ID de la tâche</param>
         /// <param name="state">Etat</param>
+        /// <param name="taskName">Nom de la Task</param>
         public Task(int id, NodeState state,string taskName)
         {
             this.id = id;

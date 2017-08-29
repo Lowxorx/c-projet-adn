@@ -46,6 +46,7 @@ namespace NodeNet.Network.Nodes
         /// <param name="name">Nom du noeud</param>
         /// <param name="adress">Adresse IP du noeud</param>
         /// <param name="port">Port d'écoute</param>
+        /// <param name="enabled">Active les logs vers un fichier"</param>
         public DefaultNode(string name, string adress, int port, bool enabled) : base(name, adress, port)
         {
 
@@ -180,7 +181,7 @@ namespace NodeNet.Network.Nodes
         /// <summary>
         /// Méthode exécutant le traitement demandé dans l'objet de transfert au travers de gestionnaire de thread indépendant
         /// </summary>
-        /// <param name="processFunction">Méthode à exécutant la fonction apssé&e en paramètre de l'objet de transfert </param>
+        /// <param name="processFunction">Méthode à exécutant la fonction passée en paramètre de l'objet de transfert </param>
         /// <param name="taskData">Objet dfe trasnfert contenant les données à traiter </param>
         /// <param name="totalNbWorker"> Nombre de gestionbnaires de thread à exécuter</param>
         protected void LaunchBgForWork(Action<object, DoWorkEventArgs> processFunction, DataInput taskData, int totalNbWorker)

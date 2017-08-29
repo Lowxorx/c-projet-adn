@@ -47,8 +47,9 @@ namespace NodeNet.Utilities
                     sw.WriteLine(DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToLongTimeString() + " - " + s + Environment.NewLine);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                //ignored
             }
         }
 
@@ -77,8 +78,9 @@ namespace NodeNet.Utilities
                     sw.WriteLine(DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToLongTimeString() + " - " + "-----------------------------------------------------------------------------------");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                //ignored
             }
         }
 

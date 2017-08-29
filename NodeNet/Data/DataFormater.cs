@@ -76,7 +76,7 @@ namespace NodeNet.Data
                     return full;
                 }
             }
-            catch (SerializationException ex)
+            catch (SerializationException)
             {
                 return null;
             }
