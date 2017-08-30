@@ -451,8 +451,26 @@ namespace NodeNet.Network.Nodes
         /// </summary>
         protected void GenGuid()
         {
-            NodeGuid = Name + ":" + Address + ":" + Port;
+            NodeGuid = Name + ":" + GetLocalIpAddress() + ":" + Port;
         }
+
+        /// <summary>
+        /// Récupère l'ip locale de la machine.
+        /// </summary>
+        /// <returns>Une IP</returns>
+        private static string GetLocalIpAddress()
+        {
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return "127.0.0.1";
+        }
+
 
         /// <summary>
         /// Méthode mettant à jour les résultats d'une tâche donnée
